@@ -34,6 +34,9 @@ impl GameTestController {
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap(), &mut scene_manager.write().unwrap(), &master_graphics_list.write().unwrap(), &audio_manager.write().unwrap());
 
+        // Test some music
+        audio_manager.write().unwrap().enqueue_sound("RealiteVirtuelle");
+
         let mut flag = false;
 
         while flag == false {
@@ -87,6 +90,7 @@ impl GameTestController {
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds");
+        let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\music");
 
         // Load the test scene from the manager into the master graphics list
         if let Some(scene) = scene_manager.get_scene("testscene") {
@@ -104,22 +108,22 @@ impl GameTestController {
         let rotation_speed = 2.0;
         let key_states_read = key_states.read().unwrap();
 
-        if key_states_read.is_key_pressed(Key::W) {
+        if key_states_read.is_key_pressed_raw(Key::W) {
             Movement::move_object(square.clone(), Vector3::new(0.0, 1.0, 0.0), move_speed, delta_time);
         }
-        if key_states_read.is_key_pressed(Key::S) {
+        if key_states_read.is_key_pressed_raw(Key::S) {
             Movement::move_object(square.clone(), Vector3::new(0.0, -1.0, 0.0), move_speed, delta_time);
         }
-        if key_states_read.is_key_pressed(Key::A) {
+        if key_states_read.is_key_pressed_raw(Key::A) {
             Movement::move_object(square.clone(), Vector3::new(-1.0, 0.0, 0.0), move_speed, delta_time);
         }
-        if key_states_read.is_key_pressed(Key::D) {
+        if key_states_read.is_key_pressed_raw(Key::D) {
             Movement::move_object(square.clone(), Vector3::new(1.0, 0.0, 0.0), move_speed, delta_time);
         }
-        if key_states_read.is_key_pressed(Key::Q) {
+        if key_states_read.is_key_pressed_raw(Key::Q) {
             Movement::rotate_object(square.clone(), rotation_speed*delta_time);
         }
-        if key_states_read.is_key_pressed(Key::E) {
+        if key_states_read.is_key_pressed_raw(Key::E) {
             Movement::rotate_object(square.clone(), -rotation_speed*delta_time);
         }
     }
@@ -141,14 +145,17 @@ impl GameTestController {
         if key_states_read.is_key_pressed(Key::Kp4) {
             audio_manager_write.enqueue_sound("Piano5D");
         }
-        if key_states_read.is_key_pressed(Key::Kp5) {
+        if key_states_read.is_key_pressed(Key::Kp6) {
             audio_manager_write.enqueue_sound("Piano5E");
         }
-        if key_states_read.is_key_pressed(Key::Kp6) {
+        if key_states_read.is_key_pressed(Key::Kp7) {
             audio_manager_write.enqueue_sound("Piano5F");
         }
-        if key_states_read.is_key_pressed(Key::Kp7) {
+        if key_states_read.is_key_pressed(Key::Kp8) {
             audio_manager_write.enqueue_sound("Piano5G");
+        }
+        if key_states_read.is_key_pressed(Key::Kp9) {
+            audio_manager_write.enqueue_sound("Piano5A");
         }
     }
 }
