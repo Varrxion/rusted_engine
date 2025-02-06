@@ -1,0 +1,9 @@
+[package]
+name = "game_test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rusted_open = { git = "https://github.com/Varrxion/rusted_open", branch = "add_audio" }
+glfw = "0.58"
+nalgebra = "0.33.1"
