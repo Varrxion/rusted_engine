@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock};
 
 use glfw::Key;
 use nalgebra::Vector3;
-use rusted_open::engine::{audio::audio_manager::AudioManager, engine_controller::EngineController, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
+use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
 
 use super::events::{collision::Collision, movement::Movement};
 
@@ -35,7 +35,7 @@ impl GameTestController {
         self.load_resources(&texture_manager.write().unwrap(), &mut scene_manager.write().unwrap(), &master_graphics_list.write().unwrap(), &audio_manager.write().unwrap());
 
         // Test some music
-        audio_manager.write().unwrap().enqueue_sound("RealiteVirtuelle");
+        //audio_manager.write().unwrap().enqueue_audio("RealiteVirtuelle", AudioType::Music, 0.2, true);
 
         let mut flag = false;
 
@@ -73,7 +73,8 @@ impl GameTestController {
 
         // Check the collision documentation if the output seems confusing
         for event in collision_events {
-            println!("Collision detected between Object ID {} and Object ID {}", event.object_name_1, event.object_name_2);
+            //event.object_name_1
+            //println!("Collision detected between Object ID {} and Object ID {}", event.object_name_1, event.object_name_2);
         }
 
         let _ = audio_manager.write().unwrap().process_audio_queue();
@@ -90,7 +91,9 @@ impl GameTestController {
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds");
+        // Load resources which should not be uploaded
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\music");
+        let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\sounds");
 
         // Load the test scene from the manager into the master graphics list
         if let Some(scene) = scene_manager.get_scene("testscene") {
@@ -133,29 +136,35 @@ impl GameTestController {
         let audio_manager_write = audio_manager.write().unwrap();
         let key_states_read = key_states.read().unwrap();
 
+        if key_states_read.is_key_pressed(Key::Kp0) {
+            audio_manager_write.stop_audio();
+        }
         if key_states_read.is_key_pressed(Key::Kp1) {
-            audio_manager_write.enqueue_sound("Piano4A");
+            audio_manager_write.enqueue_audio("Piano4A", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp2) {
-            audio_manager_write.enqueue_sound("Piano4B");
+            audio_manager_write.enqueue_audio("Piano4B", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp3) {
-            audio_manager_write.enqueue_sound("Piano5C");
+            audio_manager_write.enqueue_audio("Piano5C", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp4) {
-            audio_manager_write.enqueue_sound("Piano5D");
+            audio_manager_write.enqueue_audio("Piano5D", AudioType::Sound, 1.0, false);
+        }
+        if key_states_read.is_key_pressed(Key::Kp5) {
+            audio_manager_write.enqueue_audio("gorbino", AudioType::Music, 0.5, false);
         }
         if key_states_read.is_key_pressed(Key::Kp6) {
-            audio_manager_write.enqueue_sound("Piano5E");
+            audio_manager_write.enqueue_audio("Piano5E", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp7) {
-            audio_manager_write.enqueue_sound("Piano5F");
+            audio_manager_write.enqueue_audio("Piano5F", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp8) {
-            audio_manager_write.enqueue_sound("Piano5G");
+            audio_manager_write.enqueue_audio("Piano5G", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp9) {
-            audio_manager_write.enqueue_sound("Piano5A");
+            audio_manager_write.enqueue_audio("Piano5A", AudioType::Sound, 1.0, false);
         }
     }
 }
