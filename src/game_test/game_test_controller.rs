@@ -2,15 +2,16 @@ use std::sync::{Arc, RwLock};
 
 use glfw::Key;
 use nalgebra::Vector3;
-use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates};
+use rusted_open::engine::{engine_controller::EngineController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates};
 
-use super::{entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, scenes::scene_manager::SceneManager};
+use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, scenes::scene_manager::SceneManager};
 
 pub struct GameTestController {
     engine_controller: EngineController,
     event_handler: EventHandler,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     scene_manager: Arc<RwLock<SceneManager>>,
+    audio_manager: Arc<RwLock<AudioManager>>,
 }
 
 impl GameTestController {
@@ -21,7 +22,8 @@ impl GameTestController {
             engine_controller: EngineController::new(window_name),
             event_handler: EventHandler,
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
-            scene_manager: Arc::new(RwLock::new(SceneManager::new()))
+            scene_manager: Arc::new(RwLock::new(SceneManager::new())),
+            audio_manager: Arc::new(RwLock::new(AudioManager::new())),
         }
     }
 
@@ -32,10 +34,9 @@ impl GameTestController {
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
         let key_states = self.engine_controller.get_key_states();
-        let audio_manager = self.engine_controller.get_audio_manager();
 
         // Go into this function to see how the loading is done.
-        self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap(), &audio_manager.write().unwrap());
+        self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap());
 
         // Test some music
         //audio_manager.write().unwrap().enqueue_audio("RealiteVirtuelle", AudioType::Music, 0.2, true);
@@ -43,13 +44,13 @@ impl GameTestController {
         let mut flag = false;
 
         while flag == false {
-            flag = self.main_loop(&master_clock, &master_graphics_list, &audio_manager, &key_states);
+            flag = self.main_loop(&master_clock, &master_graphics_list, &key_states);
         }
     }
 
     /// This is the main loop for the framework.
     /// I have included a simple control scheme for the object we control, a random spinning object, and two stationary objects.
-    pub fn main_loop(&mut self, master_clock: &Arc<RwLock<MasterClock>>, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>, audio_manager: &Arc<RwLock<AudioManager>>, key_states: &Arc<RwLock<KeyStates>>) -> bool {
+    pub fn main_loop(&mut self, master_clock: &Arc<RwLock<MasterClock>>, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>, key_states: &Arc<RwLock<KeyStates>>) -> bool {
         // Retrieve the "player" square from the master graphics list
         let square = master_graphics_list.read().unwrap().get_object("testscene_playersquare").expect("Object not found");
 
@@ -60,7 +61,7 @@ impl GameTestController {
         self.process_player_movement(key_states, square, delta_time);
 
         // Process audio inputs
-        self.process_piano_keys(key_states, audio_manager);
+        self.process_piano_keys(key_states, &self.audio_manager);
 
         // Spin this object for testing
         if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
@@ -75,7 +76,7 @@ impl GameTestController {
         let collision_events = self.event_handler.check_entity_collisions(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap());
         self.event_handler.handle_collision_events(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), collision_events);
 
-        let _ = audio_manager.write().unwrap().process_audio_queue();
+        let _ = self.audio_manager.write().unwrap().process_audio_queue();
 
         master_graphics_list.read().unwrap().debug_all();
 
@@ -84,9 +85,10 @@ impl GameTestController {
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
-    pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
+    pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList) {
         self.engine_controller.set_resolution(1280.0, 720.0);
         let mut scene_manager = self.scene_manager.write().unwrap();
+        let audio_manager = self.audio_manager.read().unwrap();
 
         // Load the texture files and the scenes from their respective directories into memory
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
