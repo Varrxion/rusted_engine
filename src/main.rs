@@ -1,6 +1,6 @@
-use game_test::engine_controller::EngineController;
+use rusted_engine::engine_controller::EngineController;
 
-mod game_test;
+mod rusted_engine;
 
 fn main() {
     let mut example_app_controller = EngineController::new();

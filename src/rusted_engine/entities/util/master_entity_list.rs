@@ -1,6 +1,6 @@
 use std::{collections::HashMap, sync::{Arc, RwLock}};
 
-use crate::game_test::entities::generic_entity::GenericEntity;
+use crate::rusted_engine::entities::generic_entity::GenericEntity;
 
 pub struct MasterEntityList {
     entities: Arc<RwLock<HashMap<String, Arc<RwLock<GenericEntity>>>>>,
