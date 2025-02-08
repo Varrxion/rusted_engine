@@ -1,4 +1,4 @@
-pub mod game_test_controller;
+pub mod engine_controller;
 pub mod events;
 pub mod entities;
 pub mod scenes;

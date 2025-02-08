@@ -1,12 +1,12 @@
 use std::sync::{Arc, RwLock};
 
-use glfw::{Context, Glfw, GlfwReceiver, Key, WindowEvent};
+use glfw::{Context, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
 use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
 use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
-pub struct GameTestController {
+pub struct EngineController {
     glfw: glfw::Glfw,
     window: glfw::PWindow,
     events: GlfwReceiver<(f64, WindowEvent)>,
@@ -19,7 +19,7 @@ pub struct GameTestController {
     key_states: Arc<RwLock<KeyStates>>,
 }
 
-impl GameTestController {
+impl EngineController {
     /// Creates a new EntryPoint instance.
     pub fn new() -> Self {
         let mut glfw = glfw::init(glfw::fail_on_errors).unwrap();
