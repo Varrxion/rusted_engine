@@ -2,12 +2,14 @@ use std::sync::{Arc, RwLock};
 
 use glfw::Key;
 use nalgebra::Vector3;
-use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
+use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, events::{collision, movement}, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
 
-use super::events::{collision::Collision, movement::Movement};
+use super::{entities::{generic_entity::GenericEntity, util::master_entity_list::{self, MasterEntityList}}, events::event_handler::{self, EventHandler}};
 
 pub struct GameTestController {
     engine_controller: EngineController,
+    event_handler: EventHandler,
+    master_entity_list: Arc<RwLock<MasterEntityList>>,
 }
 
 impl GameTestController {
@@ -16,12 +18,12 @@ impl GameTestController {
         let window_name = "Game Test";
         GameTestController {
             engine_controller: EngineController::new(window_name),
+            event_handler: EventHandler,
+            master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
         }
     }
 
-    /// This is what we call from main to start the Example. It will grab the engine parts we want to use, load the example resources, and then call our game loop until the app closes.
-    /// It does not have to be made this way, any structure can be used but this makes the most sense to me so we will follow it for this example code.
-    /// Direct changes may be made to the engine itself if needed but the goal of the Engine is to be flexible.
+    // Call from main to start everything
     pub fn init(&mut self) {
         // Grab the parts of the engine_controller we want to use
         let master_clock = self.engine_controller.get_master_clock();
@@ -69,13 +71,8 @@ impl GameTestController {
         }
 
         // Call the collision checking method
-        let collision_events = Collision::check_collisions(&master_graphics_list.read().unwrap(), "testscene_playersquare");
-
-        // Check the collision documentation if the output seems confusing
-        for event in collision_events {
-            //event.object_name_1
-            //println!("Collision detected between Object ID {} and Object ID {}", event.object_name_1, event.object_name_2);
-        }
+        let collision_events = self.event_handler.check_entity_collisions(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap());
+        self.event_handler.handle_collision_events(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), collision_events);
 
         let _ = audio_manager.write().unwrap().process_audio_queue();
 
@@ -103,6 +100,12 @@ impl GameTestController {
             // It can be a good idea to make sure the scene which you are trying to load by name is actually in the list before calling it to be loaded.
             println!("Scene 'testscene' not found");
         }
+
+        let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true)));
+        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, true, false)));
+        
+        self.master_entity_list.write().unwrap().add_entity(test_entity_1);
+        self.master_entity_list.write().unwrap().add_entity(test_entity_2);
     }
 
     // Apply movement based on active keys
@@ -112,22 +115,22 @@ impl GameTestController {
         let key_states_read = key_states.read().unwrap();
 
         if key_states_read.is_key_pressed_raw(Key::W) {
-            Movement::move_object(square.clone(), Vector3::new(0.0, 1.0, 0.0), move_speed, delta_time);
+            movement::move_object(square.clone(), Vector3::new(0.0, 1.0, 0.0), move_speed, delta_time);
         }
         if key_states_read.is_key_pressed_raw(Key::S) {
-            Movement::move_object(square.clone(), Vector3::new(0.0, -1.0, 0.0), move_speed, delta_time);
+            movement::move_object(square.clone(), Vector3::new(0.0, -1.0, 0.0), move_speed, delta_time);
         }
         if key_states_read.is_key_pressed_raw(Key::A) {
-            Movement::move_object(square.clone(), Vector3::new(-1.0, 0.0, 0.0), move_speed, delta_time);
+            movement::move_object(square.clone(), Vector3::new(-1.0, 0.0, 0.0), move_speed, delta_time);
         }
         if key_states_read.is_key_pressed_raw(Key::D) {
-            Movement::move_object(square.clone(), Vector3::new(1.0, 0.0, 0.0), move_speed, delta_time);
+            movement::move_object(square.clone(), Vector3::new(1.0, 0.0, 0.0), move_speed, delta_time);
         }
         if key_states_read.is_key_pressed_raw(Key::Q) {
-            Movement::rotate_object(square.clone(), rotation_speed*delta_time);
+            movement::rotate_object(square.clone(), rotation_speed*delta_time);
         }
         if key_states_read.is_key_pressed_raw(Key::E) {
-            Movement::rotate_object(square.clone(), -rotation_speed*delta_time);
+            movement::rotate_object(square.clone(), -rotation_speed*delta_time);
         }
     }
 

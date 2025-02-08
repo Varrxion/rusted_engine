@@ -1,2 +1,1 @@
-pub mod movement;
-pub mod collision;
+pub mod event_handler;
