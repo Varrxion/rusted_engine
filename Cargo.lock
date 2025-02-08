@@ -431,6 +431,8 @@ dependencies = [
  "glfw",
  "nalgebra",
  "rusted_open",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

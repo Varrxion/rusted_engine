@@ -2,14 +2,15 @@ use std::sync::{Arc, RwLock};
 
 use glfw::Key;
 use nalgebra::Vector3;
-use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, events::{collision, movement}, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
+use rusted_open::engine::{audio::audio_manager::{AudioManager, AudioType}, engine_controller::EngineController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates};
 
-use super::{entities::{generic_entity::GenericEntity, util::master_entity_list::{self, MasterEntityList}}, events::event_handler::{self, EventHandler}};
+use super::{entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, scenes::scene_manager::SceneManager};
 
 pub struct GameTestController {
     engine_controller: EngineController,
     event_handler: EventHandler,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
+    scene_manager: Arc<RwLock<SceneManager>>,
 }
 
 impl GameTestController {
@@ -20,6 +21,7 @@ impl GameTestController {
             engine_controller: EngineController::new(window_name),
             event_handler: EventHandler,
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
+            scene_manager: Arc::new(RwLock::new(SceneManager::new()))
         }
     }
 
@@ -28,13 +30,12 @@ impl GameTestController {
         // Grab the parts of the engine_controller we want to use
         let master_clock = self.engine_controller.get_master_clock();
         let texture_manager = self.engine_controller.get_texture_manager();
-        let scene_manager = self.engine_controller.get_scene_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
         let key_states = self.engine_controller.get_key_states();
         let audio_manager = self.engine_controller.get_audio_manager();
 
         // Go into this function to see how the loading is done.
-        self.load_resources(&texture_manager.write().unwrap(), &mut scene_manager.write().unwrap(), &master_graphics_list.write().unwrap(), &audio_manager.write().unwrap());
+        self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap(), &audio_manager.write().unwrap());
 
         // Test some music
         //audio_manager.write().unwrap().enqueue_audio("RealiteVirtuelle", AudioType::Music, 0.2, true);
@@ -83,11 +84,13 @@ impl GameTestController {
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
-    pub fn load_resources(&mut self, texture_manager: &TextureManager, scene_manager: &mut SceneManager, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
+    pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
         self.engine_controller.set_resolution(1280.0, 720.0);
+        let mut scene_manager = self.scene_manager.write().unwrap();
 
         // Load the texture files and the scenes from their respective directories into memory
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
+        let _ = texture_manager.load_textures_from_directory("src\\resources\\localonly\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds");
         // Load resources which should not be uploaded
@@ -95,22 +98,19 @@ impl GameTestController {
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\sounds");
 
         // Load the test scene from the manager into the master graphics list
-        if let Some(scene) = scene_manager.get_scene("testscene") {
-            let scene = scene.write().expect("Failed to lock the scene for writing");
-            master_graphics_list.load_scene(&scene);
-        } else {
-            // It can be a good idea to make sure the scene which you are trying to load by name is actually in the list before calling it to be loaded.
-            println!("Scene 'testscene' not found");
-        }
+        let scene_name = "testscene";
+        scene_manager.load_scene_into_master_graphics_list(master_graphics_list, scene_name.to_owned());
 
         let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true)));
         let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, false, false)));
-        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 4.0, false, false, false)));
+        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 3.0, false, false, false)));
+        let test_entity_4 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj4".to_owned(), 4.0, false, false, false)));
         
         
         self.master_entity_list.write().unwrap().add_entity(test_entity_1);
         self.master_entity_list.write().unwrap().add_entity(test_entity_2);
         self.master_entity_list.write().unwrap().add_entity(test_entity_3);
+        self.master_entity_list.write().unwrap().add_entity(test_entity_4);
     }
 
     // Apply movement based on active keys

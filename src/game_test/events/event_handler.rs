@@ -1,5 +1,5 @@
 use rusted_open::engine::{events::collision::{self, CollisionEvent}, graphics::util::master_graphics_list::MasterGraphicsList};
-use crate::game_test::entities::{self, generic_entity::GenericEntity, util::master_entity_list::MasterEntityList};
+use crate::game_test::entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList};
 
 pub struct EventHandler;
 
@@ -64,7 +64,7 @@ impl EventHandler {
     }
 
     fn move_entity_based_on_position(&self, master_graphics_list: &MasterGraphicsList, unmoved_entity: &GenericEntity, moved_entity: &GenericEntity, push_force: f32) {
-        let (mut entity_1_pos, mut entity_2_pos);
+        let (entity_1_pos, mut entity_2_pos);
         
         // Get the positions of both entities
         if let Some(entity_1_graphics_object) = master_graphics_list.get_object(unmoved_entity.get_name()) {

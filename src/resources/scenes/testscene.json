@@ -47,7 +47,7 @@
             ],
             "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
             "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [0.0, 0.0, 0.0],
+            "position": [0.0, -0.3, 0.0],
             "rotation": 0.0,
             "scale": 1.0,
             "texture_name": "FamiliarBlock",
@@ -95,6 +95,28 @@
             "rotation": 0.0,
             "scale": 1.0,
             "texture_name": "BasicCharacterRed",
+            "collision_modes": ["AABB"]
+        },
+        {
+			"name": "testscene_obj4",
+            "vertex_data": [ 
+                0.1, 0.1,
+                0.1, -0.1,
+                -0.1, -0.1,
+                -0.1, 0.1
+            ],
+            "texture_coords": [
+                1.0, 0.0,
+                1.0, 1.0,
+                0.0, 1.0,
+                0.0, 0.0
+            ],
+            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
+            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+            "position": [0.0, 0.3, 0.0],
+            "rotation": 0.0,
+            "scale": 1.0,
+            "texture_name": "Chud",
             "collision_modes": ["AABB"]
         }
     ]
