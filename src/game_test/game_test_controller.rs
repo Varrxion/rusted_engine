@@ -2,9 +2,9 @@ use std::sync::{Arc, RwLock};
 
 use glfw::{Context, Glfw, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
-use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}};
+use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
+use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct GameTestController {
     glfw: glfw::Glfw,
@@ -12,6 +12,7 @@ pub struct GameTestController {
     events: GlfwReceiver<(f64, WindowEvent)>,
     engine_controller: FrameworkController,
     event_handler: EventHandler,
+    master_clock: Arc<RwLock<MasterClock>>,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     scene_manager: Arc<RwLock<SceneManager>>,
     audio_manager: Arc<RwLock<AudioManager>>,
@@ -43,6 +44,7 @@ impl GameTestController {
             events,
             engine_controller: FrameworkController::new(),
             event_handler: EventHandler,
+            master_clock: Arc::new(RwLock::new(MasterClock::new())),
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
             scene_manager: Arc::new(RwLock::new(SceneManager::new())),
             audio_manager: Arc::new(RwLock::new(AudioManager::new())),
@@ -53,7 +55,6 @@ impl GameTestController {
     // Call from main to start everything
     pub fn init(&mut self) {
         // Grab the parts of the engine_controller we want to use
-        let master_clock = self.engine_controller.get_master_clock();
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
 
@@ -66,13 +67,19 @@ impl GameTestController {
         let mut flag = false;
 
         while flag == false {
-            flag = self.main_loop(&master_clock, &master_graphics_list);
+            flag = self.main_loop(&master_graphics_list);
         }
     }
 
+
     /// This is the main loop for the framework.
     /// I have included a simple control scheme for the object we control, a random spinning object, and two stationary objects.
-    pub fn main_loop(&mut self, master_clock: &Arc<RwLock<MasterClock>>, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) -> bool {
+    pub fn main_loop(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) -> bool {
+
+        self.execute_tick(master_graphics_list);
+
+        // Thou shalt not use frame-based physics.
+        let delta_time = self.master_clock.read().unwrap().get_delta_time();
 
         if self.window.should_close() {
             return true;
@@ -80,9 +87,6 @@ impl GameTestController {
 
         // Retrieve the "player" square from the master graphics list
         let square = master_graphics_list.read().unwrap().get_object("testscene_playersquare").expect("Object not found");
-
-        // Thou shalt not use frame-based physics.
-        let delta_time = master_clock.read().unwrap().get_delta_time();
 
         // Just here for now, do movement inputs
         self.process_player_movement(square, delta_time);
@@ -103,9 +107,18 @@ impl GameTestController {
         let collision_events = self.event_handler.check_entity_collisions(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap());
         self.event_handler.handle_collision_events(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), collision_events);
 
+        return false;
+    }
+
+    /// Executing a tick renders the frame, updates the master clock, plays all queued audio, and updates inputs.
+    pub fn execute_tick(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) {
+        // Update the clock
+        self.master_clock.write().unwrap().update();
+
         let _ = self.audio_manager.write().unwrap().process_audio_queue();
 
-        master_graphics_list.read().unwrap().debug_all();
+        // Only uncomment this line if you want tons of information dumped into the console
+        //master_graphics_list.read().unwrap().debug_all();
 
         // Update Pressed Keys to Held Keys
         self.key_states.write().unwrap().update_pressed_to_held();
@@ -115,15 +128,13 @@ impl GameTestController {
         for (_, event) in glfw::flush_messages(&self.events) {
             match event {
                 _ => {
-                    //Add or remove a key from the list of currently held keys based on the current user input
+                    // Add or remove a key from the list of currently held keys based on the current user input
                     self.key_states.write().unwrap().handle_key_event(event);
                 }
             }
         }
 
-        self.engine_controller.execute_tick(&mut self.window);
-        return false;
-
+        self.engine_controller.render(&mut self.window);
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
