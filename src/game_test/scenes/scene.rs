@@ -1,6 +1,6 @@
 use std::sync::{Arc, RwLock};
 
-use rusted_open::engine::graphics::internal_object::graphics_object::Generic2DGraphicsObject;
+use rusted_open::framework::graphics::internal_object::graphics_object::Generic2DGraphicsObject;
 
 pub struct Scene {
     objects: Vec<Arc<RwLock<Generic2DGraphicsObject>>>, // Use Generic2DGraphicsObject for static objects

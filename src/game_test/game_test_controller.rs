@@ -1,29 +1,52 @@
 use std::sync::{Arc, RwLock};
 
-use glfw::Key;
+use glfw::{Context, Glfw, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
-use rusted_open::engine::{engine_controller::EngineController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}, input::key_states::KeyStates};
+use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::{master_clock::MasterClock, master_graphics_list::MasterGraphicsList}}};
 
-use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, scenes::scene_manager::SceneManager};
+use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager};
 
 pub struct GameTestController {
-    engine_controller: EngineController,
+    glfw: glfw::Glfw,
+    window: glfw::PWindow,
+    events: GlfwReceiver<(f64, WindowEvent)>,
+    engine_controller: FrameworkController,
     event_handler: EventHandler,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     scene_manager: Arc<RwLock<SceneManager>>,
     audio_manager: Arc<RwLock<AudioManager>>,
+    key_states: Arc<RwLock<KeyStates>>,
 }
 
 impl GameTestController {
     /// Creates a new EntryPoint instance.
     pub fn new() -> Self {
+        let mut glfw = glfw::init(glfw::fail_on_errors).unwrap();
+
+        glfw.window_hint(glfw::WindowHint::Resizable(false));
+
         let window_name = "Game Test";
-        GameTestController {
-            engine_controller: EngineController::new(window_name),
+        // Create a windowed mode window and its OpenGL context
+        let (mut window, events) = glfw
+            .create_window(640 as u32, 480 as u32, window_name, glfw::WindowMode::Windowed)
+            .expect("Failed to create GLFW window.");
+
+        // Make the window's context current
+        window.make_current();
+
+        // Enable key events
+        window.set_key_polling(true);
+
+        Self {
+            glfw,
+            window,
+            events,
+            engine_controller: FrameworkController::new(),
             event_handler: EventHandler,
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
             scene_manager: Arc::new(RwLock::new(SceneManager::new())),
             audio_manager: Arc::new(RwLock::new(AudioManager::new())),
+            key_states: Arc::new(RwLock::new(KeyStates::new())),
         }
     }
 
@@ -33,7 +56,6 @@ impl GameTestController {
         let master_clock = self.engine_controller.get_master_clock();
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
-        let key_states = self.engine_controller.get_key_states();
 
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap());
@@ -44,13 +66,18 @@ impl GameTestController {
         let mut flag = false;
 
         while flag == false {
-            flag = self.main_loop(&master_clock, &master_graphics_list, &key_states);
+            flag = self.main_loop(&master_clock, &master_graphics_list);
         }
     }
 
     /// This is the main loop for the framework.
     /// I have included a simple control scheme for the object we control, a random spinning object, and two stationary objects.
-    pub fn main_loop(&mut self, master_clock: &Arc<RwLock<MasterClock>>, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>, key_states: &Arc<RwLock<KeyStates>>) -> bool {
+    pub fn main_loop(&mut self, master_clock: &Arc<RwLock<MasterClock>>, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) -> bool {
+
+        if self.window.should_close() {
+            return true;
+        }
+
         // Retrieve the "player" square from the master graphics list
         let square = master_graphics_list.read().unwrap().get_object("testscene_playersquare").expect("Object not found");
 
@@ -58,10 +85,10 @@ impl GameTestController {
         let delta_time = master_clock.read().unwrap().get_delta_time();
 
         // Just here for now, do movement inputs
-        self.process_player_movement(key_states, square, delta_time);
+        self.process_player_movement(square, delta_time);
 
         // Process audio inputs
-        self.process_piano_keys(key_states, &self.audio_manager);
+        self.process_piano_keys(&self.audio_manager);
 
         // Spin this object for testing
         if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
@@ -80,13 +107,28 @@ impl GameTestController {
 
         master_graphics_list.read().unwrap().debug_all();
 
-        return self.engine_controller.execute_tick();
+        // Update Pressed Keys to Held Keys
+        self.key_states.write().unwrap().update_pressed_to_held();
+
+        // Handle key events
+        self.glfw.poll_events();
+        for (_, event) in glfw::flush_messages(&self.events) {
+            match event {
+                _ => {
+                    //Add or remove a key from the list of currently held keys based on the current user input
+                    self.key_states.write().unwrap().handle_key_event(event);
+                }
+            }
+        }
+
+        self.engine_controller.execute_tick(&mut self.window);
+        return false;
 
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
     pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList) {
-        self.engine_controller.set_resolution(1280.0, 720.0);
+        self.set_resolution(1280.0, 720.0);
         let mut scene_manager = self.scene_manager.write().unwrap();
         let audio_manager = self.audio_manager.read().unwrap();
 
@@ -116,10 +158,10 @@ impl GameTestController {
     }
 
     // Apply movement based on active keys
-    pub fn process_player_movement(&self, key_states: &Arc<RwLock<KeyStates>>, square: Arc<RwLock<Generic2DGraphicsObject>>, delta_time: f32) {
+    pub fn process_player_movement(&self, square: Arc<RwLock<Generic2DGraphicsObject>>, delta_time: f32) {
         let move_speed = 0.2;
         let rotation_speed = 2.0;
-        let key_states_read = key_states.read().unwrap();
+        let key_states_read = self.key_states.read().unwrap();
 
         if key_states_read.is_key_pressed_raw(Key::W) {
             movement::move_object(square.clone(), Vector3::new(0.0, 1.0, 0.0), move_speed, delta_time);
@@ -142,9 +184,9 @@ impl GameTestController {
     }
 
     // Here we will check if the numpad keys are pressed and it will make different piano sounds. For testing.
-    pub fn process_piano_keys(&self, key_states: &Arc<RwLock<KeyStates>>, audio_manager: &Arc<RwLock<AudioManager>>) {
+    pub fn process_piano_keys(&self, audio_manager: &Arc<RwLock<AudioManager>>) {
         let audio_manager_write = audio_manager.write().unwrap();
-        let key_states_read = key_states.read().unwrap();
+        let key_states_read = self.key_states.read().unwrap();
 
         if key_states_read.is_key_pressed(Key::Kp0) {
             audio_manager_write.stop_audio();
@@ -176,5 +218,10 @@ impl GameTestController {
         if key_states_read.is_key_pressed(Key::Kp9) {
             audio_manager_write.enqueue_audio("Piano5A", AudioType::Sound, 1.0, false);
         }
+    }
+
+    pub fn set_resolution(&mut self, width: f32, height: f32) {
+        self.window.set_size(width as i32, height as i32);
+        self.engine_controller.set_resolution(width, height);
     }
 }

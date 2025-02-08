@@ -1,7 +1,7 @@
 use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::Vector3;
-use rusted_open::engine::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::{CollisionMode, Generic2DGraphicsObject}}, texture_manager::TextureManager, util::master_graphics_list::{self, MasterGraphicsList}};
+use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::{CollisionMode, Generic2DGraphicsObject}}, texture_manager::TextureManager, util::master_graphics_list::{self, MasterGraphicsList}};
 use serde::Deserialize;
 use std::io::{self, Read};
 

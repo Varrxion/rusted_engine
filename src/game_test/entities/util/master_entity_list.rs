@@ -49,7 +49,7 @@ impl MasterEntityList {
     pub fn debug_all(&self) {
         let entities = self.entities.read().unwrap();
         for entity in entities.values() {
-            if let Ok(mut entity) = entity.read() {
+            if let Ok(entity) = entity.read() {
                 entity.print_debug();
             }
         }

@@ -1,4 +1,4 @@
-use rusted_open::engine::{events::collision::{self, CollisionEvent}, graphics::util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::{events::collision::{self, CollisionEvent}, graphics::util::master_graphics_list::MasterGraphicsList};
 use crate::game_test::entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList};
 
 pub struct EventHandler;
