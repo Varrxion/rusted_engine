@@ -76,6 +76,8 @@ impl GameTestController {
 
         let _ = audio_manager.write().unwrap().process_audio_queue();
 
+        master_graphics_list.read().unwrap().debug_all();
+
         return self.engine_controller.execute_tick();
 
     }
@@ -102,10 +104,13 @@ impl GameTestController {
         }
 
         let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true)));
-        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, true, false)));
+        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, false, false)));
+        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 4.0, false, false, false)));
+        
         
         self.master_entity_list.write().unwrap().add_entity(test_entity_1);
         self.master_entity_list.write().unwrap().add_entity(test_entity_2);
+        self.master_entity_list.write().unwrap().add_entity(test_entity_3);
     }
 
     // Apply movement based on active keys
@@ -155,7 +160,7 @@ impl GameTestController {
             audio_manager_write.enqueue_audio("Piano5D", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp5) {
-            audio_manager_write.enqueue_audio("gorbino", AudioType::Music, 0.5, false);
+            audio_manager_write.enqueue_audio("gorbino", AudioType::Music, 0.8, false);
         }
         if key_states_read.is_key_pressed(Key::Kp6) {
             audio_manager_write.enqueue_audio("Piano5E", AudioType::Sound, 1.0, false);

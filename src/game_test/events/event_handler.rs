@@ -1,5 +1,5 @@
 use rusted_open::engine::{events::collision::{self, CollisionEvent}, graphics::util::master_graphics_list::MasterGraphicsList};
-use crate::game_test::entities::{self, util::master_entity_list::MasterEntityList};
+use crate::game_test::entities::{self, generic_entity::GenericEntity, util::master_entity_list::MasterEntityList};
 
 pub struct EventHandler;
 
@@ -44,12 +44,73 @@ impl EventHandler {
                             if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
                                 self.destroy_object(master_entity_list, master_graphics_list, entity_1.get_name().to_owned());
                             }
+                            if entity_1.get_weight() > entity_2.get_weight() {
+                                self.move_entity_based_on_position(master_graphics_list, &entity_1, &entity_2, 0.05);
+                            }
+                            // push the entity 1 away from entity 2 based on position
+                            if entity_2.get_weight() > entity_1.get_weight() {
+                                self.move_entity_based_on_position(master_graphics_list, &entity_2, &entity_1, 0.005);
+                            }
+                            // push the entities away from eachother based position
+                            if entity_1.get_weight() == entity_2.get_weight() {
+                                self.move_entity_based_on_position(master_graphics_list, &entity_1, &entity_2, 0.025);
+                                self.move_entity_based_on_position(master_graphics_list, &entity_2, &entity_1, 0.025);
+                            }
                         }
                     }
                 }
             }
         }
     }
+
+    fn move_entity_based_on_position(&self, master_graphics_list: &MasterGraphicsList, unmoved_entity: &GenericEntity, moved_entity: &GenericEntity, push_force: f32) {
+        let (mut entity_1_pos, mut entity_2_pos);
+        
+        // Get the positions of both entities
+        if let Some(entity_1_graphics_object) = master_graphics_list.get_object(unmoved_entity.get_name()) {
+            entity_1_pos = entity_1_graphics_object.read().unwrap().get_position();
+        } else {
+            return; // Handle the case where entity_1 doesn't have a graphics object
+        }
+    
+        if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
+            entity_2_pos = entity_2_graphics_object.read().unwrap().get_position();
+        } else {
+            return; // Handle the case where entity_2 doesn't have a graphics object
+        }
+    
+        // Calculate the positional differences
+        let diff_x = entity_1_pos.x - entity_2_pos.x;
+        let diff_y = entity_1_pos.y - entity_2_pos.y;
+    
+        // Compare differences to determine largest direction of movement
+        if diff_x.abs() > diff_y.abs() {
+            // If X difference is larger, move along X
+            if diff_x < 0.0 {
+                // Entity 2 is further west, so push east (positive X)
+                entity_2_pos.x += push_force; // Apply eastward push
+            } else {
+                // Entity 2 is further east, so push west (negative X)
+                entity_2_pos.x -= push_force; // Apply westward push
+            }
+        } else {
+            // If Y difference is larger, move along Y
+            if diff_y < 0.0 {
+                // Entity 2 is further north, so push south (positive Y)
+                entity_2_pos.y += push_force; // Apply southward push
+            } else {
+                // Entity 2 is further south, so push north (negative Y)
+                entity_2_pos.y -= push_force; // Apply northward push
+            }
+        }
+    
+        // Update the position of entity_2 in the graphics object (if needed)
+        if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
+            let mut entity_2_graphics = entity_2_graphics_object.write().unwrap();
+            entity_2_graphics.set_position(entity_2_pos); // Assuming you have a method to update the position
+        }
+    }
+    
 
     pub fn destroy_object(&self, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: String) {
         master_entity_list.remove_entity(&object_name);

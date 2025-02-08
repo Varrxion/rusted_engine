@@ -1,4 +1,13 @@
 {
+    "entities": [
+        {
+			"name": "testscene_playersquare",
+            "weight": 3.0,
+            "can_destroy": true,
+            "destructible": false,
+            "active_collision": true
+        }
+    ],
     "objects": [
 		{
 			"name": "testscene_playersquare",
@@ -64,7 +73,7 @@
             "rotation": 0.0,
             "scale": 1.0,
             "texture_name": "BasicCharacterGreen",
-            "collision_modes": ["AABB", "Circle"]
+            "collision_modes": ["AABB"]
         },
 		{
 			"name": "testscene_obj3",
@@ -86,7 +95,7 @@
             "rotation": 0.0,
             "scale": 1.0,
             "texture_name": "BasicCharacterRed",
-            "collision_modes": ["AABB", "Circle"]
+            "collision_modes": ["AABB"]
         }
     ]
 }
