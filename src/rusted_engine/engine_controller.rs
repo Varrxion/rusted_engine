@@ -11,7 +11,6 @@ pub struct EngineController {
     window: glfw::PWindow,
     events: GlfwReceiver<(f64, WindowEvent)>,
     engine_controller: FrameworkController,
-    event_handler: EventHandler,
     master_clock: Arc<RwLock<MasterClock>>,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     scene_manager: Arc<RwLock<SceneManager>>,
@@ -43,7 +42,6 @@ impl EngineController {
             window,
             events,
             engine_controller: FrameworkController::new(),
-            event_handler: EventHandler,
             master_clock: Arc::new(RwLock::new(MasterClock::new())),
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
             scene_manager: Arc::new(RwLock::new(SceneManager::new())),
@@ -57,6 +55,7 @@ impl EngineController {
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
+        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone());
 
         self.set_resolution(1280.0, 720.0);
 
@@ -69,14 +68,14 @@ impl EngineController {
         let mut flag = false;
 
         while flag == false {
-            flag = self.main_loop(&master_graphics_list, &mut piano);
+            flag = self.main_loop(&event_handler, master_graphics_list.clone(), &mut piano);
         }
     }
 
 
     /// This is the main loop for the framework.
     /// It can contain game logic for now since we aren't abstracting much
-    pub fn main_loop(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
+    pub fn main_loop(&mut self, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
@@ -98,7 +97,7 @@ impl EngineController {
 
         // Process piano inputs (returns true if a piano input was made)
         if piano.process_piano_keys() {
-            piano_sequences::check_piano_sequences(piano);
+            piano_sequences::check_piano_sequences(piano, &event_handler);
         }
 
         // Spin this object for testing
@@ -111,8 +110,8 @@ impl EngineController {
         }
 
         // Call the collision checking method
-        let collision_events = self.event_handler.check_entity_collisions(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap());
-        self.event_handler.handle_collision_events(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), collision_events);
+        let collision_events = event_handler.check_entity_collisions();
+        event_handler.handle_collision_events(collision_events);
 
         return false;
     }

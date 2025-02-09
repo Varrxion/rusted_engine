@@ -1,6 +1,6 @@
 use rusted_open::framework::graphics::{internal_object::graphics_object::Generic2DGraphicsObject, util::master_graphics_list::MasterGraphicsList};
 
-use crate::rusted_engine::entities::{generic_entity::CollisionMode, util::master_entity_list::MasterEntityList};
+use crate::rusted_engine::entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList};
 
 #[derive(Debug, PartialEq)]
 pub struct CollisionEvent {
@@ -122,5 +122,53 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
         CollisionMode::AABB => is_colliding_aabb(object_1_read, object_2_read),
         CollisionMode::Circle => is_colliding_circle(object_1_read, object_2_read),
         CollisionMode::OBB => is_colliding_obb(),
+    }
+}
+
+pub fn collision_move_entity_based_on_position(master_graphics_list: &MasterGraphicsList, unmoved_entity: &GenericEntity, moved_entity: &GenericEntity, push_force: f32) {
+    let (entity_1_pos, mut entity_2_pos);
+    
+    // Get the positions of both entities
+    if let Some(entity_1_graphics_object) = master_graphics_list.get_object(unmoved_entity.get_name()) {
+        entity_1_pos = entity_1_graphics_object.read().unwrap().get_position();
+    } else {
+        return; // Handle the case where entity_1 doesn't have a graphics object
+    }
+
+    if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
+        entity_2_pos = entity_2_graphics_object.read().unwrap().get_position();
+    } else {
+        return; // Handle the case where entity_2 doesn't have a graphics object
+    }
+
+    // Calculate the positional differences
+    let diff_x = entity_1_pos.x - entity_2_pos.x;
+    let diff_y = entity_1_pos.y - entity_2_pos.y;
+
+    // Compare differences to determine largest direction of movement
+    if diff_x.abs() > diff_y.abs() {
+        // If X difference is larger, move along X
+        if diff_x < 0.0 {
+            // Entity 2 is further west, so push east (positive X)
+            entity_2_pos.x += push_force; // Apply eastward push
+        } else {
+            // Entity 2 is further east, so push west (negative X)
+            entity_2_pos.x -= push_force; // Apply westward push
+        }
+    } else {
+        // If Y difference is larger, move along Y
+        if diff_y < 0.0 {
+            // Entity 2 is further north, so push south (positive Y)
+            entity_2_pos.y += push_force; // Apply southward push
+        } else {
+            // Entity 2 is further south, so push north (negative Y)
+            entity_2_pos.y -= push_force; // Apply northward push
+        }
+    }
+
+    // Update the position of entity_2 in the graphics object (if needed)
+    if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
+        let mut entity_2_graphics = entity_2_graphics_object.write().unwrap();
+        entity_2_graphics.set_position(entity_2_pos); // Assuming you have a method to update the position
     }
 }
