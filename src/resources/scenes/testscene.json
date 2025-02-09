@@ -8,7 +8,7 @@
                 "destructible": false,
                 "active_collision": true,
                 "collision_modes": ["AABB", "Circle"],
-                "collision_sound": "null"
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_playersquare",
@@ -40,7 +40,7 @@
                 "destructible": true,
                 "active_collision": false,
                 "collision_modes": ["OBB"],
-                "collision_sound": "null"
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_obj1",
@@ -60,7 +60,7 @@
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
-                "scale": 1.5,
+                "scale": 0.75,
                 "texture_name": "FamiliarBlock"
             }
         },
@@ -72,7 +72,7 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "null"
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_obj2",
@@ -104,7 +104,7 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "null"
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_obj3",
@@ -136,7 +136,7 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "null"
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_obj4",
@@ -158,6 +158,38 @@
                 "rotation": 0.0,
                 "scale": 1.0,
                 "texture_name": "Chud"
+            }
+        },
+        {
+            "entity": {
+                "name": "testscene_obj5",
+                "weight": 2.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": true,
+                "collision_modes": ["AABB"],
+                "collision_sound": "SlidingStone"
+            },
+            "graphics": {
+                "name": "testscene_obj5",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.3, 0.3, 0.0],
+                "rotation": 0.0,
+                "scale": 0.5,
+                "texture_name": "StoneBlock"
             }
         }
     ]

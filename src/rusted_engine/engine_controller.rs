@@ -110,8 +110,7 @@ impl EngineController {
         }
 
         // Call the collision checking method
-        let collision_events = event_handler.check_entity_collisions();
-        event_handler.handle_collision_events(collision_events);
+        event_handler.process_collisions();
 
         return false;
     }
@@ -149,6 +148,7 @@ impl EngineController {
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
         let _ = texture_manager.load_textures_from_directory("src\\resources\\localonly\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
+        let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds");
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds\\piano");
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds\\pianosequences");
         // Load resources which should not be uploaded

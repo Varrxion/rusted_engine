@@ -1,11 +1,82 @@
+use std::sync::{Arc, RwLock};
+
 use rusted_open::framework::graphics::{internal_object::graphics_object::Generic2DGraphicsObject, util::master_graphics_list::MasterGraphicsList};
 
-use crate::rusted_engine::entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}};
 
 #[derive(Debug, PartialEq)]
 pub struct CollisionEvent {
     pub object_name_1: String,
     pub object_name_2: String,
+}
+
+pub fn check_active_entity_collisions(master_entity_list: Arc<RwLock<MasterEntityList>>, master_graphics_list: Arc<RwLock<MasterGraphicsList>>) -> Vec<CollisionEvent> {
+    let entities = master_entity_list.read().unwrap().get_entities();
+    let entities = entities.read().unwrap();
+
+    let mut relevant_names = Vec::new();
+    for entity in entities.values() {
+        if let Ok(entity) = entity.read() {
+            if entity.has_active_collision() {
+                relevant_names.push(entity.get_name().to_owned());
+            }
+        }
+    }
+
+    let mut collision_events = Vec::new();
+    for name in relevant_names {
+        let events = check_collisions(&master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), &name);
+        collision_events.extend(events);
+    }
+
+    collision_events
+}
+
+pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
+    for collision_event in collision_events {
+        if let Some(entity_1) = master_entity_list.get_entity(&collision_event.object_name_1) {
+            if let Ok(entity_1) = entity_1.read() {
+                if let Some(entity_2) = master_entity_list.get_entity(&collision_event.object_name_2) {
+                    if let Ok(entity_2) = entity_2.read() {
+                        if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
+                            master_entity_list.remove_entity(&entity_2.get_name());
+                            master_graphics_list.remove_object(&entity_2.get_name());
+                        }
+                        if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
+                            master_entity_list.remove_entity(&entity_1.get_name());
+                            master_graphics_list.remove_object(&entity_1.get_name());
+                        }
+                        if entity_1.get_weight() > entity_2.get_weight() {
+                            collision_move_entity_based_on_position(
+                                master_graphics_list, &entity_1, &entity_2, 0.05,
+                            );
+                        }
+                        if entity_2.get_weight() > entity_1.get_weight() {
+                            collision_move_entity_based_on_position(
+                                master_graphics_list, &entity_2, &entity_1, 0.005,
+                            );
+                        }
+                        if entity_1.get_weight() == entity_2.get_weight() {
+                            collision_move_entity_based_on_position(
+                                master_graphics_list, &entity_1, &entity_2, 0.025,
+                            );
+                            collision_move_entity_based_on_position(
+                                master_graphics_list, &entity_2, &entity_1, 0.025,
+                            );
+                        }
+                        let entity_1_collision_sound = entity_1.get_collision_sound();
+                        let entity_2_collision_sound = entity_2.get_collision_sound();
+                        if entity_2_collision_sound != "" || entity_2_collision_sound != "null" || entity_2_collision_sound != "none" {
+                            audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.4, false);
+                        } // Prioritize the target (entity_2) of the collision for audio sound, rather than the originator of the collision (may flip this around later)
+                        else if entity_1_collision_sound != "" || entity_1_collision_sound != "null" || entity_1_collision_sound != "none" {
+                            audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: &str) -> Vec<CollisionEvent> {

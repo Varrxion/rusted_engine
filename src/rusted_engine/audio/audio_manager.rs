@@ -64,6 +64,7 @@ impl AudioManager {
 
         while let Some(item) = queue.pop_front() {
             self.play_sound(&item)?;
+            println!("Audio: {}", item.name);
         }
 
         Ok(())
