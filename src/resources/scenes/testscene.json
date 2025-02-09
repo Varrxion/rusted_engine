@@ -7,7 +7,8 @@
                 "can_destroy": true,
                 "destructible": false,
                 "active_collision": true,
-                "collision_modes": ["AABB", "Circle"]
+                "collision_modes": ["AABB", "Circle"],
+                "collision_sound": "null"
             },
             "graphics": {
                 "name": "testscene_playersquare",
@@ -25,9 +26,9 @@
                 ],
                 "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-                "position": [0.0, 0.0, 0.0],
+                "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
-                "scale": 1.0,
+                "scale": 0.5,
                 "texture_name": "Yellow64xCharacter"
             }
         },
@@ -38,7 +39,8 @@
                 "can_destroy": false,
                 "destructible": true,
                 "active_collision": false,
-                "collision_modes": ["OBB"]
+                "collision_modes": ["OBB"],
+                "collision_sound": "null"
             },
             "graphics": {
                 "name": "testscene_obj1",
@@ -58,7 +60,7 @@
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
-                "scale": 1.0,
+                "scale": 1.5,
                 "texture_name": "FamiliarBlock"
             }
         },
@@ -69,7 +71,8 @@
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
-                "collision_modes": ["AABB"]
+                "collision_modes": ["AABB"],
+                "collision_sound": "null"
             },
             "graphics": {
                 "name": "testscene_obj2",
@@ -89,7 +92,7 @@
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,
-                "scale": 1.0,
+                "scale": 0.5,
                 "texture_name": "BasicCharacterGreen"
             }
         },
@@ -100,7 +103,8 @@
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
-                "collision_modes": ["AABB"]
+                "collision_modes": ["AABB"],
+                "collision_sound": "null"
             },
             "graphics": {
                 "name": "testscene_obj3",
@@ -120,7 +124,7 @@
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
-                "scale": 1.0,
+                "scale": 0.5,
                 "texture_name": "BasicCharacterRed"
             }
         },
@@ -131,7 +135,8 @@
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
-                "collision_modes": ["AABB"]
+                "collision_modes": ["AABB"],
+                "collision_sound": "null"
             },
             "graphics": {
                 "name": "testscene_obj4",

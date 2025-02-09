@@ -7,6 +7,7 @@ pub struct GenericEntity {
     destructible: bool,
     active_collision: bool,
     collision_modes: HashSet<CollisionMode>,
+    collision_sound: String,
 }
 
 impl Clone for GenericEntity {
@@ -18,12 +19,13 @@ impl Clone for GenericEntity {
             destructible: self.destructible,
             active_collision: self.active_collision,
             collision_modes: self.collision_modes.clone(),
+            collision_sound: self.collision_sound.clone(),
         }
     }
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>,) -> Self {
+    pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
         GenericEntity {
             name,
             weight,
@@ -31,6 +33,7 @@ impl GenericEntity {
             destructible,
             active_collision,
             collision_modes,
+            collision_sound,
         }
     }
 
@@ -59,6 +62,10 @@ impl GenericEntity {
         &self.collision_modes
     }
 
+    pub fn get_collision_sound(&self) -> &str {
+        &self.collision_sound
+    }
+
     // Setters
     pub fn set_name(&mut self, name: String) {
         self.name = name;
@@ -82,6 +89,10 @@ impl GenericEntity {
 
     pub fn set_collision_modes(&mut self, modes: HashSet<CollisionMode>) {
         self.collision_modes = modes;
+    }
+
+    pub fn set_collision_sound(&mut self, collision_sound: String) {
+        self.collision_sound = collision_sound;
     }
 
     pub fn print_debug(&self) {

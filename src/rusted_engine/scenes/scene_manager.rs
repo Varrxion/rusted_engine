@@ -136,6 +136,7 @@ impl SceneManager {
                 obj_data.entity.destructible,
                 obj_data.entity.active_collision,
                 json_collision_modes,
+                obj_data.entity.collision_sound,
             );
     
             let wrapped_graphics_object = Arc::new(RwLock::new(graphics_object));
@@ -190,6 +191,7 @@ struct EntityData {
     destructible: bool,
     active_collision: bool,
     collision_modes: Vec<String>,
+    collision_sound: String,
 }
 
 #[derive(Deserialize)]
