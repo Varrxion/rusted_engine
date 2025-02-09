@@ -4,7 +4,7 @@ use glfw::{Context, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
 use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, events::event_handler::EventHandler, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -58,6 +58,8 @@ impl EngineController {
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
 
+        self.set_resolution(1280.0, 720.0);
+
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap());
 
@@ -94,9 +96,10 @@ impl EngineController {
         // Just here for now, do movement inputs
         self.process_player_movement(square, delta_time);
 
-        // Process audio inputs
-        piano.process_piano_keys();
-        //self.process_piano_keys();
+        // Process piano inputs (returns true if a piano input was made)
+        if piano.process_piano_keys() {
+            piano_sequences::check_piano_sequences(piano);
+        }
 
         // Spin this object for testing
         if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
@@ -140,7 +143,6 @@ impl EngineController {
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
     pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList) {
-        self.set_resolution(1280.0, 720.0);
         let mut scene_manager = self.scene_manager.write().unwrap();
         let audio_manager = self.audio_manager.read().unwrap();
 
@@ -181,43 +183,6 @@ impl EngineController {
         }
         if key_states_read.is_key_pressed_raw(Key::E) {
             movement::rotate_object(square.clone(), -rotation_speed*delta_time);
-        }
-    }
-
-    // Here we will check if the numpad keys are pressed and it will make different piano sounds. For testing.
-    pub fn process_piano_keys(&self) {
-        let audio_manager_write = self.audio_manager.write().unwrap();
-        let key_states_read = self.key_states.read().unwrap();
-
-        if key_states_read.is_key_pressed(Key::Kp0) {
-            audio_manager_write.stop_audio();
-        }
-        if key_states_read.is_key_pressed(Key::Kp1) {
-            audio_manager_write.enqueue_audio("A4", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp2) {
-            audio_manager_write.enqueue_audio("B4", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp3) {
-            audio_manager_write.enqueue_audio("C5", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp4) {
-            audio_manager_write.enqueue_audio("D5", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp5) {
-            audio_manager_write.enqueue_audio("gorbino", AudioType::Music, 0.8, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp6) {
-            audio_manager_write.enqueue_audio("E5", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp7) {
-            audio_manager_write.enqueue_audio("F5", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp8) {
-            audio_manager_write.enqueue_audio("G5", AudioType::Sound, 1.0, false);
-        }
-        if key_states_read.is_key_pressed(Key::Kp9) {
-            audio_manager_write.enqueue_audio("A5", AudioType::Sound, 1.0, false);
         }
     }
 
