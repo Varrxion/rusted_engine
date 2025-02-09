@@ -55,7 +55,7 @@ impl EngineController {
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
-        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone());
+        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone());
 
         self.set_resolution(1280.0, 720.0);
 
@@ -150,6 +150,7 @@ impl EngineController {
         let _ = texture_manager.load_textures_from_directory("src\\resources\\localonly\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds\\piano");
+        let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds\\pianosequences");
         // Load resources which should not be uploaded
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\music");
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\sounds");
