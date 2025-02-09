@@ -9,6 +9,19 @@ pub struct GenericEntity {
     collision_modes: HashSet<CollisionMode>,
 }
 
+impl Clone for GenericEntity {
+    fn clone(&self) -> Self {
+        GenericEntity {
+            name: self.name.clone(),
+            weight: self.weight,
+            can_destroy: self.can_destroy,
+            destructible: self.destructible,
+            active_collision: self.active_collision,
+            collision_modes: self.collision_modes.clone(),
+        }
+    }
+}
+
 impl GenericEntity {
     pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>,) -> Self {
         GenericEntity {

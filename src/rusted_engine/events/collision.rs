@@ -1,5 +1,3 @@
-use std::sync::{Arc, RwLock};
-
 use rusted_open::framework::graphics::{internal_object::graphics_object::Generic2DGraphicsObject, util::master_graphics_list::MasterGraphicsList};
 
 use crate::rusted_engine::entities::{generic_entity::CollisionMode, util::master_entity_list::MasterEntityList};
@@ -33,7 +31,7 @@ pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_l
             let object_2_read = object_2.read().unwrap(); // Lock for reading
 
             // Check for collision
-            if is_colliding(object_1_read.get_name().to_owned(), object_2_read.get_name().to_owned(), master_entity_list.clone(), master_graphics_list.clone()) {
+            if is_colliding(object_1_read.get_name().to_owned(), object_2_read.get_name().to_owned(), master_entity_list, master_graphics_list) {
                 // Create a CollisionEvent and push it into the vector
                 collision_events.push(CollisionEvent {
                     object_name_1: object_name.to_string(),

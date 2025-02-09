@@ -1,123 +1,159 @@
 {
-    "entities": [
-        {
-			"name": "testscene_playersquare",
-            "weight": 3.0,
-            "can_destroy": true,
-            "destructible": false,
-            "active_collision": true
-        }
-    ],
     "objects": [
-		{
-			"name": "testscene_playersquare",
-            "vertex_data": [ 
-                0.1, 0.1,
-                0.1, -0.1,
-                -0.1, -0.1,
-                -0.1, 0.1
-            ],
-            "texture_coords": [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0,
-                0.0, 0.0
-            ],
-            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
-            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [0.0, 0.0, 0.0],
-            "rotation": 0.0,
-            "scale": 1.0,
-            "texture_name": "Yellow64xCharacter",
-            "collision_modes": ["AABB", "Circle"]
+        {
+            "entity": {
+                "name": "testscene_playersquare",
+                "weight": 3.0,
+                "can_destroy": true,
+                "destructible": false,
+                "active_collision": true,
+                "collision_modes": ["AABB", "Circle"]
+            },
+            "graphics": {
+                "name": "testscene_playersquare",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.0, 0.0, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "Yellow64xCharacter"
+            }
         },
         {
-			"name": "testscene_obj1",
-            "vertex_data": [ 
-                0.1, 0.1,
-                0.1, -0.1,
-                -0.1, -0.1,
-                -0.1, 0.1
-            ],
-            "texture_coords": [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0,
-                0.0, 0.0
-            ],
-            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
-            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [0.0, -0.3, 0.0],
-            "rotation": 0.0,
-            "scale": 1.0,
-            "texture_name": "FamiliarBlock",
-            "collision_modes": ["AABB", "Circle"]
-        },
-		{
-			"name": "testscene_obj2",
-            "vertex_data": [ 
-                0.1, 0.1,
-                0.1, -0.1,
-                -0.1, -0.1,
-                -0.1, 0.1
-            ],
-            "texture_coords": [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0,
-                0.0, 0.0
-            ],
-            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
-            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [0.3, 0.0, 0.0],
-            "rotation": 0.0,
-            "scale": 1.0,
-            "texture_name": "BasicCharacterGreen",
-            "collision_modes": ["AABB"]
-        },
-		{
-			"name": "testscene_obj3",
-            "vertex_data": [ 
-                0.1, 0.1,
-                0.1, -0.1,
-                -0.1, -0.1,
-                -0.1, 0.1
-            ],
-            "texture_coords": [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0,
-                0.0, 0.0
-            ],
-            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
-            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [-0.3, 0.0, 0.0],
-            "rotation": 0.0,
-            "scale": 1.0,
-            "texture_name": "BasicCharacterRed",
-            "collision_modes": ["AABB"]
+            "entity": {
+                "name": "testscene_obj1",
+                "weight": 3.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB", "Circle"]
+            },
+            "graphics": {
+                "name": "testscene_obj1",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.0, -0.3, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "FamiliarBlock"
+            }
         },
         {
-			"name": "testscene_obj4",
-            "vertex_data": [ 
-                0.1, 0.1,
-                0.1, -0.1,
-                -0.1, -0.1,
-                -0.1, 0.1
-            ],
-            "texture_coords": [
-                1.0, 0.0,
-                1.0, 1.0,
-                0.0, 1.0,
-                0.0, 0.0
-            ],
-            "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord; // Add this line to receive texture coordinates\nout vec2 TexCoord; // Add this line to output texture coordinates\nuniform mat4 model;\nuniform mat4 projection;\n\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord; // Pass the texture coordinates to the fragment shader\n}",
-            "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\n\nuniform sampler2D texture1;\n\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
-            "position": [0.0, 0.3, 0.0],
-            "rotation": 0.0,
-            "scale": 1.0,
-            "texture_name": "Chud",
-            "collision_modes": ["AABB"]
+            "entity": {
+                "name": "testscene_obj2",
+                "weight": 3.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"]
+            },
+            "graphics": {
+                "name": "testscene_obj2",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.3, 0.0, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "BasicCharacterGreen"
+            }
+        },
+        {
+            "entity": {
+                "name": "testscene_obj3",
+                "weight": 3.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"]
+            },
+            "graphics": {
+                "name": "testscene_obj3",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [-0.3, 0.0, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "BasicCharacterRed"
+            }
+        },
+        {
+            "entity": {
+                "name": "testscene_obj4",
+                "weight": 3.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"]
+            },
+            "graphics": {
+                "name": "testscene_obj4",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.0, 0.3, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "Chud"
+            }
         }
     ]
 }
