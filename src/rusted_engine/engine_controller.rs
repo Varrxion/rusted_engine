@@ -1,10 +1,10 @@
-use std::{collections::HashSet, sync::{Arc, RwLock}};
+use std::sync::{Arc, RwLock};
 
 use glfw::{Context, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
 use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, events::event_handler::EventHandler, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -61,20 +61,20 @@ impl EngineController {
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap());
 
-        // Test some music
-        //audio_manager.write().unwrap().enqueue_audio("RealiteVirtuelle", AudioType::Music, 0.2, true);
+        // Create a Piano instance
+        let mut piano = Piano::new(self.audio_manager.clone(), self.key_states.clone());
 
         let mut flag = false;
 
         while flag == false {
-            flag = self.main_loop(&master_graphics_list);
+            flag = self.main_loop(&master_graphics_list, &mut piano);
         }
     }
 
 
     /// This is the main loop for the framework.
-    /// I have included a simple control scheme for the object we control, a random spinning object, and two stationary objects.
-    pub fn main_loop(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) -> bool {
+    /// It can contain game logic for now since we aren't abstracting much
+    pub fn main_loop(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
@@ -95,7 +95,8 @@ impl EngineController {
         self.process_player_movement(square, delta_time);
 
         // Process audio inputs
-        self.process_piano_keys();
+        piano.process_piano_keys();
+        //self.process_piano_keys();
 
         // Spin this object for testing
         if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
@@ -147,27 +148,14 @@ impl EngineController {
         let _ = texture_manager.load_textures_from_directory("src\\resources\\textures");
         let _ = texture_manager.load_textures_from_directory("src\\resources\\localonly\\textures");
         let _ = scene_manager.load_scenes_from_directory("src\\resources\\scenes", &texture_manager);
-        let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds");
+        let _ = audio_manager.load_sounds_from_directory("src\\resources\\sounds\\piano");
         // Load resources which should not be uploaded
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\music");
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\sounds");
 
         // Load the test scene from the manager into the master graphics list
         let scene_name = "testscene";
-        scene_manager.load_scene_into_master_graphics_list(master_graphics_list, scene_name.to_owned());
-
-        let mut test_collision_modes = HashSet::new();
-        test_collision_modes.insert(CollisionMode::AABB);
-        let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true, test_collision_modes.clone())));
-        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, false, false, test_collision_modes.clone())));
-        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 3.0, false, false, false, test_collision_modes.clone())));
-        let test_entity_4 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj4".to_owned(), 4.0, false, false, false, test_collision_modes.clone())));
-        
-        
-        self.master_entity_list.write().unwrap().add_entity(test_entity_1);
-        self.master_entity_list.write().unwrap().add_entity(test_entity_2);
-        self.master_entity_list.write().unwrap().add_entity(test_entity_3);
-        self.master_entity_list.write().unwrap().add_entity(test_entity_4);
+        scene_manager.load_scene_into_lists(&self.master_entity_list.read().unwrap(), master_graphics_list, scene_name.to_owned());
     }
 
     // Apply movement based on active keys
@@ -205,31 +193,31 @@ impl EngineController {
             audio_manager_write.stop_audio();
         }
         if key_states_read.is_key_pressed(Key::Kp1) {
-            audio_manager_write.enqueue_audio("Piano4A", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("A4", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp2) {
-            audio_manager_write.enqueue_audio("Piano4B", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("B4", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp3) {
-            audio_manager_write.enqueue_audio("Piano5C", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("C5", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp4) {
-            audio_manager_write.enqueue_audio("Piano5D", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("D5", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp5) {
             audio_manager_write.enqueue_audio("gorbino", AudioType::Music, 0.8, false);
         }
         if key_states_read.is_key_pressed(Key::Kp6) {
-            audio_manager_write.enqueue_audio("Piano5E", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("E5", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp7) {
-            audio_manager_write.enqueue_audio("Piano5F", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("F5", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp8) {
-            audio_manager_write.enqueue_audio("Piano5G", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("G5", AudioType::Sound, 1.0, false);
         }
         if key_states_read.is_key_pressed(Key::Kp9) {
-            audio_manager_write.enqueue_audio("Piano5A", AudioType::Sound, 1.0, false);
+            audio_manager_write.enqueue_audio("A5", AudioType::Sound, 1.0, false);
         }
     }
 

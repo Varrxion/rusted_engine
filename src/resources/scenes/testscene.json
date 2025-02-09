@@ -34,11 +34,11 @@
         {
             "entity": {
                 "name": "testscene_obj1",
-                "weight": 3.0,
+                "weight": 0.0,
                 "can_destroy": false,
-                "destructible": false,
+                "destructible": true,
                 "active_collision": false,
-                "collision_modes": ["AABB", "Circle"]
+                "collision_modes": ["OBB"]
             },
             "graphics": {
                 "name": "testscene_obj1",
@@ -65,7 +65,7 @@
         {
             "entity": {
                 "name": "testscene_obj2",
-                "weight": 3.0,
+                "weight": 2.0,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
@@ -127,7 +127,7 @@
         {
             "entity": {
                 "name": "testscene_obj4",
-                "weight": 3.0,
+                "weight": 4.0,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,

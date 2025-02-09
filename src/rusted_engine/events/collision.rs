@@ -8,12 +8,6 @@ pub struct CollisionEvent {
     pub object_name_2: String,
 }
 
-//=======================================================================================================================================================
-//
-// Maybe the collision check should hold a lock on both lists for the entire function rather than giving it up and taking it back multiple times
-//
-//=======================================================================================================================================================
-
 pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: &str) -> Vec<CollisionEvent> {
     let mut collision_events = Vec::new(); // Vector to hold collision events
 
