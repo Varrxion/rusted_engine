@@ -1,9 +1,11 @@
 use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::Vector3;
-use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::{CollisionMode, Generic2DGraphicsObject}}, texture_manager::TextureManager, util::master_graphics_list::{self, MasterGraphicsList}};
+use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 use serde::Deserialize;
 use std::io::{self, Read};
+
+use crate::rusted_engine::entities::generic_entity::CollisionMode;
 
 use super::scene::Scene;
 
@@ -99,7 +101,6 @@ impl SceneManager {
                 obj_data.rotation,
                 obj_data.scale,
                 texture_id,
-                json_collision_modes,
             );
     
             let wrapped_object = Arc::new(RwLock::new(graphics_object));

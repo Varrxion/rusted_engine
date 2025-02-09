@@ -1,19 +1,23 @@
+use std::collections::HashSet;
+
 pub struct GenericEntity {
     name: String,
     weight: f32,
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
+    collision_modes: HashSet<CollisionMode>,
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool) -> Self {
+    pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>,) -> Self {
         GenericEntity {
             name,
             weight,
             can_destroy,
             destructible,
             active_collision,
+            collision_modes,
         }
     }
 
@@ -38,6 +42,10 @@ impl GenericEntity {
         self.active_collision
     }
 
+    pub fn get_collision_modes(&self) -> &HashSet<CollisionMode> {
+        &self.collision_modes
+    }
+
     // Setters
     pub fn set_name(&mut self, name: String) {
         self.name = name;
@@ -59,6 +67,10 @@ impl GenericEntity {
         self.active_collision = active_collision;
     }
 
+    pub fn set_collision_modes(&mut self, modes: HashSet<CollisionMode>) {
+        self.collision_modes = modes;
+    }
+
     pub fn print_debug(&self) {
         println!("Debug Info for GenericEntity:");
         println!("Name: {}", self.name);
@@ -66,5 +78,13 @@ impl GenericEntity {
         println!("Can Destroy: {}", self.can_destroy);
         println!("Destructible: {}", self.destructible);
         println!("Active Collision: {}", self.active_collision);
+        println!("Collision mode(s): {:?}", self.collision_modes)
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CollisionMode {
+    AABB,
+    Circle,
+    OBB,
 }

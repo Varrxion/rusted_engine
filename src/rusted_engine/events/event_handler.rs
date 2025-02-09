@@ -1,5 +1,8 @@
-use rusted_open::framework::{events::collision::{self, CollisionEvent}, graphics::util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphicsList;
+
 use crate::rusted_engine::entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList};
+
+use super::collision::{self, CollisionEvent};
 
 pub struct EventHandler;
 
@@ -25,7 +28,7 @@ impl EventHandler {
         let mut collision_events = Vec::new();
         for name in relevant_names {
             // Pass each active entity's name to the collision check function
-            let events = collision::check_collisions(master_graphics_list, &name);
+            let events = collision::check_collisions(master_entity_list, master_graphics_list, &name);
             collision_events.extend(events); // Collect all the collision events
         }
 

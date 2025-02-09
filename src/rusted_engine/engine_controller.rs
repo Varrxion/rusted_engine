@@ -1,10 +1,10 @@
-use std::sync::{Arc, RwLock};
+use std::{collections::HashSet, sync::{Arc, RwLock}};
 
 use glfw::{Context, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
 use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::event_handler::EventHandler, input::key_states::KeyStates, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -76,7 +76,10 @@ impl EngineController {
     /// I have included a simple control scheme for the object we control, a random spinning object, and two stationary objects.
     pub fn main_loop(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) -> bool {
 
-        self.execute_tick(master_graphics_list);
+        // Only uncomment this line if you want tons of information dumped into the console
+        //master_graphics_list.read().unwrap().debug_all();
+
+        self.execute_tick();
 
         // Thou shalt not use frame-based physics.
         let delta_time = self.master_clock.read().unwrap().get_delta_time();
@@ -92,7 +95,7 @@ impl EngineController {
         self.process_player_movement(square, delta_time);
 
         // Process audio inputs
-        self.process_piano_keys(&self.audio_manager);
+        self.process_piano_keys();
 
         // Spin this object for testing
         if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
@@ -111,14 +114,11 @@ impl EngineController {
     }
 
     /// Executing a tick renders the frame, updates the master clock, plays all queued audio, and updates inputs.
-    pub fn execute_tick(&mut self, master_graphics_list: &Arc<RwLock<MasterGraphicsList>>) {
+    pub fn execute_tick(&mut self) {
         // Update the clock
         self.master_clock.write().unwrap().update();
 
         let _ = self.audio_manager.write().unwrap().process_audio_queue();
-
-        // Only uncomment this line if you want tons of information dumped into the console
-        //master_graphics_list.read().unwrap().debug_all();
 
         // Update Pressed Keys to Held Keys
         self.key_states.write().unwrap().update_pressed_to_held();
@@ -156,10 +156,12 @@ impl EngineController {
         let scene_name = "testscene";
         scene_manager.load_scene_into_master_graphics_list(master_graphics_list, scene_name.to_owned());
 
-        let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true)));
-        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, false, false)));
-        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 3.0, false, false, false)));
-        let test_entity_4 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj4".to_owned(), 4.0, false, false, false)));
+        let mut test_collision_modes = HashSet::new();
+        test_collision_modes.insert(CollisionMode::AABB);
+        let test_entity_1 = Arc::new(RwLock::new(GenericEntity::new("testscene_playersquare".to_owned(), 3.0, true, false, true, test_collision_modes.clone())));
+        let test_entity_2 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj2".to_owned(), 2.0, false, false, false, test_collision_modes.clone())));
+        let test_entity_3 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj3".to_owned(), 3.0, false, false, false, test_collision_modes.clone())));
+        let test_entity_4 = Arc::new(RwLock::new(GenericEntity::new("testscene_obj4".to_owned(), 4.0, false, false, false, test_collision_modes.clone())));
         
         
         self.master_entity_list.write().unwrap().add_entity(test_entity_1);
@@ -195,8 +197,8 @@ impl EngineController {
     }
 
     // Here we will check if the numpad keys are pressed and it will make different piano sounds. For testing.
-    pub fn process_piano_keys(&self, audio_manager: &Arc<RwLock<AudioManager>>) {
-        let audio_manager_write = audio_manager.write().unwrap();
+    pub fn process_piano_keys(&self) {
+        let audio_manager_write = self.audio_manager.write().unwrap();
         let key_states_read = self.key_states.read().unwrap();
 
         if key_states_read.is_key_pressed(Key::Kp0) {
