@@ -4,7 +4,7 @@ use glfw::{Context, GlfwReceiver, Key, WindowEvent};
 use nalgebra::Vector3;
 use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences, player_movement}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -92,8 +92,8 @@ impl EngineController {
         // Retrieve the "player" square from the master graphics list
         let square = master_graphics_list.read().unwrap().get_object("testscene_playersquare").expect("Object not found");
 
-        // Just here for now, do movement inputs
-        self.process_player_movement(square, delta_time);
+        // Do movement inputs
+        player_movement::process_player_movement(square, self.key_states.clone(), delta_time);
 
         // Process piano inputs (returns true if a piano input was made)
         if piano.process_piano_keys() {
@@ -158,32 +158,6 @@ impl EngineController {
         // Load the test scene from the manager into the master graphics list
         let scene_name = "testscene";
         scene_manager.load_scene_into_lists(&self.master_entity_list.read().unwrap(), master_graphics_list, scene_name.to_owned());
-    }
-
-    // Apply movement based on active keys
-    pub fn process_player_movement(&self, square: Arc<RwLock<Generic2DGraphicsObject>>, delta_time: f32) {
-        let move_speed = 0.2;
-        let rotation_speed = 2.0;
-        let key_states_read = self.key_states.read().unwrap();
-
-        if key_states_read.is_key_pressed_raw(Key::W) {
-            movement::move_object(square.clone(), Vector3::new(0.0, 1.0, 0.0), move_speed, delta_time);
-        }
-        if key_states_read.is_key_pressed_raw(Key::S) {
-            movement::move_object(square.clone(), Vector3::new(0.0, -1.0, 0.0), move_speed, delta_time);
-        }
-        if key_states_read.is_key_pressed_raw(Key::A) {
-            movement::move_object(square.clone(), Vector3::new(-1.0, 0.0, 0.0), move_speed, delta_time);
-        }
-        if key_states_read.is_key_pressed_raw(Key::D) {
-            movement::move_object(square.clone(), Vector3::new(1.0, 0.0, 0.0), move_speed, delta_time);
-        }
-        if key_states_read.is_key_pressed_raw(Key::Q) {
-            movement::rotate_object(square.clone(), rotation_speed*delta_time);
-        }
-        if key_states_read.is_key_pressed_raw(Key::E) {
-            movement::rotate_object(square.clone(), -rotation_speed*delta_time);
-        }
     }
 
     pub fn set_resolution(&mut self, width: f32, height: f32) {
