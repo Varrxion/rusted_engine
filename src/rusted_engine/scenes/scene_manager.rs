@@ -1,11 +1,11 @@
 use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
 
-use nalgebra::Vector3;
+use nalgebra::{Vector2, Vector3};
 use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 use serde::Deserialize;
 use std::io::{self, Read};
 
-use crate::rusted_engine::entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList};
+use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState};
 
 use super::scene::Scene;
 
@@ -40,12 +40,32 @@ impl SceneManager {
         self.scenes.keys().cloned().collect()
     }
 
-    pub fn load_scene_into_lists(&self, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, scene_name: String) {
+    pub fn load_scene(&self, game_state: &mut GameState, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, scene_name: String) {
+        self.load_scene_into_game_state(game_state, scene_name.clone());
+        self.load_scene_into_lists(master_entity_list, master_graphics_list, scene_name);
+    }
+
+    fn load_scene_into_game_state(&self, game_state: &mut GameState, scene_name: String) {
+        if let Some(scene) = self.get_scene(&scene_name) {
+            if let Ok(scene) = scene.read() {
+                game_state.set_gravity(scene.get_gravity());
+                game_state.set_terminal_velocity(scene.get_terminal_velocity());
+            }
+            else {
+                println!("Could not get a read lock on Scene with name: {}", scene_name);
+            }
+        }
+        else {
+            println!("Could not find a Scene with name: {}", scene_name);
+        }
+    }
+
+    fn load_scene_into_lists(&self, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, scene_name: String) {
         self.load_scene_into_master_entity_list(master_entity_list, scene_name.clone());
         self.load_scene_into_master_graphics_list(master_graphics_list, scene_name.clone());
     }
 
-    pub fn load_scene_into_master_graphics_list(&self, master_graphics_list: &MasterGraphicsList, scene_name: String) {
+    fn load_scene_into_master_graphics_list(&self, master_graphics_list: &MasterGraphicsList, scene_name: String) {
         if let Some(scene) = self.get_scene(&scene_name) {
             if let Ok(scene) = scene.read() {
                 for obj in scene.get_graphics_objects().iter() {
@@ -63,7 +83,7 @@ impl SceneManager {
         }
     }
 
-    pub fn load_scene_into_master_entity_list(&self, master_entity_list: &MasterEntityList, scene_name: String) {
+    fn load_scene_into_master_entity_list(&self, master_entity_list: &MasterEntityList, scene_name: String) {
         if let Some(scene) = self.get_scene(&scene_name) {
             if let Ok(scene) = scene.read() {
                 for entity in scene.get_entities().iter() {
@@ -92,7 +112,19 @@ impl SceneManager {
             io::Error::new(io::ErrorKind::InvalidData, e)
         })?;
     
-        let mut json_scene = Scene::new();
+        let gravity = match scene_data.properties.gravity.len() {
+            2 => Vector2::new(scene_data.properties.gravity[0], scene_data.properties.gravity[1]),
+            1 => Vector2::new(0.0, scene_data.properties.gravity[0]), // Interpret as gravity on the y-axis
+            _ => Vector2::new(0.0, 0.0), // Default to (0.0, 0.0) if invalid
+        };
+
+        let terminal_velocity = match scene_data.properties.terminal_velocity.len() {
+            2 => Vector2::new(scene_data.properties.terminal_velocity[0], scene_data.properties.terminal_velocity[1]),
+            1 => Vector2::new(0.0, scene_data.properties.terminal_velocity[0]), // Interpret as terminal velocity on the y-axis
+            _ => Vector2::new(f32::MAX, f32::MAX), // Default to (0.0, 0.0) if invalid
+        };
+
+        let mut json_scene = Scene::new(gravity, terminal_velocity);
     
         for obj_data in scene_data.objects {
             let json_shader = CustomShader::new(
@@ -128,10 +160,15 @@ impl SceneManager {
                 obj_data.graphics.scale,
                 texture_id,
             );
+
+            let velocity = obj_data.entity.velocity.unwrap_or_else(|| vec![0.0, 0.0]);
+            let velocity_vector = Vector2::new(velocity[0], velocity[1]);
     
             let entity = GenericEntity::new(
                 obj_data.entity.name.clone(),
                 obj_data.entity.weight,
+                velocity_vector,
+                obj_data.entity.affected_by_gravity,
                 obj_data.entity.can_destroy,
                 obj_data.entity.destructible,
                 obj_data.entity.active_collision,
@@ -187,6 +224,8 @@ impl SceneManager {
 struct EntityData {
     name: String,
     weight: f32,
+    velocity: Option<Vec<f32>>,
+    affected_by_gravity: bool,
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
@@ -201,7 +240,7 @@ struct GraphicsData {
     texture_coords: Vec<f32>,
     vertex_shader: String,
     fragment_shader: String,
-    position: Vec<f32>,  // [x, y, z]
+    position: Vec<f32>,
     rotation: f32,
     scale: f32,
     texture_name: String,
@@ -215,5 +254,12 @@ struct ObjectData {
 
 #[derive(Deserialize)]
 struct SceneData {
+    properties: SceneProperties,
     objects: Vec<ObjectData>,
+}
+
+#[derive(Deserialize)]
+struct SceneProperties {
+    gravity: Vec<f32>,
+    terminal_velocity: Vec<f32>,
 }

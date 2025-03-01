@@ -1,9 +1,14 @@
 {
+    "properties": {
+        "gravity": [0.0, -0.2],
+        "terminal_velocity": [5.0, 5.0]
+    },
     "objects": [
         {
             "entity": {
                 "name": "testscene_playersquare",
                 "weight": 3.0,
+                "affected_by_gravity": true,
                 "can_destroy": true,
                 "destructible": false,
                 "active_collision": true,
@@ -36,6 +41,7 @@
             "entity": {
                 "name": "testscene_obj1",
                 "weight": 0.0,
+                "affected_by_gravity": false,
                 "can_destroy": false,
                 "destructible": true,
                 "active_collision": false,
@@ -68,6 +74,7 @@
             "entity": {
                 "name": "testscene_obj2",
                 "weight": 2.0,
+                "affected_by_gravity": false,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
@@ -100,6 +107,7 @@
             "entity": {
                 "name": "testscene_obj3",
                 "weight": 3.0,
+                "affected_by_gravity": false,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
@@ -132,6 +140,7 @@
             "entity": {
                 "name": "testscene_obj4",
                 "weight": 4.0,
+                "affected_by_gravity": false,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": false,
@@ -164,6 +173,7 @@
             "entity": {
                 "name": "testscene_obj5",
                 "weight": 2.0,
+                "affected_by_gravity": false,
                 "can_destroy": false,
                 "destructible": false,
                 "active_collision": true,

@@ -53,4 +53,13 @@ impl EventHandler {
             self.audio_manager.read().unwrap().enqueue_audio("RobloxExplosion", AudioType::UI, 0.6, false);
         }
     }
+
+    pub fn gravity_sequence(&self) {
+        if let Some(player_entity) = self.master_entity_list.read().unwrap().get_entity("testscene_playersquare") {
+            let mut player_entity_write = player_entity.write().unwrap();
+            let toggle_gravity = !player_entity_write.is_affected_by_gravity();
+            player_entity_write.set_affected_by_gravity(toggle_gravity);
+            self.audio_manager.read().unwrap().enqueue_audio("Gravity", AudioType::UI, 0.6, false);
+        }
+    }
 }

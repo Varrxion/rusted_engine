@@ -1,10 +1,9 @@
 use std::sync::{Arc, RwLock};
 
-use glfw::{Context, GlfwReceiver, Key, WindowEvent};
-use nalgebra::Vector3;
-use rusted_open::framework::{framework_controller::FrameworkController, events::movement, graphics::{internal_object::graphics_object::Generic2DGraphicsObject, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
+use glfw::{Context, GlfwReceiver, WindowEvent};
+use rusted_open::framework::{framework_controller::FrameworkController, graphics::{texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences, player_movement}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences, player_movement::{self, gravity}}, game_state::{self, GameState}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -53,6 +52,7 @@ impl EngineController {
     // Call from main to start everything
     pub fn init(&mut self) {
         // Grab the parts of the engine_controller we want to use
+        let mut game_state = GameState::new();
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
         let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone());
@@ -67,15 +67,19 @@ impl EngineController {
 
         let mut flag = false;
 
+        // Load the test scene from the manager into the master graphics list
+        let scene_name = "testscene";
+        self.scene_manager.read().unwrap().load_scene(&mut game_state, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), scene_name.to_owned());
+
         while flag == false {
-            flag = self.main_loop(&event_handler, master_graphics_list.clone(), &mut piano);
+            flag = self.main_loop(&game_state, &event_handler, master_graphics_list.clone(), &mut piano);
         }
     }
 
 
     /// This is the main loop for the framework.
     /// It can contain game logic for now since we aren't abstracting much
-    pub fn main_loop(&mut self, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
+    pub fn main_loop(&mut self, game_state: &GameState, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
@@ -89,13 +93,17 @@ impl EngineController {
             return true;
         }
 
-        // Retrieve the "player" square from the master graphics list
-        let square = master_graphics_list.read().unwrap().get_object("testscene_playersquare").expect("Object not found");
+        gravity(game_state.get_gravity(), game_state.get_terminal_velocity(), &self.master_entity_list.read().unwrap(), delta_time);
+
+        //Print debug info about the player entity
+        self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
-        player_movement::process_player_movement(square, self.key_states.clone(), delta_time);
+        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 1.0, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_object_fake_friction("testscene_playersquare".to_owned(), false, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
 
-        // Process piano inputs (returns true if a piano input was made)
+
+        // Process piano inputs, returns true if a piano input was made
         if piano.process_piano_keys() {
             piano_sequences::check_piano_sequences(piano, &event_handler);
         }
@@ -154,10 +162,6 @@ impl EngineController {
         // Load resources which should not be uploaded
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\music");
         let _ = audio_manager.load_sounds_from_directory("src\\resources\\localonly\\sounds");
-
-        // Load the test scene from the manager into the master graphics list
-        let scene_name = "testscene";
-        scene_manager.load_scene_into_lists(&self.master_entity_list.read().unwrap(), master_graphics_list, scene_name.to_owned());
     }
 
     pub fn set_resolution(&mut self, width: f32, height: f32) {

@@ -1,8 +1,12 @@
 use std::collections::HashSet;
 
+use nalgebra::Vector2;
+
 pub struct GenericEntity {
     name: String,
     weight: f32,
+    velocity: Vector2<f32>,
+    affected_by_gravity: bool,
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
@@ -15,6 +19,8 @@ impl Clone for GenericEntity {
         GenericEntity {
             name: self.name.clone(),
             weight: self.weight,
+            velocity: self.velocity,
+            affected_by_gravity: self.affected_by_gravity,
             can_destroy: self.can_destroy,
             destructible: self.destructible,
             active_collision: self.active_collision,
@@ -25,10 +31,12 @@ impl Clone for GenericEntity {
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
         GenericEntity {
             name,
             weight,
+            velocity,
+            affected_by_gravity,
             can_destroy,
             destructible,
             active_collision,
@@ -44,6 +52,14 @@ impl GenericEntity {
 
     pub fn get_weight(&self) -> f32 {
         self.weight
+    }
+
+    pub fn get_velocity(&self) -> Vector2<f32> {
+        self.velocity
+    }
+
+    pub fn is_affected_by_gravity(&self) -> bool {
+        self.affected_by_gravity
     }
 
     pub fn can_destroy(&self) -> bool {
@@ -75,6 +91,14 @@ impl GenericEntity {
         self.weight = weight;
     }
 
+    pub fn set_velocity(&mut self, velocity: Vector2<f32>) {
+        self.velocity = velocity;
+    }
+
+    pub fn set_affected_by_gravity(&mut self, affected_by_gravity: bool) {
+        self.affected_by_gravity = affected_by_gravity;
+    }
+
     pub fn set_can_destroy(&mut self, can_destroy: bool) {
         self.can_destroy = can_destroy;
     }
@@ -95,10 +119,28 @@ impl GenericEntity {
         self.collision_sound = collision_sound;
     }
 
+    // Game Logic
+
+    pub fn apply_gravity(&mut self, gravity: Vector2<f32>, terminal_velocity: Vector2<f32>, delta_time: f32) {
+    if self.affected_by_gravity {
+        // Apply gravity to the velocity
+        self.velocity += gravity * delta_time;
+        
+        // Clamp the velocity to the terminal velocity
+        self.velocity.x = self.velocity.x.clamp(-terminal_velocity.x, terminal_velocity.x);
+        self.velocity.y = self.velocity.y.clamp(-terminal_velocity.y, terminal_velocity.y);
+    }
+}
+
+
+    // Debug
+
     pub fn print_debug(&self) {
         println!("Debug Info for GenericEntity:");
         println!("Name: {}", self.name);
         println!("Weight: {}", self.weight);
+        println!("Velocity: {}", self.velocity);
+        println!("Affected by Gravity: {}", self.affected_by_gravity);
         println!("Can Destroy: {}", self.can_destroy);
         println!("Destructible: {}", self.destructible);
         println!("Active Collision: {}", self.active_collision);
