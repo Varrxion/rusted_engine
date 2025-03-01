@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use glfw::{Context, GlfwReceiver, WindowEvent};
 use rusted_open::framework::{framework_controller::FrameworkController, graphics::{texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList}};
 
-use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences, player_movement::{self, gravity}}, game_state::{self, GameState}, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
+use super::{audio::audio_manager::AudioManager, entities::util::master_entity_list::MasterEntityList, events::{event_handler::EventHandler, piano_sequences, player_movement::{self, gravity}}, game_state::GameState, input::{key_states::KeyStates, piano::Piano}, scenes::scene_manager::SceneManager, util::master_clock::MasterClock};
 
 pub struct EngineController {
     glfw: glfw::Glfw,
@@ -60,7 +60,7 @@ impl EngineController {
         self.set_resolution(1280.0, 720.0);
 
         // Go into this function to see how the loading is done.
-        self.load_resources(&texture_manager.write().unwrap(), &master_graphics_list.write().unwrap());
+        self.load_resources(&texture_manager.write().unwrap());
 
         // Create a Piano instance
         let mut piano = Piano::new(self.audio_manager.clone(), self.key_states.clone());
@@ -148,7 +148,7 @@ impl EngineController {
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
-    pub fn load_resources(&mut self, texture_manager: &TextureManager, master_graphics_list: &MasterGraphicsList) {
+    pub fn load_resources(&mut self, texture_manager: &TextureManager) {
         let mut scene_manager = self.scene_manager.write().unwrap();
         let audio_manager = self.audio_manager.read().unwrap();
 
