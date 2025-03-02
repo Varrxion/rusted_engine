@@ -51,7 +51,7 @@ pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_ent
                         }
 
                         // Resolve overlap first
-                        resolve_overlap(entity_1.get_name().to_owned(), entity_2.get_name().to_owned(), master_graphics_list);
+                        resolve_overlap(&mut entity_1, &mut entity_2, master_graphics_list);
 
                         // Transfer velocities based on the collision and weights
                         transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
@@ -171,14 +171,16 @@ pub fn is_colliding(object_1_name: String,  object_2_name: String, master_entity
             let entity_1_collision_modes = entity_1_read.get_collision_modes();
             let entity_2_collision_modes = entity_2_read.get_collision_modes();
 
-            if let Some(object_1) = master_graphics_list.get_object(&object_1_name) {
-                let object_1_read = object_1.read().unwrap();
-                if let Some(object_2) = master_graphics_list.get_object(&object_2_name) {
-                    let object_2_read = object_2.read().unwrap();
+            if entity_1_read.get_collision_priority() > entity_2_read.get_collision_priority() {
+                if let Some(object_1) = master_graphics_list.get_object(&object_1_name) {
+                    let object_1_read = object_1.read().unwrap();
+                    if let Some(object_2) = master_graphics_list.get_object(&object_2_name) {
+                        let object_2_read = object_2.read().unwrap();
 
-                    for mode in entity_1_collision_modes {
-                        if entity_2_collision_modes.contains(mode) && check_collision(&object_1_read, &object_2_read, *mode) {
-                            return true;
+                        for mode in entity_1_collision_modes {
+                            if entity_2_collision_modes.contains(mode) && check_collision(&object_1_read, &object_2_read, *mode) {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -197,10 +199,10 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
     }
 }
 
-fn resolve_overlap(object_1_name: String, object_2_name: String, master_graphics_list: &MasterGraphicsList) {
+fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, master_graphics_list: &MasterGraphicsList) {
     // Retrieve the objects from the master graphics list
-    let object_1 = master_graphics_list.get_object(&object_1_name);
-    let object_2 = master_graphics_list.get_object(&object_2_name);
+    let object_1 = master_graphics_list.get_object(entity_1.get_name());
+    let object_2 = master_graphics_list.get_object(entity_2.get_name());
     
     // Ensure the objects exist and can be locked
     if let (Some(object_1), Some(object_2)) = (object_1, object_2) {
@@ -226,10 +228,14 @@ fn resolve_overlap(object_1_name: String, object_2_name: String, master_graphics
         let move_2 = Vector3::new(normal.0 * separation_distance, normal.1 * separation_distance, 0.0);
 
         // Apply the movement using move_object to ensure proper separation
-        movement::move_object(&mut object_1, move_1, 0.01);
-        movement::move_object(&mut object_2, move_2, 0.01);
+        if !entity_1.is_static() {
+            movement::move_object(&mut object_1, move_1, 0.01);
+        }
+        if !entity_2.is_static() {
+            movement::move_object(&mut object_2, move_2, 0.01);
+        }
     } else {
-        println!("One or both objects not found: {} or {}", object_1_name, object_2_name);
+        println!("One or both objects not found to resolve collision overlap");
     }
 }
 
@@ -245,6 +251,10 @@ pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &m
     let elasticity_1 = entity_1.get_elasticity();  // Elasticity factor for entity_1
     let elasticity_2 = entity_2.get_elasticity();  // Elasticity factor for entity_2
 
+    // Check if either entity is static
+    let is_entity_1_static = entity_1.is_static();
+    let is_entity_2_static = entity_2.is_static();
+
     // Calculate the total mass (or weight)
     let total_weight = weight_1 + weight_2;
 
@@ -255,7 +265,13 @@ pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &m
     let velocity_transfer_1 = (velocity_diff * (2.0 * weight_2 / total_weight)) * elasticity_2;
     let velocity_transfer_2 = (-velocity_diff * (2.0 * weight_1 / total_weight)) * elasticity_1;
 
-    // Update the velocities of the entities based on the transfer
-    entity_1.set_velocity(velocity_1 + velocity_transfer_1);
-    entity_2.set_velocity(velocity_2 + velocity_transfer_2);
+    // Only update the velocity for non-static entities
+    if !is_entity_1_static {
+        entity_1.set_velocity(velocity_1 + velocity_transfer_1);
+    }
+
+    if !is_entity_2_static {
+        entity_2.set_velocity(velocity_2 + velocity_transfer_2);
+    }
 }
+

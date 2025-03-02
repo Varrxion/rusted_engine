@@ -14,6 +14,7 @@
                 "can_destroy": true,
                 "destructible": false,
                 "active_collision": true,
+                "collision_priority": 1,
                 "collision_modes": ["AABB", "Circle"],
                 "collision_sound": ""
             },

@@ -163,6 +163,9 @@ impl SceneManager {
 
             let velocity = obj_data.entity.velocity.unwrap_or_else(|| vec![0.0, 0.0]);
             let velocity_vector = Vector2::new(velocity[0], velocity[1]);
+
+            // Default collision_priority to 0 if None
+            let collision_priority = obj_data.entity.collision_priority.unwrap_or(0);
     
             let entity = GenericEntity::new(
                 obj_data.entity.name.clone(),
@@ -174,6 +177,7 @@ impl SceneManager {
                 obj_data.entity.can_destroy,
                 obj_data.entity.destructible,
                 obj_data.entity.active_collision,
+                collision_priority,
                 json_collision_modes,
                 obj_data.entity.collision_sound,
             );
@@ -233,6 +237,8 @@ struct EntityData {
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
+    #[serde(default)]
+    collision_priority: Option<u64>,
     collision_modes: Vec<String>,
     collision_sound: String,
 }

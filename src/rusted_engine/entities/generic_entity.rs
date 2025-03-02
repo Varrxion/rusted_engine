@@ -12,6 +12,7 @@ pub struct GenericEntity {
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
+    collision_priority: u64,
     collision_modes: HashSet<CollisionMode>,
     collision_sound: String,
 }
@@ -28,6 +29,7 @@ impl Clone for GenericEntity {
             can_destroy: self.can_destroy,
             destructible: self.destructible,
             active_collision: self.active_collision,
+            collision_priority: self.collision_priority,
             collision_modes: self.collision_modes.clone(),
             collision_sound: self.collision_sound.clone(),
         }
@@ -35,7 +37,7 @@ impl Clone for GenericEntity {
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
         GenericEntity {
             name,
             weight,
@@ -46,6 +48,7 @@ impl GenericEntity {
             can_destroy,
             destructible,
             active_collision,
+            collision_priority,
             collision_modes,
             collision_sound,
         }
@@ -86,6 +89,10 @@ impl GenericEntity {
 
     pub fn has_active_collision(&self) -> bool {
         self.active_collision
+    }
+
+    pub fn get_collision_priority(&self) -> u64 {
+        self.collision_priority
     }
 
     pub fn get_collision_modes(&self) -> &HashSet<CollisionMode> {
@@ -131,6 +138,10 @@ impl GenericEntity {
 
     pub fn set_active_collision(&mut self, active_collision: bool) {
         self.active_collision = active_collision;
+    }
+
+    pub fn set_collision_priority(&mut self, collision_priority: u64) {
+        self.collision_priority = collision_priority;
     }
 
     pub fn set_collision_modes(&mut self, modes: HashSet<CollisionMode>) {
