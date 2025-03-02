@@ -89,16 +89,7 @@ pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_l
             let object_2_read = object_2.read().unwrap(); // Lock for reading
 
             // Check for collision
-            if is_colliding(object_1_read.get_name().to_owned(), object_2_read.get_name().to_owned(), master_entity_list, master_graphics_list) {
-                let diff_x = object_2_read.get_position().x - object_1_read.get_position().x;
-                let diff_y = object_2_read.get_position().y - object_1_read.get_position().y;
-                
-                let normal = if diff_x.abs() > diff_y.abs() {
-                    if diff_x > 0.0 { (1.0, 0.0) } else { (-1.0, 0.0) }
-                } else {
-                    if diff_y > 0.0 { (0.0, 1.0) } else { (0.0, -1.0) }
-                };
-            
+            if is_colliding(object_1_read.get_name().to_owned(), object_2_read.get_name().to_owned(), master_entity_list, master_graphics_list) {          
                 collision_events.push(CollisionEvent {
                     object_name_1: object_name.to_string(),
                     object_name_2: name.clone(),
