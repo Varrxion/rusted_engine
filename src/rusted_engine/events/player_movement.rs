@@ -7,51 +7,44 @@ use rusted_open::framework::{events::movement, graphics::{internal_object::graph
 use crate::rusted_engine::{entities::util::master_entity_list::MasterEntityList, input::key_states::KeyStates};
 
 /// A more refined movement based on directional velocity.
-pub fn process_object_acceleration(obj_name: String, normalize: bool, speed: f32, max_speed: f32, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, key_states: Arc<RwLock<KeyStates>>, delta_time: f32) {
+pub fn process_object_acceleration(obj_name: String, normalize: bool, speed: f32, max_speed: f32, master_entity_list: &MasterEntityList, key_states: Arc<RwLock<KeyStates>>, delta_time: f32) {
     if let Some(entity) = master_entity_list.get_entity(&obj_name) {
         if let Ok(mut entity) = entity.write() {
-            if let Some(object) = master_graphics_list.get_object(&obj_name) {
-                let mut acceleration = Vector2::new(0.0, 0.0);
+            let mut acceleration = Vector2::new(0.0, 0.0);
 
-                let key_states_read = key_states.read().unwrap();
-                if key_states_read.is_key_pressed_raw(Key::W) {
-                    acceleration.y += speed;
-                }
-                if key_states_read.is_key_pressed_raw(Key::S) {
-                    acceleration.y -= speed;
-                }
-                if key_states_read.is_key_pressed_raw(Key::A) {
-                    acceleration.x -= speed;
-                }
-                if key_states_read.is_key_pressed_raw(Key::D) {
-                    acceleration.x += speed;
-                }
-
-                // Normalize the acceleration vector to prevent faster diagonal movement
-                if normalize == true {
-                    if acceleration.magnitude() > 0.0 {
-                        acceleration = acceleration.normalize();
-                    }
-                }
-
-                // Apply acceleration to the entity's velocity
-                let new_velocity = entity.get_velocity() + acceleration * delta_time;
-
-                entity.set_velocity(new_velocity);
-
-                let mut velocity = entity.get_velocity();
-                let current_speed = velocity.magnitude();
-
-                // If the current speed exceeds the max speed, normalize and scale it
-                if current_speed > max_speed {
-                    velocity = velocity.normalize() * max_speed;
-                    entity.set_velocity(velocity); // Set the capped velocity back to the entity
-                }
-
-                //movement::move_object(&mut object.write().unwrap().clone(), Vector3::new(velocity.x, velocity.y, 0.0), delta_time);
+            let key_states_read = key_states.read().unwrap();
+            if key_states_read.is_key_pressed_raw(Key::W) {
+                acceleration.y += speed;
             }
-            else {
-                println!("No object with that name could be found. Cannot process object acceleration");
+            if key_states_read.is_key_pressed_raw(Key::S) {
+                acceleration.y -= speed;
+            }
+            if key_states_read.is_key_pressed_raw(Key::A) {
+                acceleration.x -= speed;
+            }
+            if key_states_read.is_key_pressed_raw(Key::D) {
+                acceleration.x += speed;
+            }
+
+            // Normalize the acceleration vector to prevent faster diagonal movement
+            if normalize == true {
+                if acceleration.magnitude() > 0.0 {
+                    acceleration = acceleration.normalize();
+                }
+            }
+
+            // Apply acceleration to the entity's velocity
+            let new_velocity = entity.get_velocity() + acceleration * delta_time;
+
+            entity.set_velocity(new_velocity);
+
+            let mut velocity = entity.get_velocity();
+            let current_speed = velocity.magnitude();
+
+            // If the current speed exceeds the max speed, normalize and scale it
+            if current_speed > max_speed {
+                velocity = velocity.normalize() * max_speed;
+                entity.set_velocity(velocity); // Set the capped velocity back to the entity
             }
         }
         else {
@@ -69,8 +62,7 @@ pub fn process_object_friction() {
 }
 
 /// A method to apply friction to all object movement, for use in top-down view or zero-gravity environment
-pub fn process_all_entities_fake_friction(friction: f32, master_entity_list: &MasterEntityList, vertical_friction: bool, delta_time: f32) {
-    // Iterate through all entities in the master entity list
+pub fn process_all_entities_fake_friction(velocity_friction: f32, base_friction: f32, master_entity_list: &MasterEntityList, vertical_friction: bool, delta_time: f32) {
     let entities = master_entity_list.get_entities();
     let entities = entities.read().unwrap();
 
@@ -78,35 +70,28 @@ pub fn process_all_entities_fake_friction(friction: f32, master_entity_list: &Ma
         if let Ok(mut entity) = entity_ref.write() {
             let mut velocity = entity.get_velocity();
 
-            // Apply horizontal friction based on the velocity
-            if velocity.x > 0.0 {
-                velocity.x -= friction * delta_time;
-                if velocity.x < 0.0 {
-                    velocity.x = 0.0;
-                }
-            } else if velocity.x < 0.0 {
-                velocity.x += friction * delta_time;
-                if velocity.x > 0.0 {
+            // Apply friction in the x direction
+            if velocity.x != 0.0 {
+                let friction_x = base_friction + velocity_friction * velocity.x.abs();
+                velocity.x -= friction_x * velocity.x.signum() * delta_time;
+
+                // Prevent overshooting to the opposite direction
+                if velocity.x.signum() != (velocity.x - friction_x * velocity.x.signum() * delta_time).signum() {
                     velocity.x = 0.0;
                 }
             }
 
-            // Apply vertical friction if enabled (based on argument)
-            if vertical_friction {
-                if velocity.y > 0.0 {
-                    velocity.y -= friction * delta_time;
-                    if velocity.y < 0.0 {
-                        velocity.y = 0.0;
-                    }
-                } else if velocity.y < 0.0 {
-                    velocity.y += friction * delta_time;
-                    if velocity.y > 0.0 {
-                        velocity.y = 0.0;
-                    }
+            // Apply vertical friction if enabled
+            if vertical_friction && velocity.y != 0.0 {
+                let friction_y = base_friction + velocity_friction * velocity.y.abs();
+                velocity.y -= friction_y * velocity.y.signum() * delta_time;
+
+                // Prevent overshooting to the opposite direction
+                if velocity.y.signum() != (velocity.y - friction_y * velocity.y.signum() * delta_time).signum() {
+                    velocity.y = 0.0;
                 }
             }
 
-            // Set the new velocity with the applied friction
             entity.set_velocity(velocity);
         } else {
             println!("Couldn't acquire a write lock on entity: {}. Cannot process friction.", entity_name);

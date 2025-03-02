@@ -171,7 +171,7 @@ pub fn is_colliding(object_1_name: String,  object_2_name: String, master_entity
             let entity_1_collision_modes = entity_1_read.get_collision_modes();
             let entity_2_collision_modes = entity_2_read.get_collision_modes();
 
-            if entity_1_read.get_collision_priority() > entity_2_read.get_collision_priority() {
+            if entity_1_read.get_collision_priority() >= entity_2_read.get_collision_priority() {
                 if let Some(object_1) = master_graphics_list.get_object(&object_1_name) {
                     let object_1_read = object_1.read().unwrap();
                     if let Some(object_2) = master_graphics_list.get_object(&object_2_name) {
@@ -200,11 +200,9 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
 }
 
 fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, master_graphics_list: &MasterGraphicsList) {
-    // Retrieve the objects from the master graphics list
     let object_1 = master_graphics_list.get_object(entity_1.get_name());
     let object_2 = master_graphics_list.get_object(entity_2.get_name());
     
-    // Ensure the objects exist and can be locked
     if let (Some(object_1), Some(object_2)) = (object_1, object_2) {
         let mut object_1 = object_1.write().unwrap();
         let mut object_2 = object_2.write().unwrap();
@@ -220,14 +218,12 @@ fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, m
             if diff_y > 0.0 { (0.0, 1.0) } else { (0.0, -1.0) }
         };
 
-        // Calculate the separation distance based on the objects' overlap
-        let separation_distance = 0.05;  // Total movement to resolve the overlap
+        let separation_distance = 0.05;
 
         // Calculate the movement vectors for both objects to move them apart
         let move_1 = Vector3::new(-normal.0 * separation_distance, -normal.1 * separation_distance, 0.0);
         let move_2 = Vector3::new(normal.0 * separation_distance, normal.1 * separation_distance, 0.0);
 
-        // Apply the movement using move_object to ensure proper separation
         if !entity_1.is_static() {
             movement::move_object(&mut object_1, move_1, 0.01);
         }
@@ -248,10 +244,9 @@ pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &m
     let weight_1 = entity_1.get_weight();
     let weight_2 = entity_2.get_weight();
 
-    let elasticity_1 = entity_1.get_elasticity();  // Elasticity factor for entity_1
-    let elasticity_2 = entity_2.get_elasticity();  // Elasticity factor for entity_2
+    let elasticity_1 = entity_1.get_elasticity();
+    let elasticity_2 = entity_2.get_elasticity();
 
-    // Check if either entity is static
     let is_entity_1_static = entity_1.is_static();
     let is_entity_2_static = entity_2.is_static();
 

@@ -12,7 +12,7 @@ impl MasterClock {
         Self {
             last_time: Instant::now(),
             delta_time: 0.0,
-            max_delta: 0.1,
+            max_delta: 0.05,
         }
     }
 

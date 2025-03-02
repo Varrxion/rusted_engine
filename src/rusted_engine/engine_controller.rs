@@ -100,8 +100,8 @@ impl EngineController {
         master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
-        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), self.key_states.clone(), delta_time);
-        player_movement::process_all_entities_fake_friction(0.0, &self.master_entity_list.read().unwrap(), true, delta_time);
+        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_all_entities_fake_friction(1.5, 0.1, &self.master_entity_list.read().unwrap(), true, delta_time);
 
         //player_movement::process_object_raw_movement(master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap(), self.key_states.clone(), delta_time);
 

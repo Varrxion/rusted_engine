@@ -1,13 +1,15 @@
 [package]
 name = "rusted_engine"
 version = "0.1.0"
+authors =["Jordan Hartsell <hartcoretech@gmail.com>"]
 edition = "2021"
+description = "Dabbling in game engine mechanics, all from the ground up"
 
 [dependencies]
 rusted_open = { git = "https://github.com/Varrxion/rusted_open", branch = "main" }
-glfw = "0.58"
-bytemuck = "1.19.0"
-nalgebra = "0.33.1"
+glfw = "0.59"
+bytemuck = "1.21.0"
+nalgebra = "0.33.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 rodio = "0.20.1"
