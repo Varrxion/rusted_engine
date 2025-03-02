@@ -1,6 +1,8 @@
 use std::sync::{Arc, RwLock};
 
+use nalgebra::Vector3;
 use rusted_open::framework::graphics::{internal_object::graphics_object::Generic2DGraphicsObject, util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::events::movement;
 
 use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}};
 
@@ -47,6 +49,9 @@ pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_ent
                             master_entity_list.remove_entity(&entity_1.get_name());
                             master_graphics_list.remove_object(&entity_1.get_name());
                         }
+
+                        // Resolve overlap first
+                        resolve_overlap(entity_1.get_name().to_owned(), entity_2.get_name().to_owned(), master_graphics_list);
 
                         // Transfer velocities based on the collision and weights
                         transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
@@ -192,18 +197,65 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
     }
 }
 
-pub fn transfer_velocity_on_collision(entity_a: &mut GenericEntity, entity_b: &mut GenericEntity) {
-    let velocity_a = entity_a.get_velocity();
-    let velocity_b = entity_b.get_velocity();
+fn resolve_overlap(object_1_name: String, object_2_name: String, master_graphics_list: &MasterGraphicsList) {
+    // Retrieve the objects from the master graphics list
+    let object_1 = master_graphics_list.get_object(&object_1_name);
+    let object_2 = master_graphics_list.get_object(&object_2_name);
+    
+    // Ensure the objects exist and can be locked
+    if let (Some(object_1), Some(object_2)) = (object_1, object_2) {
+        let mut object_1 = object_1.write().unwrap();
+        let mut object_2 = object_2.write().unwrap();
 
-    let mass_a = entity_a.get_weight();
-    let mass_b = entity_b.get_weight();
+        // Calculate the vector between the two objects (the direction to resolve the overlap)
+        let diff_x = object_2.get_position().x - object_1.get_position().x;
+        let diff_y = object_2.get_position().y - object_1.get_position().y;
 
-    // Compute new velocities using the elastic collision equations
-    let new_velocity_a = ((mass_a - mass_b) * velocity_a + 2.0 * mass_b * velocity_b) / (mass_a + mass_b);
-    let new_velocity_b = ((mass_b - mass_a) * velocity_b + 2.0 * mass_a * velocity_a) / (mass_a + mass_b);
+        // Calculate the normal of the collision (direction of separation)
+        let normal = if diff_x.abs() > diff_y.abs() {
+            if diff_x > 0.0 { (1.0, 0.0) } else { (-1.0, 0.0) }
+        } else {
+            if diff_y > 0.0 { (0.0, 1.0) } else { (0.0, -1.0) }
+        };
 
-    // Apply new velocities
-    entity_a.set_velocity(new_velocity_a);
-    entity_b.set_velocity(new_velocity_b);
+        // Calculate the separation distance based on the objects' overlap
+        let separation_distance = 0.05;  // Total movement to resolve the overlap
+
+        // Calculate the movement vectors for both objects to move them apart
+        let move_1 = Vector3::new(-normal.0 * separation_distance, -normal.1 * separation_distance, 0.0);
+        let move_2 = Vector3::new(normal.0 * separation_distance, normal.1 * separation_distance, 0.0);
+
+        // Apply the movement using move_object to ensure proper separation
+        movement::move_object(&mut object_1, move_1, 0.01);
+        movement::move_object(&mut object_2, move_2, 0.01);
+    } else {
+        println!("One or both objects not found: {} or {}", object_1_name, object_2_name);
+    }
+}
+
+
+
+pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity) {
+    let velocity_1 = entity_1.get_velocity();
+    let velocity_2 = entity_2.get_velocity();
+
+    let weight_1 = entity_1.get_weight();
+    let weight_2 = entity_2.get_weight();
+
+    let elasticity_1 = entity_1.get_elasticity();  // Elasticity factor for entity_1
+    let elasticity_2 = entity_2.get_elasticity();  // Elasticity factor for entity_2
+
+    // Calculate the total mass (or weight)
+    let total_weight = weight_1 + weight_2;
+
+    // Calculate the velocity transfer between the two objects
+    let velocity_diff = velocity_2 - velocity_1;
+
+    // Apply the elasticity correction to the relative velocity change
+    let velocity_transfer_1 = (velocity_diff * (2.0 * weight_2 / total_weight)) * elasticity_2;
+    let velocity_transfer_2 = (-velocity_diff * (2.0 * weight_1 / total_weight)) * elasticity_1;
+
+    // Update the velocities of the entities based on the transfer
+    entity_1.set_velocity(velocity_1 + velocity_transfer_1);
+    entity_2.set_velocity(velocity_2 + velocity_transfer_2);
 }
