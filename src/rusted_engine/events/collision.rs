@@ -192,29 +192,18 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
     }
 }
 
-pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity) {
-    let velocity_1 = entity_1.get_velocity();
-    let velocity_2 = entity_2.get_velocity();
+pub fn transfer_velocity_on_collision(entity_a: &mut GenericEntity, entity_b: &mut GenericEntity) {
+    let velocity_a = entity_a.get_velocity();
+    let velocity_b = entity_b.get_velocity();
 
-    let weight_1 = entity_1.get_weight();
-    let weight_2 = entity_2.get_weight();
+    let mass_a = entity_a.get_weight();
+    let mass_b = entity_b.get_weight();
 
-    // Calculate the total weight
-    let total_weight = weight_1 + weight_2;
+    // Compute new velocities using the elastic collision equations
+    let new_velocity_a = ((mass_a - mass_b) * velocity_a + 2.0 * mass_b * velocity_b) / (mass_a + mass_b);
+    let new_velocity_b = ((mass_b - mass_a) * velocity_b + 2.0 * mass_a * velocity_a) / (mass_a + mass_b);
 
-    // Calculate the transfer factors based on the weight ratio
-    let transfer_factor_1 = weight_2 / total_weight;  // How much entity_1 will lose (more weight means more transfer)
-    let transfer_factor_2 = weight_1 / total_weight;  // How much entity_2 will lose
-
-    // Calculate the velocity loss based on weight difference
-    let new_velocity_1 = velocity_1 * (1.0 - transfer_factor_1); // Entity 1 will lose some of its speed
-    let new_velocity_2 = velocity_2 * (1.0 - transfer_factor_2); // Entity 2 will lose some of its speed
-
-    // Update the velocities of the entities
-    entity_1.set_velocity(new_velocity_1);
-    entity_2.set_velocity(new_velocity_2);
-
-    // Transfer the speed (divide by weight ratio) to the other object
-    entity_1.set_velocity(new_velocity_1 + velocity_2 * transfer_factor_2); // Entity 1 gets a portion of Entity 2's velocity
-    entity_2.set_velocity(new_velocity_2 + velocity_1 * transfer_factor_1); // Entity 2 gets a portion of Entity 1's velocity
+    // Apply new velocities
+    entity_a.set_velocity(new_velocity_a);
+    entity_b.set_velocity(new_velocity_b);
 }
