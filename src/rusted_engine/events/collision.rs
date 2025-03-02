@@ -35,9 +35,10 @@ pub fn check_active_entity_collisions(master_entity_list: Arc<RwLock<MasterEntit
 pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
     for collision_event in collision_events {
         if let Some(entity_1) = master_entity_list.get_entity(&collision_event.object_name_1) {
-            if let Ok(entity_1) = entity_1.read() {
+            if let Ok(mut entity_1) = entity_1.write() {
                 if let Some(entity_2) = master_entity_list.get_entity(&collision_event.object_name_2) {
-                    if let Ok(entity_2) = entity_2.read() {
+                    if let Ok(mut entity_2) = entity_2.write() {
+                        // Handle destruction logic based on weight
                         if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
                             master_entity_list.remove_entity(&entity_2.get_name());
                             master_graphics_list.remove_object(&entity_2.get_name());
@@ -46,30 +47,16 @@ pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_ent
                             master_entity_list.remove_entity(&entity_1.get_name());
                             master_graphics_list.remove_object(&entity_1.get_name());
                         }
-                        if entity_1.get_weight() > entity_2.get_weight() {
-                            collision_move_entity_based_on_position(
-                                master_graphics_list, &entity_1, &entity_2, 0.05,
-                            );
-                        }
-                        if entity_2.get_weight() > entity_1.get_weight() {
-                            collision_move_entity_based_on_position(
-                                master_graphics_list, &entity_2, &entity_1, 0.005,
-                            );
-                        }
-                        if entity_1.get_weight() == entity_2.get_weight() {
-                            collision_move_entity_based_on_position(
-                                master_graphics_list, &entity_1, &entity_2, 0.025,
-                            );
-                            collision_move_entity_based_on_position(
-                                master_graphics_list, &entity_2, &entity_1, 0.025,
-                            );
-                        }
+
+                        // Transfer velocities based on the collision and weights
+                        transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
+
+                        // Handle sound effects
                         let entity_1_collision_sound = entity_1.get_collision_sound();
                         let entity_2_collision_sound = entity_2.get_collision_sound();
-                        if entity_2_collision_sound != "" || entity_2_collision_sound != "null" || entity_2_collision_sound != "none" {
+                        if entity_2_collision_sound != "" && entity_2_collision_sound != "null" && entity_2_collision_sound != "none" {
                             audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.4, false);
-                        } // Prioritize the target (entity_2) of the collision for audio sound, rather than the originator of the collision (may flip this around later)
-                        else if entity_1_collision_sound != "" || entity_1_collision_sound != "null" || entity_1_collision_sound != "none" {
+                        } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
                             audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
                         }
                     }
@@ -78,6 +65,7 @@ pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_ent
         }
     }
 }
+
 
 pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: &str) -> Vec<CollisionEvent> {
     let mut collision_events = Vec::new(); // Vector to hold collision events
@@ -204,40 +192,29 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
     }
 }
 
-pub fn collision_move_entity_based_on_position(master_graphics_list: &MasterGraphicsList, unmoved_entity: &GenericEntity, moved_entity: &GenericEntity, push_force: f32) {
-    let (entity_1_pos, mut entity_2_pos);
-    
-    if let Some(entity_1_graphics_object) = master_graphics_list.get_object(unmoved_entity.get_name()) {
-        entity_1_pos = entity_1_graphics_object.read().unwrap().get_position();
-    } else {
-        return;
-    }
+pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity) {
+    let velocity_1 = entity_1.get_velocity();
+    let velocity_2 = entity_2.get_velocity();
 
-    if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
-        entity_2_pos = entity_2_graphics_object.read().unwrap().get_position();
-    } else {
-        return;
-    }
+    let weight_1 = entity_1.get_weight();
+    let weight_2 = entity_2.get_weight();
 
-    // Compute collision normal (direction of movement correction)
-    let mut collision_normal = entity_2_pos - entity_1_pos;
-    let length = (collision_normal.x * collision_normal.x + collision_normal.y * collision_normal.y).sqrt();
-    
-    if length == 0.0 {
-        return; // Avoid division by zero
-    }
-    
-    collision_normal.x /= length;
-    collision_normal.y /= length;
+    // Calculate the total weight
+    let total_weight = weight_1 + weight_2;
 
-    // Apply position correction in the direction of the collision normal
-    entity_2_pos.x += collision_normal.x * push_force;
-    entity_2_pos.y += collision_normal.y * push_force;
+    // Calculate the transfer factors based on the weight ratio
+    let transfer_factor_1 = weight_2 / total_weight;  // How much entity_1 will lose (more weight means more transfer)
+    let transfer_factor_2 = weight_1 / total_weight;  // How much entity_2 will lose
 
-    // Update the position of entity_2
-    if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
-        let mut entity_2_graphics = entity_2_graphics_object.write().unwrap();
-        entity_2_graphics.set_position(entity_2_pos);
-    }
+    // Calculate the velocity loss based on weight difference
+    let new_velocity_1 = velocity_1 * (1.0 - transfer_factor_1); // Entity 1 will lose some of its speed
+    let new_velocity_2 = velocity_2 * (1.0 - transfer_factor_2); // Entity 2 will lose some of its speed
+
+    // Update the velocities of the entities
+    entity_1.set_velocity(new_velocity_1);
+    entity_2.set_velocity(new_velocity_2);
+
+    // Transfer the speed (divide by weight ratio) to the other object
+    entity_1.set_velocity(new_velocity_1 + velocity_2 * transfer_factor_2); // Entity 1 gets a portion of Entity 2's velocity
+    entity_2.set_velocity(new_velocity_2 + velocity_1 * transfer_factor_1); // Entity 2 gets a portion of Entity 1's velocity
 }
-

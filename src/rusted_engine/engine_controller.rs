@@ -97,11 +97,13 @@ impl EngineController {
 
         //Print debug info about the player entity
         self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
+        master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
-        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 1.0, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), self.key_states.clone(), delta_time);
-        player_movement::process_object_fake_friction("testscene_playersquare".to_owned(), true, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_all_entities_fake_friction(0.8, &self.master_entity_list.read().unwrap(), true, delta_time);
 
+        //player_movement::process_object_raw_movement(master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap(), self.key_states.clone(), delta_time);
 
         // Process piano inputs, returns true if a piano input was made
         if piano.process_piano_keys() {
@@ -119,6 +121,8 @@ impl EngineController {
 
         // Call the collision checking method
         event_handler.process_collisions();
+
+        player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);
 
         return false;
     }
