@@ -7,6 +7,8 @@ pub struct GenericEntity {
     weight: f32,
     velocity: Vector2<f32>,
     affected_by_gravity: bool,
+    is_static: bool,
+    elasticity: f32,
     can_destroy: bool,
     destructible: bool,
     active_collision: bool,
@@ -21,6 +23,8 @@ impl Clone for GenericEntity {
             weight: self.weight,
             velocity: self.velocity,
             affected_by_gravity: self.affected_by_gravity,
+            is_static: self.is_static,
+            elasticity: self.elasticity,
             can_destroy: self.can_destroy,
             destructible: self.destructible,
             active_collision: self.active_collision,
@@ -31,12 +35,14 @@ impl Clone for GenericEntity {
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
         GenericEntity {
             name,
             weight,
             velocity,
             affected_by_gravity,
+            is_static,
+            elasticity,
             can_destroy,
             destructible,
             active_collision,
@@ -60,6 +66,14 @@ impl GenericEntity {
 
     pub fn is_affected_by_gravity(&self) -> bool {
         self.affected_by_gravity
+    }
+
+    pub fn is_static(&self) -> bool {
+        self.is_static
+    }
+
+    pub fn get_elasticity(&self) -> f32 {
+        self.elasticity
     }
 
     pub fn can_destroy(&self) -> bool {
@@ -97,6 +111,14 @@ impl GenericEntity {
 
     pub fn set_affected_by_gravity(&mut self, affected_by_gravity: bool) {
         self.affected_by_gravity = affected_by_gravity;
+    }
+
+    pub fn set_is_static(&mut self, is_static: bool) {
+        self.is_static = is_static;
+    }
+
+    pub fn set_elasticity(&mut self, elasticity: f32) {
+        self.elasticity = elasticity;
     }
 
     pub fn set_can_destroy(&mut self, can_destroy: bool) {
