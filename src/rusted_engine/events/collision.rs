@@ -97,7 +97,15 @@ pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_l
 
             // Check for collision
             if is_colliding(object_1_read.get_name().to_owned(), object_2_read.get_name().to_owned(), master_entity_list, master_graphics_list) {
-                // Create a CollisionEvent and push it into the vector
+                let diff_x = object_2_read.get_position().x - object_1_read.get_position().x;
+                let diff_y = object_2_read.get_position().y - object_1_read.get_position().y;
+                
+                let normal = if diff_x.abs() > diff_y.abs() {
+                    if diff_x > 0.0 { (1.0, 0.0) } else { (-1.0, 0.0) }
+                } else {
+                    if diff_y > 0.0 { (0.0, 1.0) } else { (0.0, -1.0) }
+                };
+            
                 collision_events.push(CollisionEvent {
                     object_name_1: object_name.to_string(),
                     object_name_2: name.clone(),
@@ -199,47 +207,37 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
 pub fn collision_move_entity_based_on_position(master_graphics_list: &MasterGraphicsList, unmoved_entity: &GenericEntity, moved_entity: &GenericEntity, push_force: f32) {
     let (entity_1_pos, mut entity_2_pos);
     
-    // Get the positions of both entities
     if let Some(entity_1_graphics_object) = master_graphics_list.get_object(unmoved_entity.get_name()) {
         entity_1_pos = entity_1_graphics_object.read().unwrap().get_position();
     } else {
-        return; // Handle the case where entity_1 doesn't have a graphics object
+        return;
     }
 
     if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
         entity_2_pos = entity_2_graphics_object.read().unwrap().get_position();
     } else {
-        return; // Handle the case where entity_2 doesn't have a graphics object
+        return;
     }
 
-    // Calculate the positional differences
-    let diff_x = entity_1_pos.x - entity_2_pos.x;
-    let diff_y = entity_1_pos.y - entity_2_pos.y;
-
-    // Compare differences to determine largest direction of movement
-    if diff_x.abs() > diff_y.abs() {
-        // If X difference is larger, move along X
-        if diff_x < 0.0 {
-            // Entity 2 is further west, so push east (positive X)
-            entity_2_pos.x += push_force; // Apply eastward push
-        } else {
-            // Entity 2 is further east, so push west (negative X)
-            entity_2_pos.x -= push_force; // Apply westward push
-        }
-    } else {
-        // If Y difference is larger, move along Y
-        if diff_y < 0.0 {
-            // Entity 2 is further north, so push south (positive Y)
-            entity_2_pos.y += push_force; // Apply southward push
-        } else {
-            // Entity 2 is further south, so push north (negative Y)
-            entity_2_pos.y -= push_force; // Apply northward push
-        }
+    // Compute collision normal (direction of movement correction)
+    let mut collision_normal = entity_2_pos - entity_1_pos;
+    let length = (collision_normal.x * collision_normal.x + collision_normal.y * collision_normal.y).sqrt();
+    
+    if length == 0.0 {
+        return; // Avoid division by zero
     }
+    
+    collision_normal.x /= length;
+    collision_normal.y /= length;
 
-    // Update the position of entity_2 in the graphics object (if needed)
+    // Apply position correction in the direction of the collision normal
+    entity_2_pos.x += collision_normal.x * push_force;
+    entity_2_pos.y += collision_normal.y * push_force;
+
+    // Update the position of entity_2
     if let Some(entity_2_graphics_object) = master_graphics_list.get_object(moved_entity.get_name()) {
         let mut entity_2_graphics = entity_2_graphics_object.write().unwrap();
-        entity_2_graphics.set_position(entity_2_pos); // Assuming you have a method to update the position
+        entity_2_graphics.set_position(entity_2_pos);
     }
 }
+

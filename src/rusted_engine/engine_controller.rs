@@ -100,7 +100,7 @@ impl EngineController {
 
         // Do movement inputs
         player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 1.0, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), self.key_states.clone(), delta_time);
-        player_movement::process_object_fake_friction("testscene_playersquare".to_owned(), false, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_object_fake_friction("testscene_playersquare".to_owned(), true, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
 
 
         // Process piano inputs, returns true if a piano input was made
