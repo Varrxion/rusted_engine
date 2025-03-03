@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use nalgebra::Vector3;
 use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphicsList;
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, game_state::GameState, scenes::scene_manager::SceneManager};
 
 use super::collision::{self};
 
@@ -11,6 +11,8 @@ pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
     audio_manager: Arc<RwLock<AudioManager>>,
+    scene_manager: Arc<RwLock<SceneManager>>,
+    game_state: Arc<RwLock<GameState>>,
 }
 
 impl EventHandler {
@@ -18,12 +20,52 @@ impl EventHandler {
         master_entity_list: Arc<RwLock<MasterEntityList>>,
         master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
         audio_manager: Arc<RwLock<AudioManager>>,
+        scene_manager: Arc<RwLock<SceneManager>>,
+        game_state: Arc<RwLock<GameState>>,
     ) -> Self {
         Self {
             master_entity_list,
             master_graphics_list,
             audio_manager,
+            scene_manager,
+            game_state,
         }
+    }
+
+    pub fn interpret_trigger(&self, trigger_name: String, target_name: String) {
+        match trigger_name.as_str() {
+            "swap_scene" => {
+                // You might want to pass a scene name dynamically
+                self.swap_scene("default_scene".to_string());
+            }
+            "homebringer_sequence" => {
+                self.homebringer_sequence();
+            }
+            "gorbino_sequence" => {
+                self.gorbino_sequence();
+            }
+            "explosion_sequence" => {
+                self.explosion_sequence();
+            }
+            "gravity_sequence" => {
+                self.gravity_sequence();
+            }
+            "destroy_object" => {
+                if target_name != "" {
+                    self.destroy_object(target_name);
+                }
+            }
+            _ => {
+                println!("No trigger found for {}", trigger_name);
+            }
+        }
+    }
+    
+
+    pub fn swap_scene(&self, scene_name: String) {
+        self.master_entity_list.write().unwrap().remove_all();
+        self.master_graphics_list.write().unwrap().remove_all();
+        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.read().unwrap(), &self.master_graphics_list.read().unwrap(), scene_name);
     }
 
     pub fn process_collisions(&self) {

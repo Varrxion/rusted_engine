@@ -2,6 +2,8 @@ use std::collections::HashSet;
 
 use nalgebra::Vector2;
 
+use crate::rusted_engine::events::triggers::Trigger;
+
 pub struct GenericEntity {
     name: String,
     weight: f32,
@@ -15,6 +17,7 @@ pub struct GenericEntity {
     collision_priority: u64,
     collision_modes: HashSet<CollisionMode>,
     collision_sound: String,
+    triggers: Vec<Trigger>,
 }
 
 impl Clone for GenericEntity {
@@ -32,12 +35,13 @@ impl Clone for GenericEntity {
             collision_priority: self.collision_priority,
             collision_modes: self.collision_modes.clone(),
             collision_sound: self.collision_sound.clone(),
+            triggers: self.triggers.clone(),
         }
     }
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String, triggers: Vec<Trigger>,) -> Self {
         GenericEntity {
             name,
             weight,
@@ -51,6 +55,7 @@ impl GenericEntity {
             collision_priority,
             collision_modes,
             collision_sound,
+            triggers,
         }
     }
 
@@ -103,6 +108,10 @@ impl GenericEntity {
         &self.collision_sound
     }
 
+    pub fn get_triggers(&self) -> &Vec<Trigger> {
+        &self.triggers
+    }
+
     // Setters
     pub fn set_name(&mut self, name: String) {
         self.name = name;
@@ -150,6 +159,10 @@ impl GenericEntity {
 
     pub fn set_collision_sound(&mut self, collision_sound: String) {
         self.collision_sound = collision_sound;
+    }
+
+    pub fn set_triggers(&mut self, triggers: Vec<Trigger>) {
+        self.triggers = triggers;
     }
 
     // Game Logic

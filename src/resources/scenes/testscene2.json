@@ -72,7 +72,7 @@
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.75,
-                "texture_name": "FamiliarBlock"
+                "texture_name": "BasicCharacterRed"
             }
         },
         {
@@ -86,19 +86,7 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "",
-                "triggers": [
-                    {
-                    "trigger_type": "Collision",
-                    "conditions": {
-                        "CollisionConditions": {
-                        "object_name": "testscene_playersquare"
-                        }
-                    },
-                    "outcome": "swap_scene",
-                    "target": "testscene2"
-                    }
-                ]
+                "collision_sound": ""
             },
             "graphics": {
                 "name": "testscene_obj2",
@@ -119,7 +107,7 @@
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterGreen"
+                "texture_name": "BasicCharacterRed"
             }
         },
         {
@@ -154,7 +142,7 @@
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterRed"
+                "texture_name": "FamiliarBlock"
             }
         },
         {

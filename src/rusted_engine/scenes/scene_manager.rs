@@ -5,7 +5,7 @@ use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomSh
 use serde::Deserialize;
 use std::io::{self, Read};
 
-use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState};
+use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::{CollisionCondition, DestructionCondition, Trigger, TriggerConditions}, game_state::GameState};
 
 use super::scene::Scene;
 
@@ -166,6 +166,25 @@ impl SceneManager {
 
             // Default collision_priority to 0 if None
             let collision_priority = obj_data.entity.collision_priority.unwrap_or(0);
+
+            let triggers: Vec<Trigger> = obj_data.entity.triggers.unwrap_or_default().into_iter().map(|trigger_data| {
+                let conditions = match trigger_data.conditions {
+                    TriggerConditions::CollisionConditions(cond) => TriggerConditions::CollisionConditions(CollisionCondition {
+                        object_name: cond.object_name,
+                    }),
+                    TriggerConditions::DestructionConditions(cond) => TriggerConditions::DestructionConditions(DestructionCondition {
+                        object_name: cond.object_name,
+                    }),
+                };
+            
+                Trigger {
+                    trigger_type: trigger_data.trigger_type,
+                    conditions,
+                    outcome: trigger_data.outcome,
+                    target: trigger_data.target,
+                }
+            }).collect();
+            
     
             let entity = GenericEntity::new(
                 obj_data.entity.name.clone(),
@@ -180,6 +199,7 @@ impl SceneManager {
                 collision_priority,
                 json_collision_modes,
                 obj_data.entity.collision_sound,
+                triggers,
             );
     
             let wrapped_graphics_object = Arc::new(RwLock::new(graphics_object));
@@ -241,6 +261,7 @@ struct EntityData {
     collision_priority: Option<u64>,
     collision_modes: Vec<String>,
     collision_sound: String,
+    triggers: Option<Vec<Trigger>>,
 }
 
 #[derive(Deserialize)]

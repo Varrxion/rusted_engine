@@ -15,6 +15,7 @@ pub struct EngineController {
     scene_manager: Arc<RwLock<SceneManager>>,
     audio_manager: Arc<RwLock<AudioManager>>,
     key_states: Arc<RwLock<KeyStates>>,
+    game_state: Arc<RwLock<GameState>>,
 }
 
 impl EngineController {
@@ -46,16 +47,16 @@ impl EngineController {
             scene_manager: Arc::new(RwLock::new(SceneManager::new())),
             audio_manager: Arc::new(RwLock::new(AudioManager::new())),
             key_states: Arc::new(RwLock::new(KeyStates::new())),
+            game_state: Arc::new(RwLock::new(GameState::new())),
         }
     }
 
     // Call from main to start everything
     pub fn init(&mut self) {
         // Grab the parts of the engine_controller we want to use
-        let mut game_state = GameState::new();
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
-        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone());
+        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
 
         self.set_resolution(1280.0, 720.0);
 
@@ -69,17 +70,17 @@ impl EngineController {
 
         // Load the test scene from the manager into the master graphics list
         let scene_name = "testscene";
-        self.scene_manager.read().unwrap().load_scene(&mut game_state, &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), scene_name.to_owned());
+        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), scene_name.to_owned());
 
         while flag == false {
-            flag = self.main_loop(&game_state, &event_handler, master_graphics_list.clone(), &mut piano);
+            flag = self.main_loop(&event_handler, master_graphics_list.clone(), &mut piano);
         }
     }
 
 
     /// This is the main loop for the framework.
     /// It can contain game logic for now since we aren't abstracting much
-    pub fn main_loop(&mut self, game_state: &GameState, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
+    pub fn main_loop(&mut self, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
@@ -93,7 +94,7 @@ impl EngineController {
             return true;
         }
 
-        gravity(game_state.get_gravity(), game_state.get_terminal_velocity(), &self.master_entity_list.read().unwrap(), delta_time);
+        gravity(self.game_state.read().unwrap().get_gravity(), self.game_state.read().unwrap().get_terminal_velocity(), &self.master_entity_list.read().unwrap(), delta_time);
 
         //Print debug info about the player entity
         self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
