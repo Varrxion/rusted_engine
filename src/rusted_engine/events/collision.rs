@@ -4,7 +4,7 @@ use nalgebra::Vector3;
 use rusted_open::framework::graphics::{internal_object::graphics_object::Generic2DGraphicsObject, util::master_graphics_list::MasterGraphicsList};
 use rusted_open::framework::events::movement;
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}};
+use crate::rusted_engine::entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList};
 
 #[derive(Debug, PartialEq)]
 pub struct CollisionEvent {
@@ -34,45 +34,7 @@ pub fn check_active_entity_collisions(master_entity_list: Arc<RwLock<MasterEntit
     collision_events
 }
 
-pub fn handle_collision_events(collision_events: Vec<CollisionEvent>, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, audio_manager: &AudioManager) {
-    for collision_event in collision_events {
-        if let Some(entity_1) = master_entity_list.get_entity(&collision_event.object_name_1) {
-            if let Ok(mut entity_1) = entity_1.write() {
-                if let Some(entity_2) = master_entity_list.get_entity(&collision_event.object_name_2) {
-                    if let Ok(mut entity_2) = entity_2.write() {
-                        // Handle destruction logic based on weight
-                        if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
-                            master_entity_list.remove_entity(&entity_2.get_name());
-                            master_graphics_list.remove_object(&entity_2.get_name());
-                        }
-                        if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
-                            master_entity_list.remove_entity(&entity_1.get_name());
-                            master_graphics_list.remove_object(&entity_1.get_name());
-                        }
-
-                        // Resolve overlap first
-                        resolve_overlap(&mut entity_1, &mut entity_2, master_graphics_list);
-
-                        // Transfer velocities based on the collision and weights
-                        transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
-
-                        // Handle sound effects
-                        let entity_1_collision_sound = entity_1.get_collision_sound();
-                        let entity_2_collision_sound = entity_2.get_collision_sound();
-                        if entity_2_collision_sound != "" && entity_2_collision_sound != "null" && entity_2_collision_sound != "none" {
-                            audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.4, false);
-                        } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
-                            audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: &str) -> Vec<CollisionEvent> {
+fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, object_name: &str) -> Vec<CollisionEvent> {
     let mut collision_events = Vec::new(); // Vector to hold collision events
 
     if let Some(object_1) = master_graphics_list.get_object(object_name) {
@@ -103,7 +65,7 @@ pub fn check_collisions(master_entity_list: &MasterEntityList, master_graphics_l
     collision_events // Return the vector of collision events
 }
 
-pub fn is_colliding_aabb(object_1_read: &Generic2DGraphicsObject,  object_2_read: &Generic2DGraphicsObject) -> bool {
+fn is_colliding_aabb(object_1_read: &Generic2DGraphicsObject,  object_2_read: &Generic2DGraphicsObject) -> bool {
     let (width_self, height_self) = object_1_read.dimensions();
     let (width_other, height_other) = object_2_read.dimensions();
 
@@ -154,7 +116,7 @@ fn is_colliding_obb() -> bool {
 
 // Check for collision with another object
 // To have a collision, SELF and OTHER must SHARE the collision type. For example, Circle Collision objects cannot collide with AABB Collision Objects unless they both have AABB and Circle.
-pub fn is_colliding(object_1_name: String,  object_2_name: String, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList) -> bool {
+fn is_colliding(object_1_name: String,  object_2_name: String, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList) -> bool {
     if let Some(entity_1) = master_entity_list.get_entity(&object_1_name) {
         let entity_1_read = entity_1.read().unwrap();
         if let Some(object_2) = master_entity_list.get_entity(&object_2_name) {
@@ -190,7 +152,7 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
     }
 }
 
-fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, master_graphics_list: &MasterGraphicsList) {
+pub fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, master_graphics_list: &MasterGraphicsList) {
     let object_1 = master_graphics_list.get_object(entity_1.get_name());
     let object_2 = master_graphics_list.get_object(entity_2.get_name());
     
@@ -225,8 +187,6 @@ fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, m
         println!("One or both objects not found to resolve collision overlap");
     }
 }
-
-
 
 pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity) {
     let velocity_1 = entity_1.get_velocity();

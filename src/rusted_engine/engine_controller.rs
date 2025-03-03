@@ -56,7 +56,7 @@ impl EngineController {
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
-        let event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
+        let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
 
         self.set_resolution(1280.0, 720.0);
 
@@ -73,14 +73,14 @@ impl EngineController {
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), scene_name.to_owned());
 
         while flag == false {
-            flag = self.main_loop(&event_handler, master_graphics_list.clone(), &mut piano);
+            flag = self.main_loop(&mut event_handler, master_graphics_list.clone(), &mut piano);
         }
     }
 
 
     /// This is the main loop for the framework.
     /// It can contain game logic for now since we aren't abstracting much
-    pub fn main_loop(&mut self, event_handler: &EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
+    pub fn main_loop(&mut self, event_handler: &mut EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
@@ -120,10 +120,12 @@ impl EngineController {
             println!("No object found with name testscene_obj1.");
         }
 
+        player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);
+
         // Call the collision checking method
         event_handler.process_collisions();
 
-        player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);
+        event_handler.process_event_outcomes();
 
         return false;
     }

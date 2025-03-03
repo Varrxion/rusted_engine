@@ -3,9 +3,14 @@ use std::sync::{Arc, RwLock};
 use nalgebra::Vector3;
 use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphicsList;
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, game_state::GameState, scenes::scene_manager::SceneManager};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::{self, MasterEntityList}}, game_state::GameState, scenes::scene_manager::SceneManager};
 
-use super::collision::{self};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Trigger, TriggerConditions, TriggerType}};
+
+pub struct EventOutcome {
+    outcome: String,
+    target: String,
+}
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
@@ -13,6 +18,7 @@ pub struct EventHandler {
     audio_manager: Arc<RwLock<AudioManager>>,
     scene_manager: Arc<RwLock<SceneManager>>,
     game_state: Arc<RwLock<GameState>>,
+    event_outcomes: Vec<EventOutcome>,
 }
 
 impl EventHandler {
@@ -29,49 +35,126 @@ impl EventHandler {
             audio_manager,
             scene_manager,
             game_state,
+            event_outcomes: Vec::new(),
         }
     }
 
-    pub fn interpret_trigger(&self, trigger_name: String, target_name: String) {
-        match trigger_name.as_str() {
-            "swap_scene" => {
-                // You might want to pass a scene name dynamically
-                self.swap_scene("default_scene".to_string());
-            }
-            "homebringer_sequence" => {
-                self.homebringer_sequence();
-            }
-            "gorbino_sequence" => {
-                self.gorbino_sequence();
-            }
-            "explosion_sequence" => {
-                self.explosion_sequence();
-            }
-            "gravity_sequence" => {
-                self.gravity_sequence();
-            }
-            "destroy_object" => {
-                if target_name != "" {
-                    self.destroy_object(target_name);
+    pub fn process_event_outcomes(&mut self) {
+        for event_outcome in &self.event_outcomes {
+            let outcome = &event_outcome.outcome;
+            let target_name = &event_outcome.target;
+
+            match outcome.as_str() {
+                "swap_scene" => {
+                    if target_name != "" {
+                        self.swap_scene(target_name.to_string());
+                    }
+                }
+                "homebringer_sequence" => {
+                    self.homebringer_sequence();
+                }
+                "gorbino_sequence" => {
+                    self.gorbino_sequence();
+                }
+                "explosion_sequence" => {
+                    self.explosion_sequence();
+                }
+                "gravity_sequence" => {
+                    self.gravity_sequence();
+                }
+                "destroy_object" => {
+                    if target_name != "" {
+                        self.destroy_object(target_name.to_string());
+                    }
+                }
+                _ => {
+                    println!("No outcome found for outcome: {}", outcome);
                 }
             }
-            _ => {
-                println!("No trigger found for {}", trigger_name);
-            }
         }
-    }
-    
+    }    
 
     pub fn swap_scene(&self, scene_name: String) {
         self.master_entity_list.write().unwrap().remove_all();
         self.master_graphics_list.write().unwrap().remove_all();
-        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.read().unwrap(), &self.master_graphics_list.read().unwrap(), scene_name);
+        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
 
-    pub fn process_collisions(&self) {
+    pub fn process_collisions(&mut self) {
         let collision_events = collision::check_active_entity_collisions(self.master_entity_list.clone(), self.master_graphics_list.clone());
-        collision::handle_collision_events(collision_events, &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), &self.audio_manager.read().unwrap());
+        let mut event_outcomes = self.handle_collision_events(collision_events);
+        self.event_outcomes.append(&mut event_outcomes);
     }
+
+    pub fn handle_collision_events(&mut self, collision_events: Vec<CollisionEvent>) -> Vec<EventOutcome> {
+        let mut event_outcomes: Vec<EventOutcome> = Vec::new();
+
+        let master_entity_list = self.master_entity_list.read().unwrap();
+        let master_graphics_list = self.master_graphics_list.read().unwrap();
+        let audio_manager = self.audio_manager.write().unwrap();
+        for collision_event in collision_events {
+            if let Some(entity_1) = master_entity_list.get_entity(&collision_event.object_name_1) {
+                if let Ok(mut entity_1) = entity_1.write() {
+                    if let Some(entity_2) = master_entity_list.get_entity(&collision_event.object_name_2) {
+                        if let Ok(mut entity_2) = entity_2.write() {
+                            // Handle destruction logic based on weight
+                            if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
+                                master_entity_list.remove_entity(&entity_2.get_name());
+                                master_graphics_list.remove_object(&entity_2.get_name());
+                            }
+                            if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
+                                master_entity_list.remove_entity(&entity_1.get_name());
+                                master_graphics_list.remove_object(&entity_1.get_name());
+                            }
+
+                            // Should check destruction triggers here ^^^ eventually. But I will do it later
+    
+                            // Resolve overlap first
+                            resolve_overlap(&mut entity_1, &mut entity_2, &master_graphics_list);
+    
+                            // Transfer velocities based on the collision and weights
+                            transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
+    
+                            // Handle sound effects
+                            let entity_1_collision_sound = entity_1.get_collision_sound();
+                            let entity_2_collision_sound = entity_2.get_collision_sound();
+                            if entity_2_collision_sound != "" && entity_2_collision_sound != "null" && entity_2_collision_sound != "none" {
+                                audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.4, false);
+                            } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
+                                audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
+                            }
+
+                            // Handle collision trigger last, so that a collision trigger with a destruction target of itself does not cause a crash.
+                            self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
+                            self.check_collision_triggers(entity_2.get_triggers(), entity_1.get_name().to_owned(), &mut event_outcomes);
+                        }
+                    }
+                }
+            }
+        }
+        return event_outcomes
+    }
+
+    fn check_collision_triggers(&self, triggers: &Vec<Trigger>, entity_2_name: String, event_outcomes: &mut Vec<EventOutcome>) {
+        for trigger in triggers {
+            if let TriggerType::Collision = trigger.trigger_type {
+                if let TriggerConditions::CollisionConditions(cond) = &trigger.conditions {
+                    if cond.object_name == entity_2_name {
+                        if let Some(outcome) = &trigger.outcome {
+                            if let Some(target) = &trigger.target {
+                                let event_outcome = EventOutcome {
+                                    outcome: outcome.to_string(),
+                                    target: target.to_string(),
+                                };
+                                event_outcomes.push(event_outcome);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 
     pub fn destroy_object(&self, object_name: String) {
         self.master_entity_list.write().unwrap().remove_entity(&object_name);
