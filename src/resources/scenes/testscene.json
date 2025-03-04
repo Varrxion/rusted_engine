@@ -1,6 +1,6 @@
 {
     "properties": {
-        "gravity": [0.0, -0.2],
+        "gravity": [0.0, -1.8],
         "terminal_velocity": [5.0, 5.0]
     },
     "objects": [
@@ -8,7 +8,7 @@
             "entity": {
                 "name": "testscene_playersquare",
                 "weight": 3.0,
-                "affected_by_gravity": true,
+                "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
                 "can_destroy": true,

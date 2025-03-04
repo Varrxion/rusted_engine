@@ -142,7 +142,7 @@
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "FamiliarBlock"
+                "texture_name": "Chud"
             }
         },
         {
@@ -189,7 +189,7 @@
                 "position": [0.0, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 1.0,
-                "texture_name": "Chud"
+                "texture_name": "FamiliarBlock"
             }
         },
         {

@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use nalgebra::Vector3;
 use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphicsList;
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::GenericEntity, util::master_entity_list::{self, MasterEntityList}}, game_state::GameState, scenes::scene_manager::SceneManager};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, game_state::GameState, scenes::scene_manager::SceneManager};
 
 use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Trigger, TriggerConditions, TriggerType}};
 
@@ -78,7 +78,6 @@ impl EventHandler {
     
             index += 1;
         }
-    
         self.event_outcomes.clear();
     }
     

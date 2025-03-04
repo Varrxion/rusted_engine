@@ -57,6 +57,9 @@ impl EngineController {
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
         let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
+        self.engine_controller.set_camera_tracking_target("testscene_playersquare".to_owned());
+
+        self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
 
         self.set_resolution(1280.0, 720.0);
 
