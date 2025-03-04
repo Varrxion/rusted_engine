@@ -40,10 +40,13 @@ impl EventHandler {
     }
 
     pub fn process_event_outcomes(&mut self) {
-        for event_outcome in &self.event_outcomes {
+        let mut index = 0;
+        
+        while index < self.event_outcomes.len() {
+            let event_outcome = &self.event_outcomes[index];
             let outcome = &event_outcome.outcome;
             let target_name = &event_outcome.target;
-
+    
             match outcome.as_str() {
                 "swap_scene" => {
                     if target_name != "" {
@@ -64,15 +67,21 @@ impl EventHandler {
                 }
                 "destroy_object" => {
                     if target_name != "" {
-                        self.destroy_object(target_name.to_string());
+                        let chained_outcomes = self.destroy_object(target_name.to_string());
+                        self.event_outcomes.extend(chained_outcomes);
                     }
                 }
                 _ => {
                     println!("No outcome found for outcome: {}", outcome);
                 }
             }
+    
+            index += 1;
         }
-    }    
+    
+        self.event_outcomes.clear();
+    }
+    
 
     pub fn swap_scene(&self, scene_name: String) {
         self.master_entity_list.write().unwrap().remove_all();
@@ -97,17 +106,25 @@ impl EventHandler {
                 if let Ok(mut entity_1) = entity_1.write() {
                     if let Some(entity_2) = master_entity_list.get_entity(&collision_event.object_name_2) {
                         if let Ok(mut entity_2) = entity_2.write() {
+                            // Check collision triggers before we might destroy the object.
+                            self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
+                            self.check_collision_triggers(entity_2.get_triggers(), entity_1.get_name().to_owned(), &mut event_outcomes);
+
                             // Handle destruction logic based on weight
                             if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
-                                master_entity_list.remove_entity(&entity_2.get_name());
-                                master_graphics_list.remove_object(&entity_2.get_name());
+                                let event_outcome = EventOutcome {
+                                    outcome: "destroy_object".to_owned(),
+                                    target: entity_2.get_name().to_owned(),
+                                };
+                                event_outcomes.push(event_outcome);
                             }
                             if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
-                                master_entity_list.remove_entity(&entity_1.get_name());
-                                master_graphics_list.remove_object(&entity_1.get_name());
+                                let event_outcome = EventOutcome {
+                                    outcome: "destroy_object".to_owned(),
+                                    target: entity_1.get_name().to_owned(),
+                                };
+                                event_outcomes.push(event_outcome);
                             }
-
-                            // Should check destruction triggers here ^^^ eventually. But I will do it later
     
                             // Resolve overlap first
                             resolve_overlap(&mut entity_1, &mut entity_2, &master_graphics_list);
@@ -124,7 +141,6 @@ impl EventHandler {
                                 audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
                             }
 
-                            // Handle collision trigger last, so that a collision trigger with a destruction target of itself does not cause a crash.
                             self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
                             self.check_collision_triggers(entity_2.get_triggers(), entity_1.get_name().to_owned(), &mut event_outcomes);
                         }
@@ -154,11 +170,36 @@ impl EventHandler {
             }
         }
     }
-    
 
-    pub fn destroy_object(&self, object_name: String) {
-        self.master_entity_list.write().unwrap().remove_entity(&object_name);
-        self.master_graphics_list.write().unwrap().remove_object(&object_name);
+    fn check_destruction_triggers(&self, triggers: &Vec<Trigger>, event_outcomes: &mut Vec<EventOutcome>) {
+        for trigger in triggers {
+            if let TriggerType::Destruction = trigger.trigger_type {
+                if let Some(outcome) = &trigger.outcome {
+                    if let Some(target) = &trigger.target {
+                        let event_outcome = EventOutcome {
+                            outcome: outcome.to_string(),
+                            target: target.to_string(),
+                        };
+                        event_outcomes.push(event_outcome);
+                    }
+                }
+            }
+        }
+    }
+    
+    pub fn destroy_object(&self, entity_name: String) -> Vec<EventOutcome> {
+        let mut event_outcomes: Vec<EventOutcome> = Vec::new();
+
+        if let Some(entity) = self.master_entity_list.read().unwrap().get_entity(&entity_name) {
+            if let Ok(entity) = entity.read() {
+                self.check_destruction_triggers(entity.get_triggers(), &mut event_outcomes);
+            }
+        }
+
+        self.master_entity_list.write().unwrap().remove_entity(&entity_name);
+        self.master_graphics_list.write().unwrap().remove_object(&entity_name);
+
+        return event_outcomes;
     }
 
     pub fn homebringer_sequence(&self) {

@@ -156,7 +156,19 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": ""
+                "collision_sound": "",
+                "triggers": [
+                    {
+                    "trigger_type": "Collision",
+                    "conditions": {
+                        "CollisionConditions": {
+                        "object_name": "testscene_playersquare"
+                        }
+                    },
+                    "outcome": "swap_scene",
+                    "target": "testscene"
+                    }
+                ]
             },
             "graphics": {
                 "name": "testscene_obj4",

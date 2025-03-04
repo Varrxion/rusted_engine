@@ -226,6 +226,63 @@
                 "scale": 0.5,
                 "texture_name": "StoneBlock"
             }
+        },
+        {
+            "entity": {
+                "name": "testscene_obj6",
+                "weight": 2.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": true,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": "SlidingGrass",
+                "triggers": [
+                    {
+                        "trigger_type": "Destruction",
+                        "conditions": {
+                            "CollisionConditions": {
+                            "object_name": "testscene_playersquare"
+                            }
+                        },
+                        "outcome": "destroy_object",
+                        "target": "testscene_obj4"
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                            "object_name": "testscene_obj5"
+                            }
+                        },
+                        "outcome": "swap_scene",
+                        "target": "testscene2"
+                    }
+                ]
+            },
+            "graphics": {
+                "name": "testscene_obj6",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [-0.3, 0.3, 0.0],
+                "rotation": 0.0,
+                "scale": 0.5,
+                "texture_name": "RealisticGrass"
+            }
         }
     ]
 }
