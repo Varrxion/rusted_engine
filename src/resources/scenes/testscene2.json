@@ -274,7 +274,19 @@
                 "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "SlidingGrass"
+                "collision_sound": "SlidingGrass",
+                "triggers": [
+                    {
+                    "trigger_type": "Collision",
+                    "conditions": {
+                        "CollisionConditions": {
+                        "object_name": "testscene_playersquare"
+                        }
+                    },
+                    "outcome": "swap_scene",
+                    "target": "testdungeon"
+                    }
+                ]
             },
             "graphics": {
                 "name": "testscene_obj6",
@@ -290,16 +302,16 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nint frame = int(currentFrame);\nint atlasRow = frame / int(atlasColumns);\nint atlasCol = frame % int(atlasColumns);\nTexCoord = vec2((aTexCoord + vec2(atlasCol, atlasRow)) / vec2(atlasColumns, atlasRows));\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [-0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 1.5,
                 "texture_name": "128x128LightAtlas",
                 "uses_atlas": true,
-                "current_frame": 0,
+                "current_frame": 6,
                 "num_frames": 16,
-                "frame_duration": 0.1,
+                "frame_duration": 3.0,
                 "atlas_columns": 4,
                 "atlas_rows": 4
             }

@@ -1,0 +1,91 @@
+{
+    "properties": {
+        "gravity": [0.0, 0.0],
+        "terminal_velocity": [5.0, 5.0]
+    },
+    "objects": [
+        {
+            "entity": {
+                "name": "testscene_playersquare",
+                "weight": 3.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "can_destroy": true,
+                "destructible": false,
+                "active_collision": true,
+                "collision_priority": 1,
+                "collision_modes": ["AABB", "Circle"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "testscene_playersquare",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "position": [0.0, 0.0, 0.1],
+                "rotation": 0.0,
+                "scale": 0.5,
+                "texture_name": "Yellow64xCharacter",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_block",
+                "weight": 0.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": true,
+                "active_collision": false,
+                "collision_modes": [],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_block",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.0, -0.3, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 122,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        }
+    ]
+}

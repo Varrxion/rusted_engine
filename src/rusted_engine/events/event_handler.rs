@@ -227,4 +227,9 @@ impl EventHandler {
             self.audio_manager.read().unwrap().enqueue_audio("Gravity", AudioType::UI, 0.6, false);
         }
     }
+
+    pub fn reset_sequence(&self) {
+        self.swap_scene("testscene".to_owned());
+        self.audio_manager.read().unwrap().enqueue_audio("TechMysterious", AudioType::UI, 0.6, false);
+    }
 }
