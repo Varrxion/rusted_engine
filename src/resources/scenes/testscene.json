@@ -37,7 +37,13 @@
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Yellow64xCharacter"
+                "texture_name": "Yellow64xCharacter",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -72,7 +78,13 @@
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.75,
-                "texture_name": "FamiliarBlock"
+                "texture_name": "FamiliarBlock",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -119,7 +131,13 @@
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterGreen"
+                "texture_name": "BasicCharacterGreen",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -154,7 +172,13 @@
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterRed"
+                "texture_name": "BasicCharacterRed",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -189,7 +213,13 @@
                 "position": [0.0, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 1.0,
-                "texture_name": "Chud"
+                "texture_name": "Chud",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -224,7 +254,13 @@
                 "position": [0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "StoneBlock"
+                "texture_name": "StoneBlock",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         },
         {
@@ -281,7 +317,13 @@
                 "position": [-0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "RealisticGrass"
+                "texture_name": "RealisticGrass",
+                "uses_atlas": false,
+                "current_frame": 0,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 0,
+                "atlas_rows": 0
             }
         }
     ]

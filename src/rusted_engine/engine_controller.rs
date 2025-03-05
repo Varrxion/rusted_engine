@@ -88,10 +88,10 @@ impl EngineController {
         // Only uncomment this line if you want tons of information dumped into the console
         //master_graphics_list.read().unwrap().debug_all();
 
-        self.execute_tick();
-
         // Thou shalt not use frame-based physics.
         let delta_time = self.master_clock.read().unwrap().get_delta_time();
+
+        self.execute_tick(delta_time);
 
         if self.window.should_close() {
             return true;
@@ -100,8 +100,8 @@ impl EngineController {
         gravity(self.game_state.read().unwrap().get_gravity(), self.game_state.read().unwrap().get_terminal_velocity(), &self.master_entity_list.read().unwrap(), delta_time);
 
         //Print debug info about the player entity
-        self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
-        master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap().read().unwrap().print_debug();
+        //self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
+        //master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
         player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
@@ -134,7 +134,7 @@ impl EngineController {
     }
 
     /// Executing a tick renders the frame, updates the master clock, plays all queued audio, and updates inputs.
-    pub fn execute_tick(&mut self) {
+    pub fn execute_tick(&mut self, delta_time: f32) {
         // Update the clock
         self.master_clock.write().unwrap().update();
 
@@ -154,7 +154,7 @@ impl EngineController {
             }
         }
 
-        self.engine_controller.render(&mut self.window);
+        self.engine_controller.render(&mut self.window, delta_time);
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.

@@ -1268,7 +1268,7 @@ dependencies = [
 [[package]]
 name = "rusted_open"
 version = "0.1.0"
-source = "git+https://github.com/Varrxion/rusted_open?branch=main#24b1bd2bfe3f90623ac039a187124af0721e4c89"
+source = "git+https://github.com/Varrxion/rusted_open?branch=main#96007a3d1bd0c29738f209ed2a44676dd317ac38"
 dependencies = [
  "gl",
  "glfw",

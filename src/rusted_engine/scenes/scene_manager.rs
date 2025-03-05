@@ -159,6 +159,12 @@ impl SceneManager {
                 obj_data.graphics.rotation,
                 obj_data.graphics.scale,
                 texture_id,
+                obj_data.graphics.uses_atlas,
+                obj_data.graphics.current_frame,
+                obj_data.graphics.num_frames,
+                obj_data.graphics.frame_duration,
+                obj_data.graphics.atlas_columns,
+                obj_data.graphics.atlas_rows,
             );
 
             let velocity = obj_data.entity.velocity.unwrap_or_else(|| vec![0.0, 0.0]);
@@ -275,6 +281,12 @@ struct GraphicsData {
     rotation: f32,
     scale: f32,
     texture_name: String,
+    uses_atlas: bool,
+    current_frame: usize,
+    num_frames: usize,
+    frame_duration: f32,
+    atlas_columns: usize,
+    atlas_rows: usize,
 }
 
 #[derive(Deserialize)]

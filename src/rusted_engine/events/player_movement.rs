@@ -41,8 +41,6 @@ pub fn process_object_acceleration(obj_name: String, normalize: bool, speed: f32
             let mut velocity = entity.get_velocity();
             let current_speed = velocity.magnitude();
 
-            println!("Velocity is: {}", velocity);
-
             // If the current speed exceeds the max speed, normalize and scale it
             if current_speed > max_speed {
                 velocity = velocity.normalize() * max_speed;
