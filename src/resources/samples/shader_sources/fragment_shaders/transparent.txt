@@ -1,0 +1,20 @@
+---Readable:
+
+#version 330 core
+out vec4 color;
+in vec2 TexCoord;
+uniform sampler2D texture1;
+
+void main() {
+    vec4 texColor = texture(texture1, TexCoord);
+    if(texColor.a < 0.7) discard;
+    color = texColor;
+}
+
+---Json-Friendly:
+
+#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}
+
+---Notes:
+
+Adjust transparency (texColor.a < transparency) between 0.0 and 1.0 as needed per texture. 0.7 Seems to work well. Higher values may be needed for pixel art.

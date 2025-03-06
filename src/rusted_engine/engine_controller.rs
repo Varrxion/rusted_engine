@@ -57,7 +57,7 @@ impl EngineController {
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
         let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
-        self.engine_controller.set_camera_tracking_target("testscene_playersquare".to_owned());
+        self.engine_controller.set_camera_tracking_target("player".to_owned());
 
         self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
 
@@ -85,9 +85,6 @@ impl EngineController {
     /// It can contain game logic for now since we aren't abstracting much
     pub fn main_loop(&mut self, event_handler: &mut EventHandler, master_graphics_list: Arc<RwLock<MasterGraphicsList>>, piano: &mut Piano) -> bool {
 
-        // Only uncomment this line if you want tons of information dumped into the console
-        //master_graphics_list.read().unwrap().debug_all();
-
         // Thou shalt not use frame-based physics.
         let delta_time = self.master_clock.read().unwrap().get_delta_time();
 
@@ -100,27 +97,16 @@ impl EngineController {
         gravity(self.game_state.read().unwrap().get_gravity(), self.game_state.read().unwrap().get_terminal_velocity(), &self.master_entity_list.read().unwrap(), delta_time);
 
         //Print debug info about the player entity
-        //self.master_entity_list.read().unwrap().get_entity("testscene_playersquare").unwrap().read().unwrap().print_debug();
-        //master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap().read().unwrap().print_debug();
+        //self.master_entity_list.read().unwrap().get_entity("player").unwrap().read().unwrap().print_debug();
+        //master_graphics_list.read().unwrap().get_object("player").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
-        player_movement::process_object_acceleration("testscene_playersquare".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
+        player_movement::process_object_acceleration("player".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
         player_movement::process_all_entities_fake_friction(1.5, 0.1, &self.master_entity_list.read().unwrap(), true, delta_time);
-
-        //player_movement::process_object_raw_movement(master_graphics_list.read().unwrap().get_object("testscene_playersquare").unwrap(), self.key_states.clone(), delta_time);
 
         // Process piano inputs, returns true if a piano input was made
         if piano.process_piano_keys() {
             piano_sequences::check_piano_sequences(piano, &event_handler);
-        }
-
-        // Spin this object for testing
-        if let Some(object_2) = master_graphics_list.read().unwrap().get_object("testscene_obj1") {
-            let mut object_2_read = object_2.write().unwrap();
-            let rotfactor = object_2_read.get_rotation()+1.0*delta_time;
-            object_2_read.set_rotation(rotfactor);
-        } else {
-            println!("No object found with name testscene_obj1.");
         }
 
         player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);

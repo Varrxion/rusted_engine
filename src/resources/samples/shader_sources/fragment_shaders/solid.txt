@@ -1,0 +1,18 @@
+---Readable:
+
+#version 330 core
+out vec4 color;
+in vec2 TexCoord;
+uniform sampler2D texture1;
+
+void main() {
+    color = texture(texture1, TexCoord);
+}
+
+---Json-Friendly:
+
+#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}
+
+---Notes:
+
+This is as simple as it gets.

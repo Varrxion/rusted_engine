@@ -1,3 +1,5 @@
+---Readable:
+
 #version 330 core
 
 layout(location = 0) in vec2 aPos;
@@ -15,6 +17,9 @@ void main() {
     gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 
-
-As one line for json parse:
+---Json-Friendly:
 #version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}
+
+---Notes:
+
+Yeah I probably should have the entire TexCoord calculation in the shader, but you will notice I do not. 

@@ -6,7 +6,7 @@
     "objects": [
         {
             "entity": {
-                "name": "testscene_playersquare",
+                "name": "player",
                 "weight": 3.0,
                 "affected_by_gravity": false,
                 "is_static": false,
@@ -19,7 +19,7 @@
                 "collision_sound": ""
             },
             "graphics": {
-                "name": "testscene_playersquare",
+                "name": "player",
                 "vertex_data": [ 
                     0.1, 0.1,
                     0.1, -0.1,
@@ -48,19 +48,142 @@
         },
         {
             "entity": {
-                "name": "dungeon1_block",
-                "weight": 0.0,
+                "name": "dungeon1_chest",
+                "weight": 6.0,
                 "affected_by_gravity": false,
-                "is_static": false,
+                "is_static": true,
                 "elasticity": 1.0,
                 "can_destroy": false,
-                "destructible": true,
+                "destructible": false,
+                "active_collision": true,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_chest",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.9) discard;\ncolor = texColor;\n}",
+                "position": [0.3, 0.5, 0.4],
+                "rotation": 0.0,
+                "scale": 0.75,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 176,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_floor1",
+                "weight": 0.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
                 "active_collision": false,
                 "collision_modes": [],
                 "collision_sound": ""
             },
             "graphics": {
-                "name": "dungeon1_block",
+                "name": "dungeon1_floor1",
+                "vertex_data": [ 
+                    1.4, 1.6,
+                    1.4, -1.6,
+                    -1.4, -1.6,
+                    -1.4, 1.6
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.0, 0.0, 0.0],
+                "rotation": 0.0,
+                "scale": 0.5,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 54,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_npc1",
+                "weight": 6.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": true,
+                "collision_modes": ["AABB"],
+                "collision_sound": "MinecraftVillager"
+            },
+            "graphics": {
+                "name": "dungeon1_npc1",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.9) discard;\ncolor = texColor;\n}",
+                "position": [0.3, -0.5, 0.1],
+                "rotation": 0.0,
+                "scale": 0.75,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 188,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_block1",
+                "weight": 5.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": true,
+                "collision_modes": ["AABB"],
+                "collision_sound": "SlidingStone"
+            },
+            "graphics": {
+                "name": "dungeon1_block1",
                 "vertex_data": [ 
                     0.1, 0.1,
                     0.1, -0.1,
@@ -75,12 +198,1160 @@
                 ],
                 "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
-                "position": [0.0, -0.3, 0.0],
+                "position": [-0.3, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 1.0,
                 "texture_name": "DungeonAtlas",
                 "uses_atlas": true,
-                "current_frame": 122,
+                "current_frame": 161,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_wall_corner1",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_wall_corner1",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, 0.7, 0.3],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 5,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_wall_corner2",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_wall_corner2",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, 0.7, 0.3],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 7,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_wall_corner3",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_wall_corner3",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, -0.8, 0.3],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 79,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_wall_corner4",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_wall_corner4",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, -0.8, 0.3],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 77,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall1",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall1",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.5, 0.7, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 56,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall2",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall2",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.3, 0.7, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 6,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall3",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall3",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.1, 0.7, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 6,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall4",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall4",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.1, 0.7, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 6,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall5",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall5",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.3, 0.7, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 6,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_upperwall6",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_upperwall6",
+                "vertex_data": [ 
+                    0.1, 0.2,
+                    0.1, -0.2,
+                    -0.1, -0.2,
+                    -0.1, 0.2
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.5, 0.7, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 56,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 5
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall1",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall1",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, 0.4, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall2",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall2",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, 0.2, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall3",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall3",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, 0.0, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall4",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall4",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, -0.2, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall5",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall5",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, -0.4, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_rightwall6",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_rightwall6",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.7, -0.6, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 55,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall1",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall1",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, 0.4, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall2",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall2",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, 0.2, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall3",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall3",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, 0.0, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall4",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall4",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, -0.2, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall5",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall5",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, -0.4, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_leftwall6",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_leftwall6",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.7, -0.6, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 53,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall1",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall1",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.5, -0.8, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall2",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall2",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.3, -0.8, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall3",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall3",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [-0.1, -0.8, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall4",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall4",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.1, -0.8, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall5",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall5",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.3, -0.8, 0.1],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
+                "num_frames": 0,
+                "frame_duration": 0.0,
+                "atlas_columns": 24,
+                "atlas_rows": 10
+            }
+        },
+        {
+            "entity": {
+                "name": "dungeon1_bottomwall6",
+                "weight": 4.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "can_destroy": false,
+                "destructible": false,
+                "active_collision": false,
+                "collision_modes": ["AABB"],
+                "collision_sound": ""
+            },
+            "graphics": {
+                "name": "dungeon1_bottomwall6",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.5, -0.8, 0.2],
+                "rotation": 0.0,
+                "scale": 1.01,
+                "texture_name": "DungeonAtlas",
+                "uses_atlas": true,
+                "current_frame": 78,
                 "num_frames": 0,
                 "frame_duration": 0.0,
                 "atlas_columns": 24,

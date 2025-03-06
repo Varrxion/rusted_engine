@@ -6,7 +6,7 @@
     "objects": [
         {
             "entity": {
-                "name": "testscene_playersquare",
+                "name": "player",
                 "weight": 3.0,
                 "affected_by_gravity": false,
                 "is_static": false,
@@ -19,7 +19,7 @@
                 "collision_sound": ""
             },
             "graphics": {
-                "name": "testscene_playersquare",
+                "name": "player",
                 "vertex_data": [ 
                     0.1, 0.1,
                     0.1, -0.1,
@@ -54,9 +54,9 @@
                 "is_static": false,
                 "elasticity": 1.0,
                 "can_destroy": false,
-                "destructible": true,
+                "destructible": false,
                 "active_collision": false,
-                "collision_modes": ["OBB"],
+                "collision_modes": [],
                 "collision_sound": ""
             },
             "graphics": {
@@ -104,7 +104,7 @@
                     "trigger_type": "Collision",
                     "conditions": {
                         "CollisionConditions": {
-                        "object_name": "testscene_playersquare"
+                        "object_name": "player"
                         }
                     },
                     "outcome": "swap_scene",
@@ -126,18 +126,18 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
-                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterGreen",
-                "uses_atlas": false,
+                "texture_name": "PortalRings2",
+                "uses_atlas": true,
                 "current_frame": 0,
-                "num_frames": 0,
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "num_frames": 5,
+                "frame_duration": 0.1,
+                "atlas_columns": 5,
+                "atlas_rows": 1
             }
         },
         {
@@ -271,7 +271,7 @@
                 "is_static": false,
                 "elasticity": 1.0,
                 "can_destroy": false,
-                "destructible": true,
+                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": "SlidingGrass",
@@ -280,7 +280,7 @@
                         "trigger_type": "Destruction",
                         "conditions": {
                             "CollisionConditions": {
-                            "object_name": "testscene_playersquare"
+                            "object_name": "player"
                             }
                         },
                         "outcome": "destroy_object",

@@ -135,9 +135,9 @@ impl EventHandler {
                             let entity_1_collision_sound = entity_1.get_collision_sound();
                             let entity_2_collision_sound = entity_2.get_collision_sound();
                             if entity_2_collision_sound != "" && entity_2_collision_sound != "null" && entity_2_collision_sound != "none" {
-                                audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.4, false);
+                                audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.3, false);
                             } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
-                                audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.4, false);
+                                audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.3, false);
                             }
 
                             self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
@@ -202,8 +202,9 @@ impl EventHandler {
     }
 
     pub fn homebringer_sequence(&self) {
-        if let Some(player_object) = self.master_graphics_list.read().unwrap().get_object("testscene_playersquare") {
-            player_object.write().unwrap().set_position(Vector3::new(0.0, 0.0, 0.0));
+        if let Some(player_object) = self.master_graphics_list.read().unwrap().get_object("player") {
+            let player_z = player_object.read().unwrap().get_position().z;
+            player_object.write().unwrap().set_position(Vector3::new(0.0, 0.0, player_z));
             self.audio_manager.read().unwrap().enqueue_audio("Homebringer", AudioType::UI, 0.6, false);
         }
     }
@@ -220,7 +221,7 @@ impl EventHandler {
     }
 
     pub fn gravity_sequence(&self) {
-        if let Some(player_entity) = self.master_entity_list.read().unwrap().get_entity("testscene_playersquare") {
+        if let Some(player_entity) = self.master_entity_list.read().unwrap().get_entity("player") {
             let mut player_entity_write = player_entity.write().unwrap();
             let toggle_gravity = !player_entity_write.is_affected_by_gravity();
             player_entity_write.set_affected_by_gravity(toggle_gravity);
