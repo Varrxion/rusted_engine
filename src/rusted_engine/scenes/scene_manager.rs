@@ -1,4 +1,4 @@
-use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
+use std::{collections::{HashMap, HashSet}, fs::{self, File}, ops::Range, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::{Vector2, Vector3};
 use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
@@ -161,7 +161,7 @@ impl SceneManager {
                 texture_id,
                 obj_data.graphics.uses_atlas,
                 obj_data.graphics.current_frame,
-                obj_data.graphics.num_frames,
+                obj_data.graphics.frame_range,
                 obj_data.graphics.frame_duration,
                 obj_data.graphics.atlas_columns,
                 obj_data.graphics.atlas_rows,
@@ -202,7 +202,6 @@ impl SceneManager {
                 obj_data.entity.active_collision,
                 collision_priority,
                 json_collision_modes,
-                obj_data.entity.collision_sound,
                 triggers,
             );
     
@@ -262,7 +261,6 @@ struct EntityData {
     #[serde(default)]
     collision_priority: Option<u64>,
     collision_modes: Vec<String>,
-    collision_sound: String,
     triggers: Option<Vec<Trigger>>,
 }
 
@@ -279,7 +277,7 @@ struct GraphicsData {
     texture_name: String,
     uses_atlas: bool,
     current_frame: usize,
-    num_frames: usize,
+    frame_range: Range<usize>,
     frame_duration: f32,
     atlas_columns: usize,
     atlas_rows: usize,

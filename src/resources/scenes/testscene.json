@@ -13,8 +13,7 @@
                 "elasticity": 1.0,
                 "active_collision": true,
                 "collision_priority": 1,
-                "collision_modes": ["AABB", "Circle"],
-                "collision_sound": ""
+                "collision_modes": ["AABB", "Circle"]
             },
             "graphics": {
                 "name": "player",
@@ -38,7 +37,7 @@
                 "texture_name": "Yellow64xCharacter",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -52,8 +51,7 @@
                 "is_static": false,
                 "elasticity": 1.0,
                 "active_collision": false,
-                "collision_modes": [],
-                "collision_sound": ""
+                "collision_modes": []
             },
             "graphics": {
                 "name": "testscene_obj1",
@@ -77,7 +75,7 @@
                 "texture_name": "FamiliarBlock",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -92,7 +90,6 @@
                 "elasticity": 1.0,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "",
                 "triggers": [
                     {
                     "trigger_type": "Collision",
@@ -128,7 +125,7 @@
                 "texture_name": "PortalRings2",
                 "uses_atlas": true,
                 "current_frame": 0,
-                "num_frames": 5,
+                "frame_range": [0,5],
                 "frame_duration": 0.1,
                 "atlas_columns": 5,
                 "atlas_rows": 1
@@ -142,8 +139,7 @@
                 "is_static": false,
                 "elasticity": 0.2,
                 "active_collision": false,
-                "collision_modes": ["AABB"],
-                "collision_sound": ""
+                "collision_modes": ["AABB"]
             },
             "graphics": {
                 "name": "testscene_obj3",
@@ -167,7 +163,7 @@
                 "texture_name": "BasicCharacterRed",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -181,8 +177,7 @@
                 "is_static": true,
                 "elasticity": 1.0,
                 "active_collision": false,
-                "collision_modes": ["AABB"],
-                "collision_sound": ""
+                "collision_modes": ["AABB"]
             },
             "graphics": {
                 "name": "testscene_obj4",
@@ -206,7 +201,7 @@
                 "texture_name": "Chud",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -221,7 +216,18 @@
                 "elasticity": 1.0,
                 "active_collision": true,
                 "collision_modes": ["AABB"],
-                "collision_sound": "SlidingStone"
+                "triggers": [
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                            "object_name": ""
+                            }
+                        },
+                        "outcome": "enqueue_audio",
+                        "target": "SlidingStone"
+                    }
+                ]
             },
             "graphics": {
                 "name": "testscene_obj5",
@@ -245,7 +251,7 @@
                 "texture_name": "StoneBlock",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -260,7 +266,6 @@
                 "elasticity": 1.0,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "SlidingGrass",
                 "triggers": [
                     {
                         "trigger_type": "Destruction",
@@ -271,6 +276,16 @@
                         },
                         "outcome": "destroy_object",
                         "target": "testscene_obj4"
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                            "object_name": ""
+                            }
+                        },
+                        "outcome": "enqueue_audio",
+                        "target": "SlidingGrass"
                     },
                     {
                         "trigger_type": "Collision",
@@ -306,7 +321,7 @@
                 "texture_name": "RealisticGrass",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0

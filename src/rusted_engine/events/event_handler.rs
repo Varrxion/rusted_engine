@@ -71,6 +71,11 @@ impl EventHandler {
                         self.event_outcomes.extend(chained_outcomes);
                     }
                 }
+                "enqueue_audio" => {
+                    if target_name != "" {
+                        self.eqnueue_audio(target_name.to_string());
+                    }
+                }
                 _ => {
                     println!("No outcome found for outcome: {}", outcome);
                 }
@@ -79,13 +84,6 @@ impl EventHandler {
             index += 1;
         }
         self.event_outcomes.clear();
-    }
-    
-
-    pub fn swap_scene(&self, scene_name: String) {
-        self.master_entity_list.write().unwrap().remove_all();
-        self.master_graphics_list.write().unwrap().remove_all();
-        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
 
     pub fn process_collisions(&mut self) {
@@ -114,15 +112,6 @@ impl EventHandler {
     
                             // Transfer velocities based on the collision and weights
                             transfer_velocity_on_collision(&mut entity_1, &mut entity_2);
-    
-                            // Handle sound effects
-                            let entity_1_collision_sound = entity_1.get_collision_sound();
-                            let entity_2_collision_sound = entity_2.get_collision_sound();
-                            if entity_2_collision_sound != "" && entity_2_collision_sound != "null" && entity_2_collision_sound != "none" {
-                                audio_manager.enqueue_audio(entity_2_collision_sound, AudioType::Sound, 0.3, false);
-                            } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
-                                audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.3, false);
-                            }
                         }
                     }
                 }
@@ -135,7 +124,7 @@ impl EventHandler {
         for trigger in triggers {
             if let TriggerType::Collision = trigger.trigger_type {
                 if let TriggerConditions::CollisionConditions(cond) = &trigger.conditions {
-                    if cond.object_name == entity_2_name {
+                    if cond.object_name == entity_2_name || cond.object_name == "" {
                         if let Some(outcome) = &trigger.outcome {
                             if let Some(target) = &trigger.target {
                                 let event_outcome = EventOutcome {
@@ -166,6 +155,12 @@ impl EventHandler {
             }
         }
     }
+
+    pub fn swap_scene(&self, scene_name: String) {
+        self.master_entity_list.write().unwrap().remove_all();
+        self.master_graphics_list.write().unwrap().remove_all();
+        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
+    }
     
     pub fn destroy_object(&self, entity_name: String) -> Vec<EventOutcome> {
         let mut event_outcomes: Vec<EventOutcome> = Vec::new();
@@ -180,6 +175,10 @@ impl EventHandler {
         self.master_graphics_list.write().unwrap().remove_object(&entity_name);
 
         return event_outcomes;
+    }
+
+    pub fn eqnueue_audio(&self, audio_name: String) {
+        self.audio_manager.read().unwrap().enqueue_audio(&audio_name, AudioType::Sound, 0.3, false);
     }
 
     pub fn homebringer_sequence(&self) {

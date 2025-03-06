@@ -14,7 +14,6 @@ pub struct GenericEntity {
     active_collision: bool,
     collision_priority: u64,
     collision_modes: HashSet<CollisionMode>,
-    collision_sound: String,
     triggers: Vec<Trigger>,
 }
 
@@ -30,14 +29,13 @@ impl Clone for GenericEntity {
             active_collision: self.active_collision,
             collision_priority: self.collision_priority,
             collision_modes: self.collision_modes.clone(),
-            collision_sound: self.collision_sound.clone(),
             triggers: self.triggers.clone(),
         }
     }
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String, triggers: Vec<Trigger>,) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, triggers: Vec<Trigger>,) -> Self {
         GenericEntity {
             name,
             weight,
@@ -48,7 +46,6 @@ impl GenericEntity {
             active_collision,
             collision_priority,
             collision_modes,
-            collision_sound,
             triggers,
         }
     }
@@ -90,10 +87,6 @@ impl GenericEntity {
         &self.collision_modes
     }
 
-    pub fn get_collision_sound(&self) -> &str {
-        &self.collision_sound
-    }
-
     pub fn get_triggers(&self) -> &Vec<Trigger> {
         &self.triggers
     }
@@ -133,10 +126,6 @@ impl GenericEntity {
 
     pub fn set_collision_modes(&mut self, modes: HashSet<CollisionMode>) {
         self.collision_modes = modes;
-    }
-
-    pub fn set_collision_sound(&mut self, collision_sound: String) {
-        self.collision_sound = collision_sound;
     }
 
     pub fn set_triggers(&mut self, triggers: Vec<Trigger>) {

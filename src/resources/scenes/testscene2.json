@@ -13,8 +13,7 @@
                 "elasticity": 1.0,
                 "active_collision": true,
                 "collision_priority": 1,
-                "collision_modes": ["AABB", "Circle"],
-                "collision_sound": ""
+                "collision_modes": ["AABB", "Circle"]
             },
             "graphics": {
                 "name": "player",
@@ -38,7 +37,7 @@
                 "texture_name": "Yellow64xCharacter",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -52,8 +51,7 @@
                 "is_static": false,
                 "elasticity": 1.0,
                 "active_collision": false,
-                "collision_modes": ["AABB"],
-                "collision_sound": ""
+                "collision_modes": ["AABB"]
             },
             "graphics": {
                 "name": "testscene_obj2",
@@ -77,7 +75,7 @@
                 "texture_name": "BasicCharacterRed",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -91,8 +89,7 @@
                 "is_static": false,
                 "elasticity": 0.2,
                 "active_collision": false,
-                "collision_modes": ["AABB"],
-                "collision_sound": ""
+                "collision_modes": ["AABB"]
             },
             "graphics": {
                 "name": "testscene_obj3",
@@ -116,7 +113,7 @@
                 "texture_name": "Chud",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -131,7 +128,6 @@
                 "elasticity": 1.0,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "",
                 "triggers": [
                     {
                     "trigger_type": "Collision",
@@ -167,7 +163,7 @@
                 "texture_name": "PortalRings1",
                 "uses_atlas": true,
                 "current_frame": 0,
-                "num_frames": 17,
+                "frame_range": [0,17],
                 "frame_duration": 0.1,
                 "atlas_columns": 4,
                 "atlas_rows": 5
@@ -182,7 +178,18 @@
                 "elasticity": 1.0,
                 "active_collision": true,
                 "collision_modes": ["AABB"],
-                "collision_sound": "SlidingStone"
+                "triggers": [
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                            "object_name": ""
+                            }
+                        },
+                        "outcome": "enqueue_audio",
+                        "target": "SlidingStone"
+                    }
+                ]
             },
             "graphics": {
                 "name": "testscene_obj5",
@@ -206,7 +213,7 @@
                 "texture_name": "StoneBlock",
                 "uses_atlas": false,
                 "current_frame": 0,
-                "num_frames": 0,
+                "frame_range": [0,0],
                 "frame_duration": 0.0,
                 "atlas_columns": 0,
                 "atlas_rows": 0
@@ -221,7 +228,6 @@
                 "elasticity": 1.0,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
-                "collision_sound": "SlidingGrass",
                 "triggers": [
                     {
                     "trigger_type": "Collision",
@@ -257,7 +263,7 @@
                 "texture_name": "128x128LightAtlas",
                 "uses_atlas": true,
                 "current_frame": 6,
-                "num_frames": 16,
+                "frame_range": [0,16],
                 "frame_duration": 0.3,
                 "atlas_columns": 4,
                 "atlas_rows": 4
