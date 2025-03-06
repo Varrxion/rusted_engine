@@ -108,22 +108,6 @@ impl EventHandler {
                             // Check collision triggers before we might destroy the object.
                             self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
                             self.check_collision_triggers(entity_2.get_triggers(), entity_1.get_name().to_owned(), &mut event_outcomes);
-
-                            // Handle destruction logic based on weight
-                            if entity_1.can_destroy() && entity_2.is_destructible() && entity_1.get_weight() >= entity_2.get_weight() {
-                                let event_outcome = EventOutcome {
-                                    outcome: "destroy_object".to_owned(),
-                                    target: entity_2.get_name().to_owned(),
-                                };
-                                event_outcomes.push(event_outcome);
-                            }
-                            if entity_2.can_destroy() && entity_1.is_destructible() && entity_2.get_weight() >= entity_1.get_weight() {
-                                let event_outcome = EventOutcome {
-                                    outcome: "destroy_object".to_owned(),
-                                    target: entity_1.get_name().to_owned(),
-                                };
-                                event_outcomes.push(event_outcome);
-                            }
     
                             // Resolve overlap first
                             resolve_overlap(&mut entity_1, &mut entity_2, &master_graphics_list);
@@ -139,9 +123,6 @@ impl EventHandler {
                             } else if entity_1_collision_sound != "" && entity_1_collision_sound != "null" && entity_1_collision_sound != "none" {
                                 audio_manager.enqueue_audio(entity_1_collision_sound, AudioType::Sound, 0.3, false);
                             }
-
-                            self.check_collision_triggers(entity_1.get_triggers(), entity_2.get_name().to_owned(), &mut event_outcomes);
-                            self.check_collision_triggers(entity_2.get_triggers(), entity_1.get_name().to_owned(), &mut event_outcomes);
                         }
                     }
                 }

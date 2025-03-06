@@ -11,8 +11,6 @@
                 "affected_by_gravity": true,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": true,
-                "destructible": false,
                 "active_collision": true,
                 "collision_priority": 1,
                 "collision_modes": ["AABB", "Circle"],
@@ -53,8 +51,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": ""
@@ -94,8 +90,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 0.2,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": ""
@@ -135,8 +129,6 @@
                 "affected_by_gravity": false,
                 "is_static": true,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": "",
@@ -188,8 +180,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": true,
                 "collision_modes": ["AABB"],
                 "collision_sound": "SlidingStone"
@@ -229,8 +219,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": "SlidingGrass",
@@ -270,7 +258,7 @@
                 "uses_atlas": true,
                 "current_frame": 6,
                 "num_frames": 16,
-                "frame_duration": 0.5,
+                "frame_duration": 0.3,
                 "atlas_columns": 4,
                 "atlas_rows": 4
             }

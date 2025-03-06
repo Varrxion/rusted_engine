@@ -199,8 +199,6 @@ impl SceneManager {
                 obj_data.entity.affected_by_gravity,
                 obj_data.entity.is_static,
                 obj_data.entity.elasticity,
-                obj_data.entity.can_destroy,
-                obj_data.entity.destructible,
                 obj_data.entity.active_collision,
                 collision_priority,
                 json_collision_modes,
@@ -260,8 +258,6 @@ struct EntityData {
     affected_by_gravity: bool,
     is_static: bool,
     elasticity: f32,
-    can_destroy: bool,
-    destructible: bool,
     active_collision: bool,
     #[serde(default)]
     collision_priority: Option<u64>,

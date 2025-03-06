@@ -1,6 +1,6 @@
 {
     "properties": {
-        "gravity": [0.0, -1.8],
+        "gravity": [0.0, -3.8],
         "terminal_velocity": [5.0, 5.0]
     },
     "objects": [
@@ -11,8 +11,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": true,
-                "destructible": false,
                 "active_collision": true,
                 "collision_priority": 1,
                 "collision_modes": ["AABB", "Circle"],
@@ -53,8 +51,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": [],
                 "collision_sound": ""
@@ -94,8 +90,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": "",
@@ -147,8 +141,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 0.2,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": ""
@@ -188,8 +180,6 @@
                 "affected_by_gravity": false,
                 "is_static": true,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": ""
@@ -229,8 +219,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": true,
                 "collision_modes": ["AABB"],
                 "collision_sound": "SlidingStone"
@@ -270,8 +258,6 @@
                 "affected_by_gravity": false,
                 "is_static": false,
                 "elasticity": 1.0,
-                "can_destroy": false,
-                "destructible": false,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
                 "collision_sound": "SlidingGrass",

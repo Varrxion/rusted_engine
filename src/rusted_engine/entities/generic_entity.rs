@@ -11,8 +11,6 @@ pub struct GenericEntity {
     affected_by_gravity: bool,
     is_static: bool,
     elasticity: f32,
-    can_destroy: bool,
-    destructible: bool,
     active_collision: bool,
     collision_priority: u64,
     collision_modes: HashSet<CollisionMode>,
@@ -29,8 +27,6 @@ impl Clone for GenericEntity {
             affected_by_gravity: self.affected_by_gravity,
             is_static: self.is_static,
             elasticity: self.elasticity,
-            can_destroy: self.can_destroy,
-            destructible: self.destructible,
             active_collision: self.active_collision,
             collision_priority: self.collision_priority,
             collision_modes: self.collision_modes.clone(),
@@ -41,7 +37,7 @@ impl Clone for GenericEntity {
 }
 
 impl GenericEntity {
-    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, can_destroy: bool, destructible: bool, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String, triggers: Vec<Trigger>,) -> Self {
+    pub fn new(name: String, weight: f32, velocity: Vector2<f32>, affected_by_gravity: bool, is_static: bool, elasticity: f32, active_collision: bool, collision_priority: u64, collision_modes: HashSet<CollisionMode>, collision_sound: String, triggers: Vec<Trigger>,) -> Self {
         GenericEntity {
             name,
             weight,
@@ -49,8 +45,6 @@ impl GenericEntity {
             affected_by_gravity,
             is_static,
             elasticity,
-            can_destroy,
-            destructible,
             active_collision,
             collision_priority,
             collision_modes,
@@ -82,14 +76,6 @@ impl GenericEntity {
 
     pub fn get_elasticity(&self) -> f32 {
         self.elasticity
-    }
-
-    pub fn can_destroy(&self) -> bool {
-        self.can_destroy
-    }
-
-    pub fn is_destructible(&self) -> bool {
-        self.destructible
     }
 
     pub fn has_active_collision(&self) -> bool {
@@ -137,14 +123,6 @@ impl GenericEntity {
         self.elasticity = elasticity;
     }
 
-    pub fn set_can_destroy(&mut self, can_destroy: bool) {
-        self.can_destroy = can_destroy;
-    }
-
-    pub fn set_destructible(&mut self, destructible: bool) {
-        self.destructible = destructible;
-    }
-
     pub fn set_active_collision(&mut self, active_collision: bool) {
         self.active_collision = active_collision;
     }
@@ -187,8 +165,6 @@ impl GenericEntity {
         println!("Weight: {}", self.weight);
         println!("Velocity: {}", self.velocity);
         println!("Affected by Gravity: {}", self.affected_by_gravity);
-        println!("Can Destroy: {}", self.can_destroy);
-        println!("Destructible: {}", self.destructible);
         println!("Active Collision: {}", self.active_collision);
         println!("Collision mode(s): {:?}", self.collision_modes)
     }
