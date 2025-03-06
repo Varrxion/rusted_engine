@@ -34,13 +34,7 @@
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Yellow64xCharacter",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "Yellow64xCharacter"
             }
         },
         {
@@ -73,12 +67,17 @@
                 "rotation": 0.0,
                 "scale": 0.75,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 176,
-                "frame_range": [176,181],
-                "frame_duration": 0.2,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 176,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                },
+                "animation_config": {
+                    "looping": true,
+                    "mode": "forward",
+                    "frame_range": [176, 181],
+                    "frame_duration": 0.2
+                }
             }
         },
         {
@@ -111,12 +110,11 @@
                 "rotation": 0.0,
                 "scale": 0.5,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 54,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 54,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -161,12 +159,11 @@
                 "rotation": 0.0,
                 "scale": 0.75,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 188,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 188,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -211,12 +208,11 @@
                 "rotation": 0.0,
                 "scale": 1.0,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 161,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 161,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -249,12 +245,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 5,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 5,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -287,12 +282,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 7,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 7,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -325,12 +319,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 79,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 79,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -363,12 +356,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 77,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 77,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -401,12 +393,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 56,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 56,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -439,12 +430,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 6,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 6,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -477,12 +467,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 6,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 6,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -515,12 +504,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 6,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 6,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -553,12 +541,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 6,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 6,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -591,12 +578,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 56,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 56,
+                    "atlas_columns": 24,
+                    "atlas_rows": 5
+                }
             }
         },
         {
@@ -629,12 +615,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -667,12 +652,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -705,12 +689,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -743,12 +726,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -781,12 +763,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -819,12 +800,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 55,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 55,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -857,12 +837,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -895,12 +874,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -933,12 +911,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -971,12 +948,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1009,12 +985,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1047,12 +1022,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 53,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 53,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1085,12 +1059,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1123,12 +1096,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1161,12 +1133,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1199,12 +1170,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1237,12 +1207,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         },
         {
@@ -1275,12 +1244,11 @@
                 "rotation": 0.0,
                 "scale": 1.01,
                 "texture_name": "DungeonAtlas",
-                "uses_atlas": true,
-                "current_frame": 78,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 24,
-                "atlas_rows": 10
+                "atlas_config": {
+                    "current_frame": 78,
+                    "atlas_columns": 24,
+                    "atlas_rows": 10
+                }
             }
         }
     ]

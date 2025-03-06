@@ -34,13 +34,7 @@
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Yellow64xCharacter",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "Yellow64xCharacter"
             }
         },
         {
@@ -72,13 +66,7 @@
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterRed",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "FamiliarBlock"
             }
         },
         {
@@ -110,13 +98,7 @@
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Chud",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "Chud"
             }
         },
         {
@@ -161,12 +143,17 @@
                 "rotation": 0.0,
                 "scale": 1.0,
                 "texture_name": "PortalRings1",
-                "uses_atlas": true,
-                "current_frame": 0,
-                "frame_range": [0,17],
-                "frame_duration": 0.1,
-                "atlas_columns": 4,
-                "atlas_rows": 5
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 4,
+                    "atlas_rows": 5
+                },
+                "animation_config": {
+                    "looping": true,
+                    "mode": "forward",
+                    "frame_range": [0, 17],
+                    "frame_duration": 0.1
+                }
             }
         },
         {
@@ -210,13 +197,7 @@
                 "position": [0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "StoneBlock",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "StoneBlock"
             }
         },
         {
@@ -261,12 +242,17 @@
                 "rotation": 0.0,
                 "scale": 1.5,
                 "texture_name": "128x128LightAtlas",
-                "uses_atlas": true,
-                "current_frame": 6,
-                "frame_range": [0,16],
-                "frame_duration": 0.3,
-                "atlas_columns": 4,
-                "atlas_rows": 4
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 4,
+                    "atlas_rows": 4
+                },
+                "animation_config": {
+                    "looping": true,
+                    "mode": "forward",
+                    "frame_range": [0, 4],
+                    "frame_duration": 0.3
+                }
             }
         }
     ]

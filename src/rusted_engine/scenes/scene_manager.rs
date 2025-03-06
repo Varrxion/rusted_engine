@@ -1,7 +1,7 @@
 use std::{collections::{HashMap, HashSet}, fs::{self, File}, ops::Range, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::{Vector2, Vector3};
-use rusted_open::framework::graphics::{internal_object::{custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 use serde::Deserialize;
 use std::io::{self, Read};
 
@@ -131,6 +131,21 @@ impl SceneManager {
                 &obj_data.graphics.vertex_shader,
                 &obj_data.graphics.fragment_shader,
             );
+
+            // Handle optional AnimationConfig
+            let animation_config = obj_data.graphics.animation_config.map(|animation_config| AnimationConfig {
+                looping: animation_config.looping,
+                mode: animation_config.mode.clone(),
+                frame_range: animation_config.frame_range.clone(),
+                frame_duration: animation_config.frame_duration,
+            });
+
+            // Handle optional AtlasConfig
+            let atlas_config = obj_data.graphics.atlas_config.map(|atlas_config| AtlasConfig {
+                current_frame: atlas_config.current_frame,
+                atlas_columns: atlas_config.atlas_columns,
+                atlas_rows: atlas_config.atlas_rows,
+            });
     
             let mut json_collision_modes = HashSet::new();
             for collision_mode in obj_data.entity.collision_modes {
@@ -159,12 +174,8 @@ impl SceneManager {
                 obj_data.graphics.rotation,
                 obj_data.graphics.scale,
                 texture_id,
-                obj_data.graphics.uses_atlas,
-                obj_data.graphics.current_frame,
-                obj_data.graphics.frame_range,
-                obj_data.graphics.frame_duration,
-                obj_data.graphics.atlas_columns,
-                obj_data.graphics.atlas_rows,
+                atlas_config,
+                animation_config,
             );
 
             let velocity = obj_data.entity.velocity.unwrap_or_else(|| vec![0.0, 0.0]);
@@ -275,12 +286,10 @@ struct GraphicsData {
     rotation: f32,
     scale: f32,
     texture_name: String,
-    uses_atlas: bool,
-    current_frame: usize,
-    frame_range: Range<usize>,
-    frame_duration: f32,
-    atlas_columns: usize,
-    atlas_rows: usize,
+    #[serde(default)]
+    atlas_config: Option<AtlasConfig>,
+    #[serde(default)]
+    animation_config: Option<AnimationConfig>,
 }
 
 #[derive(Deserialize)]

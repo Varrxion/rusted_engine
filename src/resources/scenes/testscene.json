@@ -34,13 +34,7 @@
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Yellow64xCharacter",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "Yellow64xCharacter"
             }
         },
         {
@@ -56,10 +50,10 @@
             "graphics": {
                 "name": "testscene_obj1",
                 "vertex_data": [ 
-                    0.1, 0.1,
-                    0.1, -0.1,
-                    -0.1, -0.1,
-                    -0.1, 0.1
+                    0.1, 0.13,
+                    0.1, -0.13,
+                    -0.1, -0.13,
+                    -0.1, 0.13
                 ],
                 "texture_coords": [
                     1.0, 0.0,
@@ -67,18 +61,23 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
-                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.75,
-                "texture_name": "FamiliarBlock",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "TestAtlas",
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 10,
+                    "atlas_rows": 1
+                },
+                "animation_config": {
+                    "looping": false,
+                    "mode": "random",
+                    "frame_range": [0, 10],
+                    "frame_duration": 0.5
+                }
             }
         },
         {
@@ -95,7 +94,7 @@
                     "trigger_type": "Collision",
                     "conditions": {
                         "CollisionConditions": {
-                        "object_name": "player"
+                            "object_name": "player"
                         }
                     },
                     "outcome": "swap_scene",
@@ -123,12 +122,17 @@
                 "rotation": 0.0,
                 "scale": 0.5,
                 "texture_name": "PortalRings2",
-                "uses_atlas": true,
-                "current_frame": 0,
-                "frame_range": [0,5],
-                "frame_duration": 0.1,
-                "atlas_columns": 5,
-                "atlas_rows": 1
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 5,
+                    "atlas_rows": 1
+                },
+                "animation_config": {
+                    "looping": true,
+                    "mode": "forward",
+                    "frame_range": [0, 5],
+                    "frame_duration": 0.1
+                }
             }
         },
         {
@@ -160,13 +164,7 @@
                 "position": [-0.3, 0.0, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "BasicCharacterRed",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "BasicCharacterRed"
             }
         },
         {
@@ -198,13 +196,7 @@
                 "position": [0.0, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 1.0,
-                "texture_name": "Chud",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "Chud"
             }
         },
         {
@@ -248,13 +240,7 @@
                 "position": [0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "StoneBlock",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "StoneBlock"
             }
         },
         {
@@ -318,13 +304,7 @@
                 "position": [-0.3, 0.3, 0.0],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "RealisticGrass",
-                "uses_atlas": false,
-                "current_frame": 0,
-                "frame_range": [0,0],
-                "frame_duration": 0.0,
-                "atlas_columns": 0,
-                "atlas_rows": 0
+                "texture_name": "RealisticGrass"
             }
         }
     ]
