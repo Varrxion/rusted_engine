@@ -112,14 +112,17 @@
                 "collision_modes": ["AABB"],
                 "triggers": [
                     {
-                    "trigger_type": "Collision",
-                    "conditions": {
-                        "CollisionConditions": {
-                        "object_name": "player"
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "SwapScene": {
+                                "scene_name": "testscene"
+                            }
                         }
-                    },
-                    "outcome": "swap_scene",
-                    "target": "testscene"
                     }
                 ]
             },
@@ -168,13 +171,30 @@
                 "triggers": [
                     {
                         "trigger_type": "Collision",
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "SlidingStone",
+                                "audio_type": "Sound",
+                                "volume": 0.3,
+                                "looping": false
+                            }
+                        }
+                    },
+                    {
+                        "trigger_type": "Collision",
                         "conditions": {
                             "CollisionConditions": {
-                            "object_name": ""
+                                "collided_with": "testscene_obj2"
                             }
                         },
-                        "outcome": "enqueue_audio",
-                        "target": "SlidingStone"
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "crueltysquadthirdendingshortlowqual",
+                                "audio_type": "Music",
+                                "volume": 0.3,
+                                "looping": false
+                            }
+                        }
                     }
                 ]
             },
@@ -211,14 +231,17 @@
                 "collision_modes": ["AABB"],
                 "triggers": [
                     {
-                    "trigger_type": "Collision",
-                    "conditions": {
-                        "CollisionConditions": {
-                        "object_name": "player"
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "SwapScene": {
+                                "scene_name": "testdungeon"
+                            }
                         }
-                    },
-                    "outcome": "swap_scene",
-                    "target": "testdungeon"
                     }
                 ]
             },

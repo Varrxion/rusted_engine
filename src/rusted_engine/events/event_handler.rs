@@ -5,12 +5,7 @@ use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphics
 
 use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, game_state::GameState, scenes::scene_manager::SceneManager};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Trigger, TriggerConditions, TriggerType}};
-
-pub struct EventOutcome {
-    outcome: String,
-    target: String,
-}
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Outcome, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
@@ -18,7 +13,7 @@ pub struct EventHandler {
     audio_manager: Arc<RwLock<AudioManager>>,
     scene_manager: Arc<RwLock<SceneManager>>,
     game_state: Arc<RwLock<GameState>>,
-    event_outcomes: Vec<EventOutcome>,
+    event_outcomes: Vec<Outcome>,
 }
 
 impl EventHandler {
@@ -41,50 +36,57 @@ impl EventHandler {
 
     pub fn process_event_outcomes(&mut self) {
         let mut index = 0;
-        
+    
         while index < self.event_outcomes.len() {
             let event_outcome = &self.event_outcomes[index];
-            let outcome = &event_outcome.outcome;
-            let target_name = &event_outcome.target;
-    
-            match outcome.as_str() {
-                "swap_scene" => {
-                    if target_name != "" {
-                        self.swap_scene(target_name.to_string());
+            
+            match event_outcome {
+                Outcome::Sequence(sequence_args) => {
+                    match sequence_args.sequence_name.as_str() {
+                        "homebringer_sequence" => {
+                            self.homebringer_sequence();
+                        }
+                        "gorbino_sequence" => {
+                            self.gorbino_sequence();
+                        }
+                        "explosion_sequence" => {
+                            self.explosion_sequence();
+                        }
+                        "gravity_sequence" => {
+                            self.gravity_sequence();
+                        }
+                        _ => {
+                            println!("No sequence found for sequence name: {}", sequence_args.sequence_name);
+                        }
                     }
                 }
-                "homebringer_sequence" => {
-                    self.homebringer_sequence();
+                Outcome::SwapScene(swap_scene_args) => {
+                    if !swap_scene_args.scene_name.is_empty() {
+                        self.swap_scene(swap_scene_args.scene_name.clone());
+                    }
                 }
-                "gorbino_sequence" => {
-                    self.gorbino_sequence();
-                }
-                "explosion_sequence" => {
-                    self.explosion_sequence();
-                }
-                "gravity_sequence" => {
-                    self.gravity_sequence();
-                }
-                "destroy_object" => {
-                    if target_name != "" {
-                        let chained_outcomes = self.destroy_object(target_name.to_string());
+                Outcome::DestroyObject(destroy_args) => {
+                    if !destroy_args.object_name.is_empty() {
+                        let chained_outcomes = self.destroy_object(destroy_args.object_name.clone());
                         self.event_outcomes.extend(chained_outcomes);
                     }
                 }
-                "enqueue_audio" => {
-                    if target_name != "" {
-                        self.eqnueue_audio(target_name.to_string());
+                Outcome::EnqueueAudio(audio_args) => {
+                    if !audio_args.audio_name.is_empty() {
+                        self.enqueue_audio(audio_args.audio_name.clone(), audio_args.audio_type.clone(), audio_args.volume);
                     }
                 }
                 _ => {
-                    println!("No outcome found for outcome: {}", outcome);
+                    println!("Unhandled outcome: {:?}", event_outcome);
                 }
             }
     
             index += 1;
         }
+    
         self.event_outcomes.clear();
     }
+    
 
     pub fn process_collisions(&mut self) {
         let collision_events = collision::check_active_entity_collisions(self.master_entity_list.clone(), self.master_graphics_list.clone());
@@ -92,12 +94,11 @@ impl EventHandler {
         self.event_outcomes.append(&mut event_outcomes);
     }
 
-    pub fn handle_collision_events(&mut self, collision_events: Vec<CollisionEvent>) -> Vec<EventOutcome> {
-        let mut event_outcomes: Vec<EventOutcome> = Vec::new();
+    pub fn handle_collision_events(&mut self, collision_events: Vec<CollisionEvent>) -> Vec<Outcome> {
+        let mut event_outcomes: Vec<Outcome> = Vec::new();
 
         let master_entity_list = self.master_entity_list.read().unwrap();
         let master_graphics_list = self.master_graphics_list.read().unwrap();
-        let audio_manager = self.audio_manager.write().unwrap();
         for collision_event in collision_events {
             if let Some(entity_1) = master_entity_list.get_entity(&collision_event.object_name_1) {
                 if let Ok(mut entity_1) = entity_1.write() {
@@ -120,37 +121,31 @@ impl EventHandler {
         return event_outcomes
     }
 
-    fn check_collision_triggers(&self, triggers: &Vec<Trigger>, entity_2_name: String, event_outcomes: &mut Vec<EventOutcome>) {
+    fn check_collision_triggers(&self, triggers: &Vec<Trigger>, entity_2_name: String, event_outcomes: &mut Vec<Outcome>) {
         for trigger in triggers {
             if let TriggerType::Collision = trigger.trigger_type {
-                if let TriggerConditions::CollisionConditions(cond) = &trigger.conditions {
-                    if cond.object_name == entity_2_name || cond.object_name == "" {
+                if let Some(TriggerConditions::CollisionConditions(cond)) = &trigger.conditions {
+                    if cond.collided_with == entity_2_name {
                         if let Some(outcome) = &trigger.outcome {
-                            if let Some(target) = &trigger.target {
-                                let event_outcome = EventOutcome {
-                                    outcome: outcome.to_string(),
-                                    target: target.to_string(),
-                                };
-                                event_outcomes.push(event_outcome);
-                            }
+                            event_outcomes.push(outcome.clone());
                         }
+                    }
+                } else {
+                    if let Some(outcome) = &trigger.outcome {
+                        event_outcomes.push(outcome.clone());
                     }
                 }
             }
         }
     }
+    
+    
 
-    fn check_destruction_triggers(&self, triggers: &Vec<Trigger>, event_outcomes: &mut Vec<EventOutcome>) {
+    fn check_destruction_triggers(&self, triggers: &Vec<Trigger>, event_outcomes: &mut Vec<Outcome>) {
         for trigger in triggers {
             if let TriggerType::Destruction = trigger.trigger_type {
                 if let Some(outcome) = &trigger.outcome {
-                    if let Some(target) = &trigger.target {
-                        let event_outcome = EventOutcome {
-                            outcome: outcome.to_string(),
-                            target: target.to_string(),
-                        };
-                        event_outcomes.push(event_outcome);
-                    }
+                    event_outcomes.push(outcome.clone());
                 }
             }
         }
@@ -162,8 +157,8 @@ impl EventHandler {
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
     
-    pub fn destroy_object(&self, entity_name: String) -> Vec<EventOutcome> {
-        let mut event_outcomes: Vec<EventOutcome> = Vec::new();
+    pub fn destroy_object(&self, entity_name: String) -> Vec<Outcome> {
+        let mut event_outcomes: Vec<Outcome> = Vec::new();
 
         if let Some(entity) = self.master_entity_list.read().unwrap().get_entity(&entity_name) {
             if let Ok(entity) = entity.read() {
@@ -177,8 +172,8 @@ impl EventHandler {
         return event_outcomes;
     }
 
-    pub fn eqnueue_audio(&self, audio_name: String) {
-        self.audio_manager.read().unwrap().enqueue_audio(&audio_name, AudioType::Sound, 0.3, false);
+    pub fn enqueue_audio(&self, audio_name: String, audio_type: AudioType, volume: f32) {
+        self.audio_manager.read().unwrap().enqueue_audio(&audio_name, audio_type, volume, false);
     }
 
     pub fn homebringer_sequence(&self) {

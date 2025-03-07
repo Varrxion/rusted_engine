@@ -91,14 +91,17 @@
                 "collision_modes": ["AABB"],
                 "triggers": [
                     {
-                    "trigger_type": "Collision",
-                    "conditions": {
-                        "CollisionConditions": {
-                            "object_name": "player"
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "SwapScene": {
+                                "scene_name": "testscene2"
+                            }
                         }
-                    },
-                    "outcome": "swap_scene",
-                    "target": "testscene2"
                     }
                 ]
             },
@@ -211,13 +214,14 @@
                 "triggers": [
                     {
                         "trigger_type": "Collision",
-                        "conditions": {
-                            "CollisionConditions": {
-                            "object_name": ""
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "SlidingStone",
+                                "audio_type": "Sound",
+                                "volume": 0.3,
+                                "looping": false
                             }
-                        },
-                        "outcome": "enqueue_audio",
-                        "target": "SlidingStone"
+                        }
                     }
                 ]
             },
@@ -254,34 +258,36 @@
                 "collision_modes": ["AABB"],
                 "triggers": [
                     {
-                        "trigger_type": "Destruction",
-                        "conditions": {
-                            "CollisionConditions": {
-                            "object_name": "player"
+                        "trigger_type": "Collision",
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "SlidingGrass",
+                                "audio_type": "Sound",
+                                "volume": 0.3,
+                                "looping": false
                             }
-                        },
-                        "outcome": "destroy_object",
-                        "target": "testscene_obj4"
+                        }
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "outcome": {
+                            "DestroyObject": {
+                                "object_name": "testscene_obj4"
+                            }
+                        }
                     },
                     {
                         "trigger_type": "Collision",
                         "conditions": {
                             "CollisionConditions": {
-                            "object_name": ""
+                                "collided_with": "testscene_obj5"
                             }
                         },
-                        "outcome": "enqueue_audio",
-                        "target": "SlidingGrass"
-                    },
-                    {
-                        "trigger_type": "Collision",
-                        "conditions": {
-                            "CollisionConditions": {
-                            "object_name": "testscene_obj5"
+                        "outcome": {
+                            "SwapScene": {
+                                "scene_name": "testscene2"
                             }
-                        },
-                        "outcome": "swap_scene",
-                        "target": "testscene2"
+                        }
                     }
                 ]
             },

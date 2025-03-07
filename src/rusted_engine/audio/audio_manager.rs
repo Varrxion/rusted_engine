@@ -1,9 +1,11 @@
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, RwLock};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
+use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufReader, Read};
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum AudioType {
     Music,
     Sound,

@@ -73,10 +73,10 @@
                     "atlas_rows": 10
                 },
                 "animation_config": {
-                    "looping": true,
+                    "looping": false,
                     "mode": "forward",
                     "frame_range": [176, 181],
-                    "frame_duration": 0.2
+                    "frame_duration": 0.7
                 }
             }
         },
@@ -129,13 +129,14 @@
                 "triggers": [
                     {
                         "trigger_type": "Collision",
-                        "conditions": {
-                            "CollisionConditions": {
-                            "object_name": ""
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "MinecraftVillager",
+                                "audio_type": "Sound",
+                                "volume": 0.3,
+                                "looping": false
                             }
-                        },
-                        "outcome": "enqueue_audio",
-                        "target": "MinecraftVillager"
+                        }
                     }
                 ]
             },
@@ -178,13 +179,14 @@
                 "triggers": [
                     {
                         "trigger_type": "Collision",
-                        "conditions": {
-                            "CollisionConditions": {
-                            "object_name": ""
+                        "outcome": {
+                            "EnqueueAudio": {
+                                "audio_name": "SlidingStone",
+                                "audio_type": "Sound",
+                                "volume": 0.3,
+                                "looping": false
                             }
-                        },
-                        "outcome": "enqueue_audio",
-                        "target": "SlidingStone"
+                        }
                     }
                 ]
             },
