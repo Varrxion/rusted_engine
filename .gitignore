@@ -1,5 +1,6 @@
 /target
 .vscode/
+.VSCodeCounter/
 /src/resources/localonly
 
 # Added by cargo

@@ -123,6 +123,20 @@
                                 "scene_name": "testscene"
                             }
                         }
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "TeleportObject": {
+                                "object_name": "player",
+                                "new_position": [0.0, 0.0, 0.0]
+                            }
+                        }
                     }
                 ]
             },
@@ -240,6 +254,20 @@
                         "outcome": {
                             "SwapScene": {
                                 "scene_name": "testdungeon"
+                            }
+                        }
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "TeleportObject": {
+                                "object_name": "player",
+                                "new_position": [0.0, 0.0, 0.0]
                             }
                         }
                     }

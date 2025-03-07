@@ -1,16 +1,16 @@
-use std::{collections::{HashMap, HashSet}, fs::{self, File}, ops::Range, path::Path, ptr::null, sync::{Arc, RwLock}};
+use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::{Vector2, Vector3};
 use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 use serde::Deserialize;
 use std::io::{self, Read};
 
-use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::{CollisionCondition, Trigger, TriggerConditions}, game_state::GameState};
+use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::Trigger, game_state::GameState};
 
-use super::scene::Scene;
+use super::{scene::Scene, scene_properties::SceneProperties};
 
 pub struct SceneManager {
-    scenes: HashMap<String, Arc<RwLock<Scene>>>, // Use RwLock for thread safety
+    scenes: HashMap<String, Arc<RwLock<Scene>>>,
 }
 
 impl SceneManager {
@@ -40,7 +40,34 @@ impl SceneManager {
         self.scenes.keys().cloned().collect()
     }
 
+    /// Saves a scene, overwriting the existing scene in the map if the name is already used.
+    pub fn save_scene(&mut self, scene_name: &str, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList) {        
+        let properties = self.get_scene(scene_name).unwrap().read().unwrap().get_properties();
+        let mut new_scene = Scene::new(properties);
+
+        let entities_map = master_entity_list.get_entities();
+        let entities_map_read = entities_map.read().unwrap();
+        let entities = entities_map_read.values();
+        
+        for entity in entities {
+            let cloned_entity = entity.clone();
+            new_scene.add_entity(cloned_entity);
+        }
+
+        let objects_map = master_graphics_list.get_objects();
+        let objects_map_read = objects_map.read().unwrap();
+        let objects = objects_map_read.values();
+        
+        for object in objects {
+            let cloned_obj = object.clone();
+            new_scene.add_graphics_object(cloned_obj);
+        }
+        
+        self.scenes.insert(scene_name.to_string(), Arc::new(RwLock::new(new_scene)));
+    }
+
     pub fn load_scene(&self, game_state: &mut GameState, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList, scene_name: String) {
+        game_state.set_current_scene_name(scene_name.clone());
         self.load_scene_into_game_state(game_state, scene_name.clone());
         self.load_scene_into_lists(master_entity_list, master_graphics_list, scene_name);
     }
@@ -124,7 +151,9 @@ impl SceneManager {
             _ => Vector2::new(f32::MAX, f32::MAX), // Default to (0.0, 0.0) if invalid
         };
 
-        let mut json_scene = Scene::new(gravity, terminal_velocity);
+        let scene_properties = SceneProperties::new(gravity, terminal_velocity);
+
+        let mut json_scene = Scene::new(scene_properties);
     
         for obj_data in scene_data.objects {
             let json_shader = CustomShader::new(
@@ -283,12 +312,12 @@ struct ObjectData {
 
 #[derive(Deserialize)]
 struct SceneData {
-    properties: SceneProperties,
     objects: Vec<ObjectData>,
+    properties: ScenePropertiesDeserialize,
 }
 
 #[derive(Deserialize)]
-struct SceneProperties {
+struct ScenePropertiesDeserialize {
     gravity: Vec<f32>,
     terminal_velocity: Vec<f32>,
 }

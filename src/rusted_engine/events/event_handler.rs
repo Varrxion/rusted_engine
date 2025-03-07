@@ -71,6 +71,11 @@ impl EventHandler {
                         self.event_outcomes.extend(chained_outcomes);
                     }
                 }
+                Outcome::TeleportObject(teleport_args) => {
+                    if !teleport_args.object_name.is_empty() {
+                        self.teleport_object(teleport_args.object_name.clone(), teleport_args.new_position.clone());
+                    }
+                }
                 Outcome::EnqueueAudio(audio_args) => {
                     if !audio_args.audio_name.is_empty() {
                         self.enqueue_audio(audio_args.audio_name.clone(), audio_args.audio_type.clone(), audio_args.volume);
@@ -151,7 +156,15 @@ impl EventHandler {
         }
     }
 
+    pub fn swap_scene_without_saving(&self, scene_name: String) {
+        self.master_entity_list.write().unwrap().remove_all();
+        self.master_graphics_list.write().unwrap().remove_all();
+        self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
+    }
+
     pub fn swap_scene(&self, scene_name: String) {
+        self.scene_manager.write().unwrap().save_scene(&self.game_state.read().unwrap().get_current_scene_name(), &self.master_entity_list.read().unwrap(), &self.master_graphics_list.read().unwrap());
+
         self.master_entity_list.write().unwrap().remove_all();
         self.master_graphics_list.write().unwrap().remove_all();
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
@@ -170,6 +183,27 @@ impl EventHandler {
         self.master_graphics_list.write().unwrap().remove_object(&entity_name);
 
         return event_outcomes;
+    }
+
+    pub fn teleport_object(&self, object_name: String, new_position: Vec<f32>) {
+        let teleporting_object_option = self.master_graphics_list.write().unwrap().get_object(&object_name);
+        if let Some(teleporting_object) = teleporting_object_option {
+            let mut teleporting_object_write = teleporting_object.write().unwrap();
+
+            let current_position = teleporting_object_write.get_position();
+
+            // If the provided destination doesn't include a new Z-value we'll keep the existing one
+            let new_position = if new_position.len() == 2 {
+                Vector3::new(new_position[0], new_position[1], current_position.z)
+            } else if new_position.len() == 3 {
+                Vector3::new(new_position[0], new_position[1], new_position[2])
+            } else {
+                println!("Invalid position size, expected 2D or 2D+Z position.");
+                return; // Leave before passing anything
+            };
+
+            teleporting_object_write.set_position(new_position);
+        }
     }
 
     pub fn enqueue_audio(&self, audio_name: String, audio_type: AudioType, volume: f32) {
@@ -206,6 +240,7 @@ impl EventHandler {
 
     pub fn reset_sequence(&self) {
         self.swap_scene("testscene".to_owned());
+        self.teleport_object("player".to_owned(), vec![0.0, 0.0, 0.0]);
         self.audio_manager.read().unwrap().enqueue_audio("TechMysterious", AudioType::UI, 0.6, false);
     }
 }

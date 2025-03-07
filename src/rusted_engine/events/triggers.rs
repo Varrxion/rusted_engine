@@ -31,6 +31,7 @@ pub enum Outcome {
     Sequence(SequenceArgs),
     SwapScene(SwapSceneArgs),
     DestroyObject(DestroyObjectArgs),
+    TeleportObject(TeleportObjectArgs),
     EnqueueAudio(EnqueueAudioArgs),
 }
 
@@ -47,6 +48,12 @@ pub struct  SwapSceneArgs {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct  DestroyObjectArgs {
     pub object_name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  TeleportObjectArgs {
+    pub object_name: String,
+    pub new_position: Vec<f32>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

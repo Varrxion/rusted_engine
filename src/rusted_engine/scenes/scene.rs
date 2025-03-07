@@ -5,20 +5,20 @@ use rusted_open::framework::graphics::internal_object::graphics_object::Generic2
 
 use crate::rusted_engine::entities::generic_entity::GenericEntity;
 
+use super::scene_properties::SceneProperties;
+
 pub struct Scene {
     entities: Vec<Arc<RwLock<GenericEntity>>>,
     graphics_objects: Vec<Arc<RwLock<Generic2DGraphicsObject>>>,
-    gravity: Vector2<f32>,
-    terminal_velocity: Vector2<f32>,
+    properties: SceneProperties,
 }
 
 impl Scene {
-    pub fn new(gravity: Vector2<f32>, terminal_velocity: Vector2<f32>) -> Self {
+    pub fn new(properties: SceneProperties) -> Self {
         Scene {
             entities: Vec::new(),
             graphics_objects: Vec::new(),
-            gravity,
-            terminal_velocity,
+            properties,
         }
     }
 
@@ -38,19 +38,29 @@ impl Scene {
         &self.entities
     }
 
+    // properties
+
+    pub fn get_properties(&self) -> SceneProperties {
+        self.properties.clone()
+    }
+
+    pub fn set_properties(&mut self, properties: SceneProperties) {
+        self.properties = properties;
+    }
+
     pub fn set_gravity(&mut self, gravity: Vector2<f32>) {
-        self.gravity = gravity;
+        self.properties.set_gravity(gravity);
     }
 
     pub fn get_gravity(&self) -> Vector2<f32> {
-        self.gravity
+        self.properties.get_gravity()
     }
 
     pub fn set_terminal_velocity(&mut self, terminal_velocity: Vector2<f32>) {
-        self.terminal_velocity = terminal_velocity;
+        self.properties.set_terminal_velocity(terminal_velocity);
     }
 
     pub fn get_terminal_velocity(&self) -> Vector2<f32> {
-        self.terminal_velocity
+        self.properties.get_terminal_velocity()
     }
 }

@@ -85,7 +85,7 @@
                 "name": "testscene_obj2",
                 "weight": 2.0,
                 "affected_by_gravity": false,
-                "is_static": false,
+                "is_static": true,
                 "elasticity": 1.0,
                 "active_collision": false,
                 "collision_modes": ["AABB"],
@@ -100,6 +100,20 @@
                         "outcome": {
                             "SwapScene": {
                                 "scene_name": "testscene2"
+                            }
+                        }
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "player"
+                            }
+                        },
+                        "outcome": {
+                            "TeleportObject": {
+                                "object_name": "player",
+                                "new_position": [0.0, 0.0, 0.0]
                             }
                         }
                     }
