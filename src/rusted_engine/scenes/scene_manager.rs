@@ -2,7 +2,7 @@ use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{
 
 use nalgebra::{Vector2, Vector3};
 use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::io::{self, Read};
 
 use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::Trigger, game_state::GameState};
@@ -272,42 +272,42 @@ impl SceneManager {
     }
 }
 
-#[derive(Deserialize)]
-struct EntityData {
-    name: String,
-    weight: f32,
-    velocity: Option<Vec<f32>>,
-    affected_by_gravity: bool,
-    is_static: bool,
-    elasticity: f32,
-    active_collision: bool,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct EntityData {
+    pub name: String,
+    pub weight: f32,
+    pub velocity: Option<Vec<f32>>,
+    pub affected_by_gravity: bool,
+    pub is_static: bool,
+    pub elasticity: f32,
+    pub active_collision: bool,
     #[serde(default)]
-    collision_priority: Option<u64>,
-    collision_modes: Vec<String>,
-    triggers: Option<Vec<Trigger>>,
+    pub collision_priority: Option<u64>,
+    pub collision_modes: Vec<String>,
+    pub triggers: Option<Vec<Trigger>>,
 }
 
-#[derive(Deserialize)]
-struct GraphicsData {
-    name: String,
-    vertex_data: Vec<f32>,
-    texture_coords: Vec<f32>,
-    vertex_shader: String,
-    fragment_shader: String,
-    position: Vec<f32>,
-    rotation: f32,
-    scale: f32,
-    texture_name: String,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GraphicsData {
+    pub name: String,
+    pub vertex_data: Vec<f32>,
+    pub texture_coords: Vec<f32>,
+    pub vertex_shader: String,
+    pub fragment_shader: String,
+    pub position: Vec<f32>,
+    pub rotation: f32,
+    pub scale: f32,
+    pub texture_name: String,
     #[serde(default)]
-    atlas_config: Option<AtlasConfig>,
+    pub atlas_config: Option<AtlasConfig>,
     #[serde(default)]
-    animation_config: Option<AnimationConfig>,
+    pub animation_config: Option<AnimationConfig>,
 }
 
-#[derive(Deserialize)]
-struct ObjectData {
-    entity: EntityData,
-    graphics: GraphicsData,
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct ObjectData {
+    pub entity: EntityData,
+    pub graphics: GraphicsData,
 }
 
 #[derive(Deserialize)]

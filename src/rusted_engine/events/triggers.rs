@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::rusted_engine::audio::audio_manager::AudioType;
+use crate::rusted_engine::{audio::audio_manager::AudioType, scenes::scene_manager::ObjectData};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Trigger {
@@ -30,6 +30,7 @@ pub struct CollisionCondition {
 pub enum Outcome {
     Sequence(SequenceArgs),
     SwapScene(SwapSceneArgs),
+    CreateObject(ObjectData),
     DestroyObject(DestroyObjectArgs),
     TeleportObject(TeleportObjectArgs),
     EnqueueAudio(EnqueueAudioArgs),

@@ -1,15 +1,16 @@
-use std::sync::{Arc, RwLock};
+use std::{collections::HashSet, sync::{Arc, RwLock}};
 
-use nalgebra::Vector3;
-use rusted_open::framework::graphics::util::master_graphics_list::MasterGraphicsList;
+use nalgebra::{Vector2, Vector3};
+use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::util::master_entity_list::MasterEntityList, game_state::GameState, scenes::scene_manager::SceneManager};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, scenes::scene_manager::{ObjectData, SceneManager}};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Outcome, Trigger, TriggerConditions, TriggerType}};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Outcome, TeleportObjectArgs, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
+    texture_manager: Arc<RwLock<TextureManager>>,
     audio_manager: Arc<RwLock<AudioManager>>,
     scene_manager: Arc<RwLock<SceneManager>>,
     game_state: Arc<RwLock<GameState>>,
@@ -20,6 +21,7 @@ impl EventHandler {
     pub fn new(
         master_entity_list: Arc<RwLock<MasterEntityList>>,
         master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
+        texture_manager: Arc<RwLock<TextureManager>>,
         audio_manager: Arc<RwLock<AudioManager>>,
         scene_manager: Arc<RwLock<SceneManager>>,
         game_state: Arc<RwLock<GameState>>,
@@ -27,6 +29,7 @@ impl EventHandler {
         Self {
             master_entity_list,
             master_graphics_list,
+            texture_manager,
             audio_manager,
             scene_manager,
             game_state,
@@ -63,6 +66,13 @@ impl EventHandler {
                 Outcome::SwapScene(swap_scene_args) => {
                     if !swap_scene_args.scene_name.is_empty() {
                         self.swap_scene(swap_scene_args.scene_name.clone());
+                    }
+                }
+                Outcome::CreateObject(create_object_args) => {
+                    if self.master_graphics_list.read().unwrap().get_object(&create_object_args.graphics.name).is_some() {
+                        println!("Call to create object was made when object of same ID \"{}\" already exists. Ignoring.", create_object_args.graphics.name)
+                    } else {
+                        self.create_object(create_object_args.clone());
                     }
                 }
                 Outcome::DestroyObject(destroy_args) => {
@@ -168,6 +178,88 @@ impl EventHandler {
         self.master_entity_list.write().unwrap().remove_all();
         self.master_graphics_list.write().unwrap().remove_all();
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
+    }
+
+    /// FINISH THIS
+    pub fn create_object(&self, create_object_args: ObjectData) {
+
+        let json_shader = CustomShader::new(
+            &create_object_args.graphics.vertex_shader,
+            &create_object_args.graphics.fragment_shader,
+        );
+
+        // Handle optional AnimationConfig
+        let animation_config = create_object_args.graphics.animation_config.map(|animation_config| AnimationConfig {
+            looping: animation_config.looping,
+            mode: animation_config.mode.clone(),
+            frame_range: animation_config.frame_range.clone(),
+            frame_duration: animation_config.frame_duration,
+        });
+
+        // Handle optional AtlasConfig
+        let atlas_config = create_object_args.graphics.atlas_config.map(|atlas_config| AtlasConfig {
+            current_frame: atlas_config.current_frame,
+            atlas_columns: atlas_config.atlas_columns,
+            atlas_rows: atlas_config.atlas_rows,
+        });
+
+        let mut json_collision_modes = HashSet::new();
+        for collision_mode in create_object_args.entity.collision_modes {
+            match collision_mode.as_str() {
+                "AABB" => { json_collision_modes.insert(CollisionMode::AABB); }
+                "Circle" => { json_collision_modes.insert(CollisionMode::Circle); }
+                "OBB" => { json_collision_modes.insert(CollisionMode::OBB); }
+                _ => {}
+            }
+        }
+
+        let position = Vector3::new(
+            create_object_args.graphics.position[0],
+            create_object_args.graphics.position[1],
+            create_object_args.graphics.position[2],
+        );
+
+        let texture_id = self.texture_manager.read().unwrap().get_texture_id(&create_object_args.graphics.texture_name);
+
+        let graphics_object = Generic2DGraphicsObject::new(
+            create_object_args.graphics.name.clone(),
+            create_object_args.graphics.vertex_data,
+            create_object_args.graphics.texture_coords,
+            json_shader.get_shader_program(),
+            position,
+            create_object_args.graphics.rotation,
+            create_object_args.graphics.scale,
+            texture_id,
+            atlas_config,
+            animation_config,
+        );
+
+        let velocity = create_object_args.entity.velocity.unwrap_or_else(|| vec![0.0, 0.0]);
+        let velocity_vector = Vector2::new(velocity[0], velocity[1]);
+
+        // Default collision_priority to 0 if None
+        let collision_priority = create_object_args.entity.collision_priority.unwrap_or(0);
+
+        let triggers = create_object_args.entity.triggers.unwrap_or_default();
+
+        let entity = GenericEntity::new(
+            create_object_args.entity.name.clone(),
+            create_object_args.entity.weight,
+            velocity_vector,
+            create_object_args.entity.affected_by_gravity,
+            create_object_args.entity.is_static,
+            create_object_args.entity.elasticity,
+            create_object_args.entity.active_collision,
+            collision_priority,
+            json_collision_modes,
+            triggers,
+        );
+
+        let wrapped_graphics_object = Arc::new(RwLock::new(graphics_object));
+        let wrapped_entity = Arc::new(RwLock::new(entity));
+
+        self.master_entity_list.write().unwrap().add_entity(wrapped_entity);
+        self.master_graphics_list.write().unwrap().add_object(wrapped_graphics_object);
     }
     
     pub fn destroy_object(&self, entity_name: String) -> Vec<Outcome> {

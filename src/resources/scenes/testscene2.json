@@ -134,7 +134,7 @@
                         "outcome": {
                             "TeleportObject": {
                                 "object_name": "player",
-                                "new_position": [0.0, 0.0, 0.0]
+                                "new_position": [0.0, 0.0]
                             }
                         }
                     }
@@ -267,7 +267,7 @@
                         "outcome": {
                             "TeleportObject": {
                                 "object_name": "player",
-                                "new_position": [0.0, 0.0, 0.0]
+                                "new_position": [0.0, 0.0]
                             }
                         }
                     }

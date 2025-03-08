@@ -56,12 +56,12 @@ impl EngineController {
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
-        let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
+        let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), texture_manager.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone());
         self.engine_controller.set_camera_tracking_target("player".to_owned());
 
         self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
 
-        self.set_resolution(1280.0, 720.0);
+        self.set_resolution(1920.0, 1080.0);
 
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap());
