@@ -1,3 +1,4 @@
+use rusted_open::framework::graphics::internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig};
 use serde::{Deserialize, Serialize};
 
 use crate::rusted_engine::{audio::audio_manager::AudioType, scenes::scene_manager::ObjectData};
@@ -6,19 +7,20 @@ use crate::rusted_engine::{audio::audio_manager::AudioType, scenes::scene_manage
 pub struct Trigger {
     pub trigger_type: TriggerType,  // Trigger type (collision, destruction, etc.)
     pub conditions: Option<TriggerConditions>,  // The conditions are specific to each trigger type
-    pub outcome: Option<Outcome>,   // Outcome tells not only which action to take but also the arguments for the action
+    pub outcome: Outcome,   // Outcome tells not only which action to take but also the arguments for the action
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct SceneTrigger {
     pub scene_trigger_type: SceneTriggerType,
     pub conditions: Option<TriggerConditions>,
-    pub outcome: Outcome,
+    pub outcome: Vec<Outcome>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum SceneTriggerType {
     KeyPressed,
+    KeyNotPressed,
     Timer,
 }
 
@@ -32,23 +34,24 @@ pub enum TriggerType {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TriggerConditions {
     CollisionConditions(CollisionCondition),
-    KeyPressedConditions(KeyPressedCondition),
+    KeyConditions(KeyCondition),
     TimerConditions(TimerCondition),
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct KeyPressedCondition {
-    pub key_pressed: char,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TimerCondition {
-    pub time_in_seconds: f32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct CollisionCondition {
     pub collided_with: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct KeyCondition {
+    pub keys: Vec<char>,
+}
+
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TimerCondition {
+    pub time_in_seconds: f32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -59,6 +62,8 @@ pub enum Outcome {
     DestroyObject(DestroyObjectArgs),
     TeleportObject(TeleportObjectArgs),
     EnqueueAudio(EnqueueAudioArgs),
+    SetAtlasConfig(SetAtlasConfigArgs),
+    SetAnimationConfig(SetAnimationConfigArgs),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -88,4 +93,16 @@ pub struct  EnqueueAudioArgs {
     pub audio_type: AudioType,
     pub volume: f32,
     pub looping: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  SetAtlasConfigArgs {
+    pub object_name: String,
+    pub atlas_config: AtlasConfig,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  SetAnimationConfigArgs {
+    pub object_name: String,
+    pub animation_config: AnimationConfig,
 }

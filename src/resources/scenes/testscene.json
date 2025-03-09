@@ -7,15 +7,132 @@
         {
             "scene_trigger_type": "KeyPressed",
             "conditions": {
-                "KeyPressedConditions": {
-                    "key_pressed": "p"
+                "KeyConditions": {
+                    "keys": ["p"]
                 }
             },
-            "outcome": {
-                "DestroyObject": {
-                    "object_name": "player"
+            "outcome": [
+                {
+                    "DestroyObject": {
+                        "object_name": "player"
+                    }
                 }
-            }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["w"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [0, 3],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyNotPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["w","s","a","d"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": false,
+                            "mode": "forward",
+                            "frame_range": [12, 13],
+                            "frame_duration": 0.2
+                        }
+                    }
+                },
+                {
+                    "SetAtlasConfig": {
+                        "object_name": "player",
+                        "atlas_config": {
+                            "current_frame": 12,
+                            "atlas_columns": 3,
+                            "atlas_rows": 5
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["s"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [3, 6],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["a"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [6, 9],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["d"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [9, 12],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
         }
     ],
     "objects": [
@@ -94,7 +211,7 @@
                 },
                 "animation_config": {
                     "looping": true,
-                    "mode": "forward",
+                    "mode": "random",
                     "frame_range": [0, 10],
                     "frame_duration": 0.5
                 }

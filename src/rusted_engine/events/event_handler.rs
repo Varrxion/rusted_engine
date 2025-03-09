@@ -5,7 +5,7 @@ use rusted_open::framework::graphics::{internal_object::{animation_config::Anima
 
 use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, input::key_states::KeyStates, scenes::scene_manager::{ObjectData, SceneManager}, util::char_to_glfw_key::char_to_glfw_key};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{KeyPressedCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{KeyCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
@@ -94,6 +94,16 @@ impl EventHandler {
                         self.enqueue_audio(audio_args.audio_name.clone(), audio_args.audio_type.clone(), audio_args.volume);
                     }
                 }
+                Outcome::SetAtlasConfig(set_atlas_config_args) => {
+                    if !set_atlas_config_args.object_name.is_empty() {
+                        self.set_atlas_config(set_atlas_config_args.object_name.clone(), set_atlas_config_args.atlas_config.clone());
+                    }
+                }
+                Outcome::SetAnimationConfig(set_animation_config_args) => {
+                    if !set_animation_config_args.object_name.is_empty() {
+                        self.set_animation_config(set_animation_config_args.object_name.clone(), set_animation_config_args.animation_config.clone());
+                    }
+                }
                 _ => {
                     println!("Unhandled outcome: {:?}", event_outcome);
                 }
@@ -144,27 +154,19 @@ impl EventHandler {
             if let TriggerType::Collision = trigger.trigger_type {
                 if let Some(TriggerConditions::CollisionConditions(cond)) = &trigger.conditions {
                     if cond.collided_with == entity_2_name {
-                        if let Some(outcome) = &trigger.outcome {
-                            event_outcomes.push(outcome.clone());
-                        }
+                        event_outcomes.push(trigger.outcome.clone());
                     }
                 } else {
-                    if let Some(outcome) = &trigger.outcome {
-                        event_outcomes.push(outcome.clone());
-                    }
+                    event_outcomes.push(trigger.outcome.clone());
                 }
             }
         }
     }
-    
-    
 
     fn check_destruction_triggers(&self, triggers: &Vec<Trigger>, event_outcomes: &mut Vec<Outcome>) {
         for trigger in triggers {
             if let TriggerType::Destruction = trigger.trigger_type {
-                if let Some(outcome) = &trigger.outcome {
-                    event_outcomes.push(outcome.clone());
-                }
+                event_outcomes.push(trigger.outcome.clone());
             }
         }
     }
@@ -179,12 +181,25 @@ impl EventHandler {
             for scene_trigger in current_scene_triggers {
                 match scene_trigger.scene_trigger_type {
                     SceneTriggerType::KeyPressed => {
-                        if let Some(TriggerConditions::KeyPressedConditions(cond)) = &scene_trigger.conditions {
-                            if self.check_keypressed_trigger(cond.clone()) {
-                                self.event_outcomes.push(scene_trigger.outcome);
+                        if let Some(TriggerConditions::KeyConditions(cond)) = &scene_trigger.conditions {
+                            if self.check_key_pressed_trigger(cond.clone()) {
+                                for outcome in scene_trigger.outcome {
+                                    self.event_outcomes.push(outcome)
+                                }
                             }
                         } else {
-                            println!("A Keypressed trigger was processed, but no condition could be found. Ignoring.");
+                            println!("A KeyPressed trigger was processed, but no condition could be found. Ignoring.");
+                        }
+                    }
+                    SceneTriggerType::KeyNotPressed => {
+                        if let Some(TriggerConditions::KeyConditions(cond)) = &scene_trigger.conditions {
+                            if self.check_key_not_pressed_trigger(cond.clone()) {
+                                for outcome in scene_trigger.outcome {
+                                    self.event_outcomes.push(outcome)
+                                }
+                            }
+                        } else {
+                            println!("A KeyNotPressed trigger was processed, but no condition could be found. Ignoring.");
                         }
                     }
                     SceneTriggerType::Timer => {
@@ -198,13 +213,27 @@ impl EventHandler {
         }
     }
 
-    pub fn check_keypressed_trigger(&self, trigger_condition: KeyPressedCondition) -> bool {
-        if let Some(key) = char_to_glfw_key(trigger_condition.key_pressed) {
-            if self.key_states.read().unwrap().is_key_pressed(key) {
-                return true;
+    pub fn check_key_pressed_trigger(&self, trigger_condition: KeyCondition) -> bool {
+        for key in trigger_condition.keys.iter() {
+            if let Some(key) = char_to_glfw_key(*key) {
+                if self.key_states.read().unwrap().is_key_pressed_raw(key) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+    
+
+    pub fn check_key_not_pressed_trigger(&self, trigger_condition: KeyCondition) -> bool {
+        for key in trigger_condition.keys.iter() {
+            if let Some(key) = char_to_glfw_key(*key) {
+                if self.key_states.read().unwrap().is_key_pressed_raw(key) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     pub fn check_timer_trigger(&self) {
@@ -225,7 +254,6 @@ impl EventHandler {
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
 
-    /// FINISH THIS
     pub fn create_object(&self, create_object_args: ObjectData) {
 
         let json_shader = CustomShader::new(
@@ -346,6 +374,23 @@ impl EventHandler {
     pub fn enqueue_audio(&self, audio_name: String, audio_type: AudioType, volume: f32) {
         self.audio_manager.read().unwrap().enqueue_audio(&audio_name, audio_type, volume, false);
     }
+
+    pub fn set_atlas_config(&self, object_name: String, new_atlas_config: AtlasConfig) {
+        let master_graphics_list_write = self.master_graphics_list.write().unwrap();
+        if let Some(object) = master_graphics_list_write.get_object(&object_name) {
+            let mut object_write = object.write().unwrap();
+            object_write.set_atlas_config(Some(new_atlas_config));
+        }
+    }
+
+    pub fn set_animation_config(&self, object_name: String, new_animation_config: AnimationConfig) {
+        let master_graphics_list_write = self.master_graphics_list.write().unwrap();
+        if let Some(object) = master_graphics_list_write.get_object(&object_name) {
+            let mut object_write = object.write().unwrap();
+            object_write.set_animation_config(Some(new_animation_config));
+        }
+    }
+    
 
     pub fn homebringer_sequence(&self) {
         if let Some(player_object) = self.master_graphics_list.read().unwrap().get_object("player") {
