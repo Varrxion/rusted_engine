@@ -25,11 +25,26 @@ impl EngineController {
 
         glfw.window_hint(glfw::WindowHint::Resizable(false));
 
-        let window_name = "Game Test";
-        // Create a windowed mode window and its OpenGL context
-        let (mut window, events) = glfw
-            .create_window(640 as u32, 480 as u32, window_name, glfw::WindowMode::Windowed)
-            .expect("Failed to create GLFW window.");
+        let fullscreen = true;
+
+        let (mut window, events) = glfw.with_primary_monitor(|glfw, m| {
+            if fullscreen == true {
+                if let Some(monitor) = m {
+                    if let Some(video_mode) = monitor.get_video_mode() {
+                        return glfw.create_window(
+                            video_mode.width,
+                            video_mode.height,
+                            "rusted_engine",
+                            glfw::WindowMode::FullScreen(monitor),
+                        );
+                    }
+                }
+            }
+            
+
+            // Fallback to windowed mode if monitor or video mode is unavailable
+            glfw.create_window(640, 480, "rusted_engine", glfw::WindowMode::Windowed)
+        }).expect("Failed to create GLFW window.");
 
         // Make the window's context current
         window.make_current();
@@ -53,6 +68,9 @@ impl EngineController {
 
     // Call from main to start everything
     pub fn init(&mut self) {
+        let window_size = self.window.get_size();
+        self.set_resolution(window_size.0 as f32, window_size.1 as f32);
+
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.engine_controller.get_texture_manager();
         let master_graphics_list = self.engine_controller.get_master_graphics_list();
@@ -60,8 +78,6 @@ impl EngineController {
         self.engine_controller.set_camera_tracking_target("player".to_owned());
 
         self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
-
-        self.set_resolution(1920.0, 1080.0);
 
         // Go into this function to see how the loading is done.
         self.load_resources(&texture_manager.write().unwrap());
