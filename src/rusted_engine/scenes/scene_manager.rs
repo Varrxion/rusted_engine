@@ -5,7 +5,7 @@ use rusted_open::framework::graphics::{internal_object::{animation_config::Anima
 use serde::{Deserialize, Serialize};
 use std::io::{self, Read};
 
-use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::Trigger, game_state::GameState};
+use crate::rusted_engine::{entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, events::triggers::{SceneTrigger, Trigger}, game_state::GameState};
 
 use super::{scene::Scene, scene_properties::SceneProperties};
 
@@ -43,7 +43,8 @@ impl SceneManager {
     /// Saves a scene, overwriting the existing scene in the map if the name is already used.
     pub fn save_scene(&mut self, scene_name: &str, master_entity_list: &MasterEntityList, master_graphics_list: &MasterGraphicsList) {        
         let properties = self.get_scene(scene_name).unwrap().read().unwrap().get_properties();
-        let mut new_scene = Scene::new(properties);
+        let scene_triggers = self.get_scene(scene_name).unwrap().read().unwrap().get_triggers();
+        let mut new_scene = Scene::new(properties, scene_triggers);
 
         let entities_map = master_entity_list.get_entities();
         let entities_map_read = entities_map.read().unwrap();
@@ -153,7 +154,9 @@ impl SceneManager {
 
         let scene_properties = SceneProperties::new(gravity, terminal_velocity);
 
-        let mut json_scene = Scene::new(scene_properties);
+        let scene_triggers = scene_data.scene_triggers;
+
+        let mut json_scene = Scene::new(scene_properties, scene_triggers);
     
         for obj_data in scene_data.objects {
             let json_shader = CustomShader::new(
@@ -314,6 +317,8 @@ pub struct ObjectData {
 struct SceneData {
     objects: Vec<ObjectData>,
     properties: ScenePropertiesDeserialize,
+    #[serde(default)]
+    scene_triggers: Vec<SceneTrigger>,
 }
 
 #[derive(Deserialize)]

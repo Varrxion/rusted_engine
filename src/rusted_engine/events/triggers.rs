@@ -10,6 +10,19 @@ pub struct Trigger {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct SceneTrigger {
+    pub scene_trigger_type: SceneTriggerType,
+    pub conditions: Option<TriggerConditions>,
+    pub outcome: Outcome,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub enum SceneTriggerType {
+    KeyPressed,
+    Timer,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TriggerType {
     Collision,
     Destruction,
@@ -19,6 +32,18 @@ pub enum TriggerType {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum TriggerConditions {
     CollisionConditions(CollisionCondition),
+    KeyPressedConditions(KeyPressedCondition),
+    TimerConditions(TimerCondition),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct KeyPressedCondition {
+    pub key_pressed: char,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct TimerCondition {
+    pub time_in_seconds: f32,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

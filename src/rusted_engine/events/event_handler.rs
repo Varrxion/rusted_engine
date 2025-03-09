@@ -3,9 +3,9 @@ use std::{collections::HashSet, sync::{Arc, RwLock}};
 use nalgebra::{Vector2, Vector3};
 use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 
-use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, scenes::scene_manager::{ObjectData, SceneManager}};
+use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, input::key_states::KeyStates, scenes::scene_manager::{ObjectData, SceneManager}, util::char_to_glfw_key::char_to_glfw_key};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{Outcome, TeleportObjectArgs, Trigger, TriggerConditions, TriggerType}};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{KeyPressedCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
@@ -15,6 +15,7 @@ pub struct EventHandler {
     scene_manager: Arc<RwLock<SceneManager>>,
     game_state: Arc<RwLock<GameState>>,
     event_outcomes: Vec<Outcome>,
+    key_states: Arc<RwLock<KeyStates>>,
 }
 
 impl EventHandler {
@@ -25,6 +26,7 @@ impl EventHandler {
         audio_manager: Arc<RwLock<AudioManager>>,
         scene_manager: Arc<RwLock<SceneManager>>,
         game_state: Arc<RwLock<GameState>>,
+        key_states: Arc<RwLock<KeyStates>>,
     ) -> Self {
         Self {
             master_entity_list,
@@ -33,6 +35,7 @@ impl EventHandler {
             audio_manager,
             scene_manager,
             game_state,
+            key_states,
             event_outcomes: Vec::new(),
         }
     }
@@ -164,6 +167,48 @@ impl EventHandler {
                 }
             }
         }
+    }
+
+    pub fn check_scene_triggers(&mut self) {
+        let current_scene_name = self.game_state.read().unwrap().get_current_scene_name();
+
+        // This if statement should never fail
+        if let Some(current_scene) = self.scene_manager.read().unwrap().get_scene(&current_scene_name) {
+            let current_scene_triggers = current_scene.read().unwrap().get_triggers();
+
+            for scene_trigger in current_scene_triggers {
+                match scene_trigger.scene_trigger_type {
+                    SceneTriggerType::KeyPressed => {
+                        if let Some(TriggerConditions::KeyPressedConditions(cond)) = &scene_trigger.conditions {
+                            if self.check_keypressed_trigger(cond.clone()) {
+                                self.event_outcomes.push(scene_trigger.outcome);
+                            }
+                        } else {
+                            println!("A Keypressed trigger was processed, but no condition could be found. Ignoring.");
+                        }
+                    }
+                    SceneTriggerType::Timer => {
+                        self.check_timer_trigger();
+                    }
+                    _ => {
+                        println!("The scene trigger was empty.")
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn check_keypressed_trigger(&self, trigger_condition: KeyPressedCondition) -> bool {
+        if let Some(key) = char_to_glfw_key(trigger_condition.key_pressed) {
+            if self.key_states.read().unwrap().is_key_pressed(key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    pub fn check_timer_trigger(&self) {
+        println!("Timer trigger is not implemented yet");
     }
 
     pub fn swap_scene_without_saving(&self, scene_name: String) {

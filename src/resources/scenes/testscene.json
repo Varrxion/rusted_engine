@@ -3,6 +3,21 @@
         "gravity": [0.0, -3.8],
         "terminal_velocity": [5.0, 5.0]
     },
+    "scene_triggers": [
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyPressedConditions": {
+                    "key_pressed": "p"
+                }
+            },
+            "outcome": {
+                "DestroyObject": {
+                    "object_name": "player"
+                }
+            }
+        }
+    ],
     "objects": [
         {
             "entity": {
@@ -29,12 +44,17 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main() {\n    gl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n    TexCoord = aTexCoord;\n}",
-                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\n    color = texture(texture1, TexCoord);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
                 "scale": 0.5,
-                "texture_name": "Yellow64xCharacter"
+                "texture_name": "SquareGuySprites",
+                "atlas_config": {
+                    "current_frame": 12,
+                    "atlas_columns": 3,
+                    "atlas_rows": 5
+                }
             }
         },
         {

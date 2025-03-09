@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock};
 use nalgebra::Vector2;
 use rusted_open::framework::graphics::internal_object::graphics_object::Generic2DGraphicsObject;
 
-use crate::rusted_engine::entities::generic_entity::GenericEntity;
+use crate::rusted_engine::{entities::generic_entity::GenericEntity, events::triggers::SceneTrigger};
 
 use super::scene_properties::SceneProperties;
 
@@ -11,14 +11,16 @@ pub struct Scene {
     entities: Vec<Arc<RwLock<GenericEntity>>>,
     graphics_objects: Vec<Arc<RwLock<Generic2DGraphicsObject>>>,
     properties: SceneProperties,
+    scene_triggers: Vec<SceneTrigger>, // Empty vector if no triggers in the scene
 }
 
 impl Scene {
-    pub fn new(properties: SceneProperties) -> Self {
+    pub fn new(properties: SceneProperties, scene_triggers: Vec<SceneTrigger>) -> Self {
         Scene {
             entities: Vec::new(),
             graphics_objects: Vec::new(),
             properties,
+            scene_triggers,
         }
     }
 
@@ -62,5 +64,15 @@ impl Scene {
 
     pub fn get_terminal_velocity(&self) -> Vector2<f32> {
         self.properties.get_terminal_velocity()
+    }
+
+    // triggers
+
+    pub fn get_triggers(&self) -> Vec<SceneTrigger> {
+        self.scene_triggers.clone()
+    }
+
+    pub fn set_triggers(&mut self, scene_triggers: Vec<SceneTrigger>) {
+        self.scene_triggers = scene_triggers;
     }
 }
