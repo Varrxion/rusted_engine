@@ -56,6 +56,7 @@ pub struct TimerCondition {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Outcome {
+    AccelerateObject(AccelerateObjectArgs),
     Sequence(SequenceArgs),
     SwapScene(SwapSceneArgs),
     CreateObject(ObjectData),
@@ -64,6 +65,14 @@ pub enum Outcome {
     EnqueueAudio(EnqueueAudioArgs),
     SetAtlasConfig(SetAtlasConfigArgs),
     SetAnimationConfig(SetAnimationConfigArgs),
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  AccelerateObjectArgs {
+    pub object_name: String,
+    pub acceleration: Vec<f32>,
+    pub max_speed: f32,
+    pub normalize: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

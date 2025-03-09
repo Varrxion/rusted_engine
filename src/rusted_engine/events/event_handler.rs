@@ -5,7 +5,7 @@ use rusted_open::framework::graphics::{internal_object::{animation_config::Anima
 
 use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, input::key_states::KeyStates, scenes::scene_manager::{ObjectData, SceneManager}, util::char_to_glfw_key::char_to_glfw_key};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{KeyCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{AccelerateObjectArgs, KeyCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
     master_entity_list: Arc<RwLock<MasterEntityList>>,
@@ -40,7 +40,7 @@ impl EventHandler {
         }
     }
 
-    pub fn process_event_outcomes(&mut self) {
+    pub fn process_event_outcomes(&mut self, delta_time: f32) {
         let mut index = 0;
     
         while index < self.event_outcomes.len() {
@@ -65,6 +65,9 @@ impl EventHandler {
                             println!("No sequence found for sequence name: {}", sequence_args.sequence_name);
                         }
                     }
+                }
+                Outcome::AccelerateObject(accelerate_object_args) => {
+                    super::player_movement::accelerate_object(accelerate_object_args.clone(), &self.master_entity_list.write().unwrap(), delta_time)
                 }
                 Outcome::SwapScene(swap_scene_args) => {
                     if !swap_scene_args.scene_name.is_empty() {

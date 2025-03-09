@@ -8,25 +8,18 @@
             "scene_trigger_type": "KeyPressed",
             "conditions": {
                 "KeyConditions": {
-                    "keys": ["p"]
-                }
-            },
-            "outcome": [
-                {
-                    "DestroyObject": {
-                        "object_name": "player"
-                    }
-                }
-            ]
-        },
-        {
-            "scene_trigger_type": "KeyPressed",
-            "conditions": {
-                "KeyConditions": {
                     "keys": ["w"]
                 }
             },
             "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [0.0, 3.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
                 {
                     "SetAnimationConfig": {
                         "object_name": "player",
@@ -80,6 +73,14 @@
             },
             "outcome": [
                 {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [0.0, -3.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
                     "SetAnimationConfig": {
                         "object_name": "player",
                         "animation_config": {
@@ -101,6 +102,14 @@
             },
             "outcome": [
                 {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [-3.0, 0.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
                     "SetAnimationConfig": {
                         "object_name": "player",
                         "animation_config": {
@@ -121,6 +130,14 @@
                 }
             },
             "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [3.0, 0.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
                 {
                     "SetAnimationConfig": {
                         "object_name": "player",

@@ -117,7 +117,6 @@ impl EngineController {
         //master_graphics_list.read().unwrap().get_object("player").unwrap().read().unwrap().print_debug();
 
         // Do movement inputs
-        player_movement::process_object_acceleration("player".to_owned(), false, 3.0, 1.0, &self.master_entity_list.read().unwrap(), self.key_states.clone(), delta_time);
         player_movement::process_all_entities_fake_friction(1.5, 0.1, &self.master_entity_list.read().unwrap(), true, delta_time);
 
         // Process piano inputs, returns true if a piano input was made
@@ -125,14 +124,15 @@ impl EngineController {
             piano_sequences::check_piano_sequences(piano, &event_handler);
         }
 
-        player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);
-
+        // These triggers have priority, they are checked before any others, which means their events are added to the event_handler first.
         event_handler.check_scene_triggers();
 
         // Call the collision checking method
         event_handler.process_collisions();
 
-        event_handler.process_event_outcomes();
+        event_handler.process_event_outcomes(delta_time);
+
+        player_movement::process_movement(&self.master_entity_list.read().unwrap(), &master_graphics_list.read().unwrap(), delta_time);
 
         return false;
     }

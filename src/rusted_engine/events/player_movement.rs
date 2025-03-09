@@ -6,45 +6,34 @@ use rusted_open::framework::{events::movement, graphics::{internal_object::graph
 
 use crate::rusted_engine::{entities::util::master_entity_list::MasterEntityList, input::key_states::KeyStates};
 
+use super::triggers::AccelerateObjectArgs;
+
 /// A more refined movement based on directional velocity.
-pub fn process_object_acceleration(obj_name: String, normalize: bool, speed: f32, max_speed: f32, master_entity_list: &MasterEntityList, key_states: Arc<RwLock<KeyStates>>, delta_time: f32) {
-    if let Some(entity) = master_entity_list.get_entity(&obj_name) {
+pub fn accelerate_object(accelerate_object_args: AccelerateObjectArgs, master_entity_list: &MasterEntityList, delta_time: f32) {
+    if let Some(entity) = master_entity_list.get_entity(&accelerate_object_args.object_name) {
         if let Ok(mut entity) = entity.write() {
-            let mut acceleration = Vector2::new(0.0, 0.0);
-
-            let key_states_read = key_states.read().unwrap();
-            if key_states_read.is_key_pressed_raw(Key::W) {
-                acceleration.y += speed;
-            }
-            if key_states_read.is_key_pressed_raw(Key::S) {
-                acceleration.y -= speed;
-            }
-            if key_states_read.is_key_pressed_raw(Key::A) {
-                acceleration.x -= speed;
-            }
-            if key_states_read.is_key_pressed_raw(Key::D) {
-                acceleration.x += speed;
-            }
-
-            // Normalize the acceleration vector to prevent faster diagonal movement
-            if normalize == true {
-                if acceleration.magnitude() > 0.0 {
-                    acceleration = acceleration.normalize();
+            if accelerate_object_args.acceleration.len() == 2 {
+                let mut acceleration_matrix = Vector2::new(accelerate_object_args.acceleration[0], accelerate_object_args.acceleration[1]);
+                // Normalize the acceleration vector to prevent faster diagonal movement
+                if accelerate_object_args.normalize == true {
+                    if acceleration_matrix.magnitude() > 0.0 {
+                        acceleration_matrix = acceleration_matrix.normalize();
+                    }
                 }
-            }
 
-            // Apply acceleration to the entity's velocity
-            let new_velocity = entity.get_velocity() + acceleration * delta_time;
+                // Apply acceleration to the entity's velocity
+                let new_velocity = entity.get_velocity() + acceleration_matrix * delta_time;
 
-            entity.set_velocity(new_velocity);
+                entity.set_velocity(new_velocity);
 
-            let mut velocity = entity.get_velocity();
-            let current_speed = velocity.magnitude();
+                let mut velocity = entity.get_velocity();
+                let current_speed = velocity.magnitude();
 
-            // If the current speed exceeds the max speed, normalize and scale it
-            if current_speed > max_speed {
-                velocity = velocity.normalize() * max_speed;
-                entity.set_velocity(velocity); // Set the capped velocity back to the entity
+                // If the current speed exceeds the max speed, normalize and scale it
+                if current_speed > accelerate_object_args.max_speed {
+                    velocity = velocity.normalize() * accelerate_object_args.max_speed;
+                    entity.set_velocity(velocity); // Set the capped velocity back to the entity
+                }
             }
         }
         else {
