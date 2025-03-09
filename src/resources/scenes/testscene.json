@@ -58,7 +58,9 @@
                         "atlas_config": {
                             "current_frame": 12,
                             "atlas_columns": 3,
-                            "atlas_rows": 5
+                            "atlas_rows": 5,
+                            "columns_wide": 1,
+                            "rows_tall": 1
                         }
                     }
                 }
@@ -184,10 +186,16 @@
                 "rotation": 0.0,
                 "scale": 0.5,
                 "texture_name": "SquareGuySprites",
+                "tiling_config": {
+                    "horizontal_scalar": 2.0,
+                    "vertical_scalar": 2.0
+                },
                 "atlas_config": {
                     "current_frame": 12,
                     "atlas_columns": 3,
-                    "atlas_rows": 5
+                    "atlas_rows": 5,
+                    "columns_wide": 1,
+                    "rows_tall": 1
                 }
             }
         },
@@ -224,7 +232,9 @@
                 "atlas_config": {
                     "current_frame": 0,
                     "atlas_columns": 10,
-                    "atlas_rows": 1
+                    "atlas_rows": 1,
+                    "columns_wide": 1,
+                    "rows_tall": 1
                 },
                 "animation_config": {
                     "looping": true,
@@ -296,7 +306,9 @@
                 "atlas_config": {
                     "current_frame": 0,
                     "atlas_columns": 5,
-                    "atlas_rows": 1
+                    "atlas_rows": 1,
+                    "columns_wide": 1,
+                    "rows_tall": 1
                 },
                 "animation_config": {
                     "looping": true,

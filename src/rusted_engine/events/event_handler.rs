@@ -257,6 +257,8 @@ impl EventHandler {
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
 
+
+    /// Add support for tiling config to this later
     pub fn create_object(&self, create_object_args: ObjectData) {
 
         let json_shader = CustomShader::new(
@@ -277,6 +279,8 @@ impl EventHandler {
             current_frame: atlas_config.current_frame,
             atlas_columns: atlas_config.atlas_columns,
             atlas_rows: atlas_config.atlas_rows,
+            columns_wide: atlas_config.columns_wide,
+            rows_tall: atlas_config.rows_tall,
         });
 
         let mut json_collision_modes = HashSet::new();
@@ -306,6 +310,7 @@ impl EventHandler {
             create_object_args.graphics.rotation,
             create_object_args.graphics.scale,
             texture_id,
+            None,
             atlas_config,
             animation_config,
         );

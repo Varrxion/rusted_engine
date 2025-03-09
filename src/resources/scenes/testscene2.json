@@ -58,7 +58,9 @@
                         "atlas_config": {
                             "current_frame": 12,
                             "atlas_columns": 3,
-                            "atlas_rows": 5
+                            "atlas_rows": 5,
+                            "columns_wide": 1,
+                            "rows_tall": 1
                         }
                     }
                 }
@@ -187,7 +189,9 @@
                 "atlas_config": {
                     "current_frame": 12,
                     "atlas_columns": 3,
-                    "atlas_rows": 5
+                    "atlas_rows": 5,
+                    "columns_wide": 1,
+                    "rows_tall": 1
                 }
             }
         },
@@ -317,7 +321,9 @@
                 "atlas_config": {
                     "current_frame": 0,
                     "atlas_columns": 4,
-                    "atlas_rows": 5
+                    "atlas_rows": 5,
+                    "columns_wide": 1,
+                    "rows_tall": 1
                 },
                 "animation_config": {
                     "looping": true,
@@ -450,12 +456,14 @@
                 "atlas_config": {
                     "current_frame": 0,
                     "atlas_columns": 4,
-                    "atlas_rows": 4
+                    "atlas_rows": 4,
+                    "columns_wide": 2,
+                    "rows_tall": 2
                 },
                 "animation_config": {
                     "looping": true,
                     "mode": "forward",
-                    "frame_range": [0, 4],
+                    "frame_range": [0, 16],
                     "frame_duration": 0.3
                 }
             }
