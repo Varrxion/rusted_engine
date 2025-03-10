@@ -180,7 +180,7 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nvoid main(){\nint frame = int(currentFrame);\nTexCoord = vec2(\n(aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,\n(aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows\n);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.0, 0.0, 0.1],
                 "rotation": 0.0,
@@ -223,7 +223,7 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nvoid main(){\nint frame = int(currentFrame);\nTexCoord = vec2(\n(aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,\n(aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows\n);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.0, -0.3, 0.0],
                 "rotation": 0.0,
@@ -238,7 +238,7 @@
                 },
                 "animation_config": {
                     "looping": true,
-                    "mode": "random",
+                    "mode": "forward",
                     "frame_range": [0, 10],
                     "frame_duration": 0.5
                 }
@@ -297,7 +297,7 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}",
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nvoid main(){\nint frame = int(currentFrame);\nTexCoord = vec2(\n(aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,\n(aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows\n);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
                 "position": [0.3, 0.0, 0.0],
                 "rotation": 0.0,

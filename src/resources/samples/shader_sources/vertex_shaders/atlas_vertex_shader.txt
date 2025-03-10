@@ -1,4 +1,4 @@
----Readable:
+---Readable raw texture coords shader:
 
 #version 330 core
 
@@ -9,17 +9,33 @@ out vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 projection;
-uniform float atlasRows;
+uniform float currentFrame;
 uniform float atlasColumns;
+uniform float atlasRows;
 
 void main() {
-    TexCoord = aTexCoord / vec2(atlasColumns, atlasRows); 
+    int frame = int(currentFrame);
+    
+    TexCoord = vec2(
+        (aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,
+        (aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows
+    );
+    
     gl_Position = projection * model * vec4(aPos, 0.0, 1.0);
 }
 
----Json-Friendly:
-#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}
 
 ---Notes:
 
-Yeah I probably should have the entire TexCoord calculation in the shader, but you will notice I do not. 
+The raw texture coords shader should be the one you use unless I change it and forget to update this.
+
+
+---(Tested) For raw texture coords
+#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nvoid main(){\nint frame = int(currentFrame);\nTexCoord = vec2(\n(aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,\n(aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows\n);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}
+
+---(OLD)
+---(Tested) For pre-calculated but not normalized texture coords:
+#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float atlasRows;\nuniform float atlasColumns;\nvoid main() {\nTexCoord = aTexCoord / vec2(atlasColumns, atlasRows);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);\n}
+
+---(Tested) For pre-normalized texture coords:
+#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nvoid main(){\nTexCoord = aTexCoord;\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}
