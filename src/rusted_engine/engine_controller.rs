@@ -9,7 +9,7 @@ pub struct EngineController {
     glfw: glfw::Glfw,
     window: glfw::PWindow,
     events: GlfwReceiver<(f64, WindowEvent)>,
-    engine_controller: FrameworkController,
+    framework_controller: FrameworkController,
     master_clock: Arc<RwLock<MasterClock>>,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     scene_manager: Arc<RwLock<SceneManager>>,
@@ -56,7 +56,7 @@ impl EngineController {
             glfw,
             window,
             events,
-            engine_controller: FrameworkController::new(),
+            framework_controller: FrameworkController::new(),
             master_clock: Arc::new(RwLock::new(MasterClock::new())),
             master_entity_list: Arc::new(RwLock::new(MasterEntityList::new())),
             scene_manager: Arc::new(RwLock::new(SceneManager::new())),
@@ -72,10 +72,11 @@ impl EngineController {
         self.set_resolution(window_size.0 as f32, window_size.1 as f32);
 
         // Grab the parts of the engine_controller we want to use
-        let texture_manager = self.engine_controller.get_texture_manager();
-        let master_graphics_list = self.engine_controller.get_master_graphics_list();
+        let texture_manager = self.framework_controller.get_texture_manager();
+        let master_graphics_list = self.framework_controller.get_master_graphics_list();
         let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), texture_manager.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone(), self.key_states.clone());
-        self.engine_controller.set_camera_tracking_target("player".to_owned());
+        self.framework_controller.set_camera_tracking_target("player".to_owned());
+        self.framework_controller.set_camera_zoom(1.0);
 
         self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
 
@@ -158,7 +159,7 @@ impl EngineController {
             }
         }
 
-        self.engine_controller.render(&mut self.window, delta_time);
+        self.framework_controller.render(&mut self.window, delta_time);
     }
 
     /// Here we will load the json scene configs (basically level files), and load the test scene into the master graphics list.
@@ -180,6 +181,6 @@ impl EngineController {
 
     pub fn set_resolution(&mut self, width: f32, height: f32) {
         self.window.set_size(width as i32, height as i32);
-        self.engine_controller.set_resolution(width, height);
+        self.framework_controller.set_resolution(width, height);
     }
 }
