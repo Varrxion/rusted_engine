@@ -1,7 +1,7 @@
 use std::{collections::{HashMap, HashSet}, fs::{self, File}, path::Path, sync::{Arc, RwLock}};
 
 use nalgebra::{Vector2, Vector3};
-use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject, tiling_config::TilingConfig}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 use serde::{Deserialize, Serialize};
 use std::io::{self, Read};
 
@@ -164,12 +164,6 @@ impl SceneManager {
                 &obj_data.graphics.fragment_shader,
             );
 
-            // Handle optional TilingConfig
-            let tiling_config = obj_data.graphics.tiling_config.map(|tiling_config| TilingConfig {
-                horizontal_scalar: tiling_config.horizontal_scalar,
-                vertical_scalar: tiling_config.vertical_scalar,
-            });
-
             // Handle optional AnimationConfig
             let animation_config = obj_data.graphics.animation_config.map(|animation_config| AnimationConfig {
                 looping: animation_config.looping,
@@ -214,7 +208,6 @@ impl SceneManager {
                 obj_data.graphics.rotation,
                 obj_data.graphics.scale,
                 texture_id,
-                tiling_config,
                 atlas_config,
                 animation_config,
             );
@@ -310,8 +303,6 @@ pub struct GraphicsData {
     pub rotation: f32,
     pub scale: f32,
     pub texture_name: String,
-    #[serde(default)]
-    pub tiling_config: Option<TilingConfig>,
     #[serde(default)]
     pub atlas_config: Option<AtlasConfig>,
     #[serde(default)]

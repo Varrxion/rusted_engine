@@ -1,0 +1,238 @@
+{
+    "properties": {
+        "gravity": [0.0, -3.8],
+        "terminal_velocity": [5.0, 5.0]
+    },
+    "scene_triggers": [
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["w"]
+                }
+            },
+            "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [0.0, 3.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [0, 3],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyNotPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["w","s","a","d"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": false,
+                            "mode": "forward",
+                            "frame_range": [12, 13],
+                            "frame_duration": 0.2
+                        }
+                    }
+                },
+                {
+                    "SetAtlasConfig": {
+                        "object_name": "player",
+                        "atlas_config": {
+                            "current_frame": 12,
+                            "atlas_columns": 3,
+                            "atlas_rows": 5,
+                            "columns_wide": 1,
+                            "rows_tall": 1
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["s"]
+                }
+            },
+            "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [0.0, -3.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [3, 6],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["a"]
+                }
+            },
+            "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [-3.0, 0.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [6, 9],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["d"]
+                }
+            },
+            "outcome": [
+                {
+                    "AccelerateObject": {
+                        "object_name": "player",
+                        "acceleration": [3.0, 0.0],
+                        "max_speed": 5.0,
+                        "normalize": false
+                    }
+                },
+                {
+                    "SetAnimationConfig": {
+                        "object_name": "player",
+                        "animation_config": {
+                            "looping": true,
+                            "mode": "forward",
+                            "frame_range": [9, 12],
+                            "frame_duration": 0.2
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "objects": [
+        {
+            "entity": {
+                "name": "player",
+                "weight": 3.0,
+                "affected_by_gravity": false,
+                "is_static": false,
+                "elasticity": 1.0,
+                "active_collision": true,
+                "collision_priority": 1,
+                "collision_modes": ["AABB", "Circle"]
+            },
+            "graphics": {
+                "name": "player",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nuniform float columnsWide;\nuniform float rowsTall;\nvoid main() {\nint frame = int(currentFrame);\nint frame_x = frame % int(atlasColumns);\nint frame_y = frame / int(atlasColumns);\nfloat u1 = float(frame_x) / atlasColumns;\nfloat v1 = float(frame_y) / atlasRows;\nfloat u2 = float(frame_x + columnsWide) / atlasColumns;\nfloat v2 = float(frame_y + rowsTall) / atlasRows;\nTexCoord = vec2(u1 + aTexCoord.x * (u2 - u1), v1 + aTexCoord.y * (v2 - v1));\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.0, 0.0, 0.1],
+                "rotation": 0.0,
+                "scale": 0.5,
+                "texture_name": "SquareGuySprites",
+                "atlas_config": {
+                    "current_frame": 12,
+                    "atlas_columns": 3,
+                    "atlas_rows": 5,
+                    "columns_wide": 1,
+                    "rows_tall": 1
+                }
+            }
+        },
+        {
+            "entity": {
+                "name": "courtyard_grass",
+                "weight": 2.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "active_collision": false,
+                "collision_modes": []
+            },
+            "graphics": {
+                "name": "courtyard_grass",
+                "vertex_data": [ 
+                    0.1, 0.1,
+                    0.1, -0.1,
+                    -0.1, -0.1,
+                    -0.1, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nuniform float columnsWide;\nuniform float rowsTall;\nvoid main() {\nint frame = int(currentFrame);\nint frame_x = frame % int(atlasColumns);\nint frame_y = frame / int(atlasColumns);\nfloat u1 = float(frame_x) / atlasColumns;\nfloat v1 = float(frame_y) / atlasRows;\nfloat u2 = float(frame_x + columnsWide) / atlasColumns;\nfloat v2 = float(frame_y + rowsTall) / atlasRows;\nTexCoord = vec2(u1 + aTexCoord.x * (u2 - u1), v1 + aTexCoord.y * (v2 - v1));\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.0, 0.0, -0.9],
+                "rotation": 0.0,
+                "scale": 100.0,
+                "texture_name": "RealisticGrass",
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 1,
+                    "atlas_rows": 1,
+                    "columns_wide": 256,
+                    "rows_tall": 256
+                }
+            }
+        }
+    ]
+}

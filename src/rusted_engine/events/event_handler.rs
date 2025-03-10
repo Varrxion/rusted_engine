@@ -257,8 +257,6 @@ impl EventHandler {
         self.scene_manager.read().unwrap().load_scene(&mut self.game_state.write().unwrap(), &self.master_entity_list.write().unwrap(), &self.master_graphics_list.write().unwrap(), scene_name);
     }
 
-
-    /// Add support for tiling config to this later
     pub fn create_object(&self, create_object_args: ObjectData) {
 
         let json_shader = CustomShader::new(
@@ -310,7 +308,6 @@ impl EventHandler {
             create_object_args.graphics.rotation,
             create_object_args.graphics.scale,
             texture_id,
-            None,
             atlas_config,
             animation_config,
         );

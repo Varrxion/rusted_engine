@@ -315,6 +315,19 @@
                                 "looping": false
                             }
                         }
+                    },
+                    {
+                        "trigger_type": "Collision",
+                        "conditions": {
+                            "CollisionConditions": {
+                                "collided_with": "dungeon1_block1"
+                            }
+                        },
+                        "outcome": {
+                            "SwapScene": {
+                                "scene_name": "courtyard"
+                            }
+                        }
                     }
                 ]
             },
@@ -423,7 +436,7 @@
                     0.0, 1.0,
                     0.0, 0.0
                 ],
-                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nvoid main(){\nint frame = int(currentFrame);\nTexCoord = vec2(\n(aTexCoord.x + float(frame % int(atlasColumns))) / atlasColumns,\n(aTexCoord.y + float(frame / int(atlasColumns))) / atlasRows\n);\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
+                "vertex_shader": "#version 330 core\nlayout(location=0)in vec2 aPos;layout(location=1)in vec2 aTexCoord;out vec2 TexCoord;uniform mat4 model,projection;uniform float currentFrame,atlasColumns,atlasRows,columnsWide,rowsTall;void main(){int frame=int(currentFrame),frame_x=frame%int(atlasColumns),frame_y=frame/int(atlasColumns);float u1=float(frame_x)/atlasColumns,v1=float(frame_y)/atlasRows,u2=float(frame_x+columnsWide)/atlasColumns,v2=float(frame_y+rowsTall)/atlasRows;TexCoord=vec2(u1+aTexCoord.x*(u2-u1),v1+aTexCoord.y*(v2-v1));gl_Position=projection*model*vec4(aPos,0.0,1.0);}",
                 "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.9) discard;\ncolor = texColor;\n}",
                 "position": [-0.7, 0.7, 0.3],
                 "rotation": 0.0,
@@ -432,9 +445,9 @@
                 "atlas_config": {
                     "current_frame": 5,
                     "atlas_columns": 24,
-                    "atlas_rows": 5,
+                    "atlas_rows": 10,
                     "columns_wide": 1,
-                    "rows_tall": 1
+                    "rows_tall": 2
                 }
             }
         },
