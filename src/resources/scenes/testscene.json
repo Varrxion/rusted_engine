@@ -8,6 +8,36 @@
             "scene_trigger_type": "KeyPressed",
             "conditions": {
                 "KeyConditions": {
+                    "keys": ["-"]
+                }
+            },
+            "outcome": [
+                {
+                    "SetCameraZoom": {
+                        "zoom": 0.5
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
+                    "keys": ["="]
+                }
+            },
+            "outcome": [
+                {
+                    "SetCameraZoom": {
+                        "zoom": 1.0
+                    }
+                }
+            ]
+        },
+        {
+            "scene_trigger_type": "KeyPressed",
+            "conditions": {
+                "KeyConditions": {
                     "keys": ["w"]
                 }
             },

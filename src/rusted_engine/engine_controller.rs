@@ -25,9 +25,9 @@ impl EngineController {
 
         glfw.window_hint(glfw::WindowHint::Resizable(false));
 
-        let fullscreen = true;
-        let windowed_width = 640;
-        let windowed_height = 480;
+        let fullscreen = false;
+        let windowed_width = 1920;
+        let windowed_height = 1080;
 
         let (mut window, events) = glfw.with_primary_monitor(|glfw, m| {
             if fullscreen == true {
@@ -75,9 +75,10 @@ impl EngineController {
         // Grab the parts of the engine_controller we want to use
         let texture_manager = self.framework_controller.get_texture_manager();
         let master_graphics_list = self.framework_controller.get_master_graphics_list();
-        let mut event_handler = EventHandler::new(self.master_entity_list.clone(), master_graphics_list.clone(), texture_manager.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone(), self.key_states.clone());
-        self.framework_controller.set_camera_tracking_target("player".to_owned());
-        self.framework_controller.set_camera_zoom(1.0);
+        let camera = self.framework_controller.get_camera();
+        let mut event_handler = EventHandler::new(camera.clone(), self.master_entity_list.clone(), master_graphics_list.clone(), texture_manager.clone(), self.audio_manager.clone(), self.scene_manager.clone(), self.game_state.clone(), self.key_states.clone());
+        camera.write().unwrap().set_tracking_target(Some("player".to_owned()));
+        camera.write().unwrap().set_zoom(1.0);
 
         self.audio_manager.read().unwrap().enqueue_audio("TormentureMainTheme", super::audio::audio_manager::AudioType::Music, 0.1, true);
 

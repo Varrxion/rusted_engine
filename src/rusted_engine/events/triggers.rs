@@ -65,6 +65,8 @@ pub enum Outcome {
     EnqueueAudio(EnqueueAudioArgs),
     SetAtlasConfig(SetAtlasConfigArgs),
     SetAnimationConfig(SetAnimationConfigArgs),
+    SetCameraZoom(SetCameraZoomArgs),
+    SetCameraTrackingTarget(SetCameraTrackingTargetArgs),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -114,4 +116,14 @@ pub struct  SetAtlasConfigArgs {
 pub struct  SetAnimationConfigArgs {
     pub object_name: String,
     pub animation_config: AnimationConfig,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  SetCameraZoomArgs {
+    pub zoom: f32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct  SetCameraTrackingTargetArgs {
+    pub tracking_target: String,
 }

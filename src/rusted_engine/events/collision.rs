@@ -155,35 +155,50 @@ fn check_collision(object_1_read: &Generic2DGraphicsObject, object_2_read: &Gene
 pub fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity, master_graphics_list: &MasterGraphicsList) {
     let object_1 = master_graphics_list.get_object(entity_1.get_name());
     let object_2 = master_graphics_list.get_object(entity_2.get_name());
-    
+
     if let (Some(object_1), Some(object_2)) = (object_1, object_2) {
         let mut object_1 = object_1.write().unwrap();
         let mut object_2 = object_2.write().unwrap();
 
-        // Calculate the vector between the two objects (the direction to resolve the overlap)
-        let diff_x = object_2.get_position().x - object_1.get_position().x;
-        let diff_y = object_2.get_position().y - object_1.get_position().y;
+        let pos_1 = object_1.get_position();
+        let pos_2 = object_2.get_position();
+        let (width_1, height_1) = object_1.dimensions();
+        let (width_2, height_2) = object_2.dimensions();
 
-        // Calculate the normal of the collision (direction of separation)
-        let normal_x = if diff_x > 0.0 { 1.0 } else { -1.0 };
-        let normal_y = if diff_y > 0.0 { 1.0 } else { -1.0 };
+        let half_width_1 = width_1 * 0.5;
+        let half_height_1 = height_1 * 0.5;
+        let half_width_2 = width_2 * 0.5;
+        let half_height_2 = height_2 * 0.5;
 
-        let separation_distance = 0.05;
+        let diff_x = pos_1.x - pos_2.x;
+        let diff_y = pos_1.y - pos_2.y;
 
-        // Calculate the movement vectors for both objects to move them apart
-        let move_1 = Vector3::new(-normal_x * separation_distance, -normal_y * separation_distance, 0.0);
-        let move_2 = Vector3::new(normal_x * separation_distance, normal_y * separation_distance, 0.0);
+        let overlap_x = (half_width_1 + half_width_2) - diff_x.abs();
+        let overlap_y = (half_height_1 + half_height_2) - diff_y.abs();
 
-        if !entity_1.is_static() {
-            movement::move_object(&mut object_1, move_1, 0.01);
-        }
-        if !entity_2.is_static() {
-            movement::move_object(&mut object_2, move_2, 0.01);
+        if overlap_x > 0.0 && overlap_y > 0.0 {
+            // Determine the axis of least penetration
+            if overlap_x < overlap_y {
+                // Resolve along the X-axis
+                if diff_x > 0.0 {
+                    object_1.set_position(Vector3::new(pos_2.x + half_width_2 + half_width_1, pos_1.y, pos_1.z));
+                } else {
+                    object_1.set_position(Vector3::new(pos_2.x - (half_width_2 + half_width_1), pos_1.y, pos_1.z));
+                }
+            } else {
+                // Resolve along the Y-axis
+                if diff_y > 0.0 {
+                    object_1.set_position(Vector3::new(pos_1.x, pos_2.y + half_height_2 + half_height_1, pos_1.z));
+                } else {
+                    object_1.set_position(Vector3::new(pos_1.x, pos_2.y - (half_height_2 + half_height_1), pos_1.z));
+                }
+            }
         }
     } else {
         println!("One or both objects not found to resolve collision overlap");
     }
 }
+
 
 pub fn transfer_velocity_on_collision(entity_1: &mut GenericEntity, entity_2: &mut GenericEntity) {
     let velocity_1 = entity_1.get_velocity();

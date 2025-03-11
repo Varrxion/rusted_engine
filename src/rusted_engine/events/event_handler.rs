@@ -1,13 +1,14 @@
 use std::{collections::HashSet, sync::{Arc, RwLock}};
 
 use nalgebra::{Vector2, Vector3};
-use rusted_open::framework::graphics::{internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
+use rusted_open::framework::graphics::{camera::Camera, internal_object::{animation_config::AnimationConfig, atlas_config::AtlasConfig, custom_shader::CustomShader, graphics_object::Generic2DGraphicsObject}, texture_manager::TextureManager, util::master_graphics_list::MasterGraphicsList};
 
 use crate::rusted_engine::{audio::audio_manager::{AudioManager, AudioType}, entities::{generic_entity::{CollisionMode, GenericEntity}, util::master_entity_list::MasterEntityList}, game_state::GameState, input::key_states::KeyStates, scenes::scene_manager::{ObjectData, SceneManager}, util::char_to_glfw_key::char_to_glfw_key};
 
-use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{AccelerateObjectArgs, KeyCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
+use super::{collision::{self, resolve_overlap, transfer_velocity_on_collision, CollisionEvent}, triggers::{KeyCondition, Outcome, SceneTriggerType, Trigger, TriggerConditions, TriggerType}};
 
 pub struct EventHandler {
+    camera: Arc<RwLock<Camera>>,
     master_entity_list: Arc<RwLock<MasterEntityList>>,
     master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
     texture_manager: Arc<RwLock<TextureManager>>,
@@ -20,6 +21,7 @@ pub struct EventHandler {
 
 impl EventHandler {
     pub fn new(
+        camera: Arc<RwLock<Camera>>,
         master_entity_list: Arc<RwLock<MasterEntityList>>,
         master_graphics_list: Arc<RwLock<MasterGraphicsList>>,
         texture_manager: Arc<RwLock<TextureManager>>,
@@ -29,6 +31,7 @@ impl EventHandler {
         key_states: Arc<RwLock<KeyStates>>,
     ) -> Self {
         Self {
+            camera,
             master_entity_list,
             master_graphics_list,
             texture_manager,
@@ -106,6 +109,12 @@ impl EventHandler {
                     if !set_animation_config_args.object_name.is_empty() {
                         self.set_animation_config(set_animation_config_args.object_name.clone(), set_animation_config_args.animation_config.clone());
                     }
+                }
+                Outcome::SetCameraZoom(set_camera_zoom_args) => {
+                    self.set_camera_zoom(set_camera_zoom_args.zoom);
+                }
+                Outcome::SetCameraTrackingTarget(set_camera_tracking_target_args) => {
+                    self.set_camera_tracking_target(set_camera_tracking_target_args.tracking_target.clone());
                 }
                 _ => {
                     println!("Unhandled outcome: {:?}", event_outcome);
@@ -395,7 +404,19 @@ impl EventHandler {
             object_write.set_animation_config(Some(new_animation_config));
         }
     }
-    
+
+    pub fn set_camera_zoom(&self, camera_zoom: f32) {
+        self.camera.write().unwrap().set_zoom(camera_zoom);
+    }
+
+    pub fn set_camera_tracking_target(&self, tracking_target: String) {
+        if tracking_target != "" {
+            self.camera.write().unwrap().set_tracking_target(Some(tracking_target.to_string()));
+        }
+        else {
+            self.camera.write().unwrap().set_tracking_target(None);
+        }
+    }
 
     pub fn homebringer_sequence(&self) {
         if let Some(player_object) = self.master_graphics_list.read().unwrap().get_object("player") {
