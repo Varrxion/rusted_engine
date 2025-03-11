@@ -26,6 +26,8 @@ impl EngineController {
         glfw.window_hint(glfw::WindowHint::Resizable(false));
 
         let fullscreen = true;
+        let windowed_width = 640;
+        let windowed_height = 480;
 
         let (mut window, events) = glfw.with_primary_monitor(|glfw, m| {
             if fullscreen == true {
@@ -41,9 +43,8 @@ impl EngineController {
                 }
             }
             
-
             // Fallback to windowed mode if monitor or video mode is unavailable
-            glfw.create_window(640, 480, "rusted_engine", glfw::WindowMode::Windowed)
+            glfw.create_window(windowed_width, windowed_height, "rusted_engine", glfw::WindowMode::Windowed)
         }).expect("Failed to create GLFW window.");
 
         // Make the window's context current

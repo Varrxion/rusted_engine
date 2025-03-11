@@ -165,17 +165,14 @@ pub fn resolve_overlap(entity_1: &mut GenericEntity, entity_2: &mut GenericEntit
         let diff_y = object_2.get_position().y - object_1.get_position().y;
 
         // Calculate the normal of the collision (direction of separation)
-        let normal = if diff_x.abs() > diff_y.abs() {
-            if diff_x > 0.0 { (1.0, 0.0) } else { (-1.0, 0.0) }
-        } else {
-            if diff_y > 0.0 { (0.0, 1.0) } else { (0.0, -1.0) }
-        };
+        let normal_x = if diff_x > 0.0 { 1.0 } else { -1.0 };
+        let normal_y = if diff_y > 0.0 { 1.0 } else { -1.0 };
 
         let separation_distance = 0.05;
 
         // Calculate the movement vectors for both objects to move them apart
-        let move_1 = Vector3::new(-normal.0 * separation_distance, -normal.1 * separation_distance, 0.0);
-        let move_2 = Vector3::new(normal.0 * separation_distance, normal.1 * separation_distance, 0.0);
+        let move_1 = Vector3::new(-normal_x * separation_distance, -normal_y * separation_distance, 0.0);
+        let move_2 = Vector3::new(normal_x * separation_distance, normal_y * separation_distance, 0.0);
 
         if !entity_1.is_static() {
             movement::move_object(&mut object_1, move_1, 0.01);

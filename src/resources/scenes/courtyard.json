@@ -229,8 +229,47 @@
                     "current_frame": 0,
                     "atlas_columns": 1,
                     "atlas_rows": 1,
-                    "columns_wide": 256,
-                    "rows_tall": 256
+                    "columns_wide": 128,
+                    "rows_tall": 128
+                }
+            }
+        },
+        {
+            "entity": {
+                "name": "courtyard_upper_wall",
+                "weight": 2.0,
+                "affected_by_gravity": false,
+                "is_static": true,
+                "elasticity": 1.0,
+                "active_collision": false,
+                "collision_modes": ["AABB"]
+            },
+            "graphics": {
+                "name": "courtyard_upper_wall",
+                "vertex_data": [ 
+                    2.0, 0.1,
+                    2.0, -0.1,
+                    -2.0, -0.1,
+                    -2.0, 0.1
+                ],
+                "texture_coords": [
+                    1.0, 0.0,
+                    1.0, 1.0,
+                    0.0, 1.0,
+                    0.0, 0.0
+                ],
+                "vertex_shader": "#version 330 core\nlayout(location = 0) in vec2 aPos;\nlayout(location = 1) in vec2 aTexCoord;\nout vec2 TexCoord;\nuniform mat4 model;\nuniform mat4 projection;\nuniform float currentFrame;\nuniform float atlasColumns;\nuniform float atlasRows;\nuniform float columnsWide;\nuniform float rowsTall;\nvoid main() {\nint frame = int(currentFrame);\nint frame_x = frame % int(atlasColumns);\nint frame_y = frame / int(atlasColumns);\nfloat u1 = float(frame_x) / atlasColumns;\nfloat v1 = float(frame_y) / atlasRows;\nfloat u2 = float(frame_x + columnsWide) / atlasColumns;\nfloat v2 = float(frame_y + rowsTall) / atlasRows;\nTexCoord = vec2(u1 + aTexCoord.x * (u2 - u1), v1 + aTexCoord.y * (v2 - v1));\ngl_Position = projection * model * vec4(aPos, 0.0, 1.0);}",
+                "fragment_shader": "#version 330 core\nout vec4 color;\nin vec2 TexCoord;\nuniform sampler2D texture1;\nvoid main() {\nvec4 texColor = texture(texture1, TexCoord);\nif(texColor.a < 0.7) discard;\ncolor = texColor;\n}",
+                "position": [0.0, 1.0, 0.0],
+                "rotation": 0.0,
+                "scale": 1.0,
+                "texture_name": "StoneWall",
+                "atlas_config": {
+                    "current_frame": 0,
+                    "atlas_columns": 1,
+                    "atlas_rows": 1,
+                    "columns_wide": 8,
+                    "rows_tall": 1
                 }
             }
         }
